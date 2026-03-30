@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="teal">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Green Screen Project | Tiago Ferrao</title>
+  <meta name="description" content="The design philosophy behind ferrao.me — a love letter to green phosphor terminals and the Timex 2048">
+  <link rel="icon" href="img/bee.png">
+  <link rel="apple-touch-icon" href="img/bee.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <style>
+    /* === Green Screen Page Specific Styles === */
+
+    .gs-story {
+      max-width: 720px;
+      margin: 0 auto var(--space-3xl);
+    }
+
+    .gs-story p {
+      font-size: var(--text-lg);
+      line-height: 1.9;
+      margin-bottom: var(--space-lg);
+    }
+
+    .gs-story .highlight {
+      color: var(--accent-primary);
+      font-weight: 700;
+    }
+
+    .gs-story .dim {
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    /* Terminal Illustration */
+    .terminal-art {
+      max-width: 480px;
+      margin: var(--space-2xl) auto;
+      padding: var(--space-xl);
+      border: 2px solid var(--accent-secondary);
+      border-radius: var(--border-radius-lg);
+      background: #000d10;
+      box-shadow:
+        0 0 40px rgba(125, 227, 141, 0.05),
+        inset 0 0 60px rgba(0, 0, 0, 0.5);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .terminal-art::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(125, 227, 141, 0.015) 2px,
+        rgba(125, 227, 141, 0.015) 4px
+      );
+      pointer-events: none;
+    }
+
+    .terminal-art .scanline {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: rgba(125, 227, 141, 0.08);
+      animation: scanline 8s linear infinite;
+    }
+
+    @keyframes scanline {
+      0% { top: 0; }
+      100% { top: 100%; }
+    }
+
+    .terminal-text {
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      color: var(--accent-primary);
+      line-height: 1.8;
+      position: relative;
+      z-index: 1;
+    }
+
+    .terminal-text .prompt {
+      color: var(--accent-secondary);
+    }
+
+    .terminal-text .cursor {
+      display: inline-block;
+      width: 8px;
+      height: 16px;
+      background: var(--accent-primary);
+      animation: blink 1s step-end infinite;
+      vertical-align: text-bottom;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    /* Color Palette Display */
+    .palette-section {
+      max-width: 720px;
+      margin: var(--space-3xl) auto;
+    }
+
+    .palette-section h3 {
+      text-align: center;
+      margin-bottom: var(--space-xl);
+    }
+
+    .palette-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: var(--space-md);
+      margin-bottom: var(--space-xl);
+    }
+
+    .color-card {
+      border-radius: var(--border-radius-md);
+      border: 1px solid var(--border-subtle);
+      overflow: hidden;
+      background: var(--bg-surface);
+    }
+
+    .color-swatch {
+      height: 80px;
+      width: 100%;
+    }
+
+    .color-info {
+      padding: var(--space-md);
+    }
+
+    .color-info .color-name {
+      font-family: var(--font-display);
+      font-size: var(--text-sm);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--space-xs);
+    }
+
+    .color-info .color-hex {
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      color: var(--accent-primary);
+      letter-spacing: 0.05em;
+    }
+
+    .color-info .color-use {
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+      margin-top: var(--space-xs);
+    }
+
+    /* Instruction Book */
+    .instructions {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .instructions h3 {
+      margin-bottom: var(--space-lg);
+      padding-bottom: var(--space-sm);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .instruction-step {
+      margin-bottom: var(--space-xl);
+      padding-left: var(--space-lg);
+      border-left: 2px solid var(--accent-secondary);
+    }
+
+    .instruction-step h4 {
+      color: var(--accent-primary);
+      margin-bottom: var(--space-sm);
+      font-family: var(--font-body);
+      font-weight: 700;
+    }
+
+    .instruction-step p {
+      font-size: var(--text-sm);
+      margin-bottom: var(--space-sm);
+    }
+
+    .instruction-step code {
+      display: inline-block;
+      background: var(--bg-secondary);
+      color: var(--accent-primary);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: var(--font-body);
+      font-size: var(--text-xs);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .code-block {
+      background: #000d10;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--border-radius-sm);
+      padding: var(--space-md);
+      margin: var(--space-md) 0;
+      font-family: var(--font-body);
+      font-size: var(--text-xs);
+      color: var(--accent-primary);
+      line-height: 1.8;
+      overflow-x: auto;
+    }
+
+    .code-block .comment {
+      color: var(--text-muted);
+    }
+
+    .code-block .prop {
+      color: var(--accent-secondary);
+    }
+
+    .code-block .val {
+      color: var(--accent-primary);
+    }
+
+    /* Divider */
+    .gs-divider {
+      width: 60px;
+      height: 2px;
+      background: var(--accent-gradient);
+      margin: var(--space-3xl) auto;
+      border: none;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-brand">
+        <h1>Tiago Ferrao</h1>
+        <span class="subtitle">Digital Innovator</span>
+      </a>
+      <button class="nav-toggle" aria-label="Toggle navigation">
+        <svg viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+      </button>
+      <nav class="site-nav">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contacts.html">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+
+      <!-- ===== PAGE HEADER ===== -->
+      <section class="page-header fade-in">
+        <svg class="icon" viewBox="0 0 640 640">
+          <g>
+            <path class="fa-primary" fill="currentColor" d="M144 128L144 432C144 440.8 151.2 448 160 448L480 448C488.8 448 496 440.8 496 432L496 128C496 119.2 488.8 112 480 112L160 112C151.2 112 144 119.2 144 128zM176 496L176 528L464 528L464 496L176 496zM192 192C192 174.3 206.3 160 224 160L416 160C433.7 160 448 174.3 448 192L448 288C448 305.7 433.7 320 416 320L224 320C206.3 320 192 305.7 192 288L192 192zM240 384C240 397.3 229.3 408 216 408C202.7 408 192 397.3 192 384C192 370.7 202.7 360 216 360C229.3 360 240 370.7 240 384zM296 384C296 370.7 306.7 360 320 360L424 360C437.3 360 448 370.7 448 384C448 397.3 437.3 408 424 408L320 408C306.7 408 296 397.3 296 384z"/>
+            <path class="fa-secondary" fill="currentColor" d="M480 112C488.8 112 496 119.2 496 128L496 432C496 440.8 488.8 448 480 448L160 448C151.2 448 144 440.8 144 432L144 128C144 119.2 151.2 112 160 112L480 112zM512 487.4C531.1 476.3 544 455.7 544 432L544 128C544 92.7 515.3 64 480 64L160 64C124.7 64 96 92.7 96 128L96 432C96 455.7 108.9 476.4 128 487.4L128 544C128 561.7 142.3 576 160 576L480 576C497.7 576 512 561.7 512 544L512 487.4zM464 496L464 528L176 528L176 496L464 496zM192 192L192 288C192 305.7 206.3 320 224 320L416 320C433.7 320 448 305.7 448 288L448 192C448 174.3 433.7 160 416 160L224 160C206.3 160 192 174.3 192 192zM296 384C296 397.3 306.7 408 320 408L424 408C437.3 408 448 397.3 448 384C448 370.7 437.3 360 424 360L320 360C306.7 360 296 370.7 296 384zM216 408C229.3 408 240 397.3 240 384C240 370.7 229.3 360 216 360C202.7 360 192 370.7 192 384C192 397.3 202.7 408 216 408z"/>
+          </g>
+        </svg>
+        <h2>The Green Screen Project</h2>
+        <p>A design system born from phosphor glow and childhood memory</p>
+      </section>
+
+      <!-- ===== THE STORY ===== -->
+      <section class="gs-story fade-in">
+
+        <h3 style="text-align:center; margin-bottom: var(--space-xl);">The Origin</h3>
+
+        <p>Somewhere in Portugal, in the late 1980s, a boy sat cross-legged on the floor of his parents' living room staring at a small television set. Connected to it by a thick cable was a <span class="highlight">Timex Computer 2048</span> &mdash; a curious little machine with rubber keys and a promise that the future was something you could type into existence.</p>
+
+        <p>The screen glowed green. Not the green of trees or grass, but a different green entirely &mdash; the <span class="highlight">phosphor green</span> of early CRT monitors. A colour that existed nowhere in nature, only in the space between electricity and glass. Characters would appear on that dark background like small luminous creatures, each one placed there by a child's fingers learning that the world could be spoken to in a language made of logic.</p>
+
+        <p>That boy was me. And that green &mdash; that specific, warm, electric green against an almost-black teal darkness &mdash; became the first colour palette I ever loved, long before I knew what a colour palette was.</p>
+
+        <!-- Terminal Art -->
+        <div class="terminal-art">
+          <div class="scanline"></div>
+          <div class="terminal-text">
+            <span class="prompt">10</span> PRINT "HELLO WORLD"<br>
+            <span class="prompt">20</span> PRINT "MY NAME IS TIAGO"<br>
+            <span class="prompt">30</span> PRINT "I AM 7 YEARS OLD"<br>
+            <span class="prompt">40</span> PRINT "THIS COMPUTER IS MAGIC"<br>
+            <span class="prompt">50</span> GOTO 10<br>
+            <br>
+            <span class="prompt">RUN</span><br>
+            HELLO WORLD<br>
+            MY NAME IS TIAGO<br>
+            I AM 7 YEARS OLD<br>
+            THIS COMPUTER IS MAGIC<br>
+            HELLO WORLD<br>
+            MY NAME IS TIAGO<br>
+            <span class="cursor"></span>
+          </div>
+        </div>
+
+        <p>The Timex 2048 was the Portuguese cousin of the Sinclair ZX Spectrum &mdash; a home computer that taught an entire generation to program before they could properly spell. It loaded programs from cassette tapes with a sound like a fax machine having a nightmare. Sometimes it took fifteen minutes to load a game. Sometimes it crashed at minute fourteen. You learned patience. You learned persistence. You learned that the machine did exactly what you told it to do, nothing more, nothing less.</p>
+
+        <p><span class="dim">I still have that computer. It sits on a shelf in my home, rubber keys slightly yellowed, its power supply long dead. But the memory of that screen &mdash; that glow &mdash; never faded.</span></p>
+
+        <hr class="gs-divider">
+
+        <h3 style="text-align:center; margin-bottom: var(--space-xl);">The Design Philosophy</h3>
+
+        <p>When I built my first website, I didn't think twice about the colour scheme. The background had to be <span class="highlight">dark</span>. The text had to be <span class="highlight">green</span>. The font had to be <span class="highlight">monospace</span>. It wasn't a design decision &mdash; it was a homecoming.</p>
+
+        <p>The Green Screen is not about nostalgia for nostalgia's sake. It's about a fundamental belief: that the most honest interface is the one that gets out of the way. A dark background that doesn't fight for your attention. Text that glows just enough to be read. No distractions, no decoration for decoration's sake. Just information, clearly presented, in a palette that feels like it was designed by someone who respects your eyes.</p>
+
+        <p>Every colour in this system was chosen to echo the experience of looking at a phosphor terminal in a dim room &mdash; the dark teal-black of the screen before it warms up, the bright green of active text, the softer green of things that have been read, and the deep muted green of things waiting in the background.</p>
+
+      </section>
+
+      <hr class="gs-divider">
+
+      <!-- ===== THE PALETTE ===== -->
+      <section class="palette-section fade-in">
+        <h3>The Palette</h3>
+
+        <h4 style="color: var(--text-secondary); font-weight: 400; text-align: center; margin-bottom: var(--space-xl);">Backgrounds</h4>
+        <div class="palette-grid">
+          <div class="color-card">
+            <div class="color-swatch" style="background: #001a20;"></div>
+            <div class="color-info">
+              <div class="color-name">Deep Terminal</div>
+              <div class="color-hex">#001a20</div>
+              <div class="color-use">Primary background &mdash; the screen before power-on</div>
+            </div>
+          </div>
+          <div class="color-card">
+            <div class="color-swatch" style="background: #002a33;"></div>
+            <div class="color-info">
+              <div class="color-name">Warm CRT</div>
+              <div class="color-hex">#002a33</div>
+              <div class="color-use">Secondary background &mdash; the screen warming up</div>
+            </div>
+          </div>
+          <div class="color-card">
+            <div class="color-swatch" style="background: rgba(0, 50, 60, 0.9);"></div>
+            <div class="color-info">
+              <div class="color-name">Glass Surface</div>
+              <div class="color-hex">rgba(0, 50, 60, 0.6)</div>
+              <div class="color-use">Card backgrounds &mdash; like looking through the glass</div>
+            </div>
+          </div>
+        </div>
+
+        <h4 style="color: var(--text-secondary); font-weight: 400; text-align: center; margin-bottom: var(--space-xl);">The Greens</h4>
+        <div class="palette-grid">
+          <div class="color-card">
+            <div class="color-swatch" style="background: #7DE38D;"></div>
+            <div class="color-info">
+              <div class="color-name">Phosphor Bright</div>
+              <div class="color-hex">#7DE38D</div>
+              <div class="color-use">Primary accent &mdash; the active cursor, the living text</div>
+            </div>
+          </div>
+          <div class="color-card">
+            <div class="color-swatch" style="background: #288f5b;"></div>
+            <div class="color-info">
+              <div class="color-name">Phosphor Soft</div>
+              <div class="color-hex">#288f5b</div>
+              <div class="color-use">Secondary accent &mdash; text that's been read, settled</div>
+            </div>
+          </div>
+          <div class="color-card">
+            <div class="color-swatch" style="background: #4ecdc4;"></div>
+            <div class="color-info">
+              <div class="color-name">Teal Glow</div>
+              <div class="color-hex">#4ecdc4</div>
+              <div class="color-use">Gradient companion &mdash; the ambient light bleed</div>
+            </div>
+          </div>
+        </div>
+
+        <h4 style="color: var(--text-secondary); font-weight: 400; text-align: center; margin-bottom: var(--space-xl);">Text Hierarchy</h4>
+        <div class="palette-grid">
+          <div class="color-card">
+            <div class="color-swatch" style="background: #e0f0e8;"></div>
+            <div class="color-info">
+              <div class="color-name">Active Text</div>
+              <div class="color-hex">#e0f0e8</div>
+              <div class="color-use">Primary text &mdash; the line you're reading now</div>
+            </div>
+          </div>
+          <div class="color-card">
+            <div class="color-swatch" style="background: #8fb8a0;"></div>
+            <div class="color-info">
+              <div class="color-name">Resting Text</div>
+              <div class="color-hex">#8fb8a0</div>
+              <div class="color-use">Secondary text &mdash; supporting information</div>
+            </div>
+          </div>
+          <div class="color-card">
+            <div class="color-swatch" style="background: #5a8a70;"></div>
+            <div class="color-info">
+              <div class="color-name">Ghost Text</div>
+              <div class="color-hex">#5a8a70</div>
+              <div class="color-use">Muted text &mdash; metadata, timestamps, the quiet things</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="gs-divider">
+
+      <!-- ===== REPLICATION GUIDE ===== -->
+      <section class="instructions fade-in">
+        <h3>Replication Guide</h3>
+        <p style="color: var(--text-secondary); margin-bottom: var(--space-2xl);">Everything you need to rebuild this aesthetic from scratch. Fork it, remix it, make it yours.</p>
+
+        <div class="instruction-step">
+          <h4>01 &mdash; Typography</h4>
+          <p>Two fonts. One for display, one for body. The body font must be monospace &mdash; it's non-negotiable. The terminal doesn't do serifs.</p>
+          <p>Headings: <code>Space Grotesk</code> &mdash; geometric, clean, modern</p>
+          <p>Body: <code>Inconsolata</code> &mdash; monospace, warm, readable</p>
+          <div class="code-block">
+<span class="comment">/* Import from Google Fonts */</span>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inconsolata:wght@400;700&display=swap');
+
+<span class="prop">--font-display</span>: <span class="val">'Space Grotesk', sans-serif</span>;
+<span class="prop">--font-body</span>: <span class="val">'Inconsolata', monospace</span>;
+          </div>
+        </div>
+
+        <div class="instruction-step">
+          <h4>02 &mdash; The Background</h4>
+          <p>Start with near-black, but never pure black. The teal undertone is what makes it feel like a screen rather than a void. Layer surfaces with transparency to create depth.</p>
+          <div class="code-block">
+<span class="prop">--bg-primary</span>: <span class="val">#001a20</span>;    <span class="comment">/* The void */</span>
+<span class="prop">--bg-secondary</span>: <span class="val">#002a33</span>;  <span class="comment">/* Slightly warmer */</span>
+<span class="prop">--bg-surface</span>: <span class="val">rgba(0, 50, 60, 0.6)</span>; <span class="comment">/* Glass cards */</span>
+          </div>
+        </div>
+
+        <div class="instruction-step">
+          <h4>03 &mdash; The Green</h4>
+          <p>The accent green should feel like phosphor &mdash; bright but not neon, warm but not yellow. It should look like it's emitting light, not reflecting it.</p>
+          <div class="code-block">
+<span class="prop">--accent-primary</span>: <span class="val">#7DE38D</span>;   <span class="comment">/* The glow */</span>
+<span class="prop">--accent-secondary</span>: <span class="val">#288f5b</span>; <span class="comment">/* The afterglow */</span>
+<span class="prop">--accent-glow</span>: <span class="val">rgba(125, 227, 141, 0.15)</span>; <span class="comment">/* Ambient bleed */</span>
+          </div>
+        </div>
+
+        <div class="instruction-step">
+          <h4>04 &mdash; Borders & Glow</h4>
+          <p>Borders should be barely visible &mdash; ghosts of structure. On hover, they brighten like a monitor responding to touch. Use box-shadow with accent-glow for that phosphor bleed effect.</p>
+          <div class="code-block">
+<span class="prop">--border-subtle</span>: <span class="val">rgba(125, 227, 141, 0.1)</span>;
+<span class="prop">--border-medium</span>: <span class="val">rgba(125, 227, 141, 0.2)</span>;
+<span class="prop">--border-strong</span>: <span class="val">rgba(125, 227, 141, 0.4)</span>;
+
+<span class="comment">/* The phosphor glow on hover */</span>
+<span class="prop">box-shadow</span>: <span class="val">0 0 20px rgba(125, 227, 141, 0.1)</span>;
+          </div>
+        </div>
+
+        <div class="instruction-step">
+          <h4>05 &mdash; Scanlines (Optional)</h4>
+          <p>For maximum authenticity, add a subtle scanline overlay using a repeating gradient. Keep the opacity very low &mdash; it should be felt more than seen.</p>
+          <div class="code-block">
+<span class="comment">/* CRT scanline effect */</span>
+<span class="prop">background</span>: <span class="val">repeating-linear-gradient(
+  0deg,
+  transparent,
+  transparent 2px,
+  rgba(125, 227, 141, 0.015) 2px,
+  rgba(125, 227, 141, 0.015) 4px
+)</span>;
+          </div>
+        </div>
+
+        <div class="instruction-step">
+          <h4>06 &mdash; The Cursor</h4>
+          <p>If you're showing a terminal element, the blinking cursor is essential. It's the heartbeat of the screen &mdash; proof the machine is alive and waiting for you.</p>
+          <div class="code-block">
+<span class="comment">/* The blinking cursor */</span>
+<span class="prop">@keyframes blink</span> {
+  <span class="val">50%</span> { <span class="prop">opacity</span>: <span class="val">0</span>; }
+}
+.<span class="prop">cursor</span> {
+  <span class="prop">width</span>: <span class="val">8px</span>;
+  <span class="prop">height</span>: <span class="val">16px</span>;
+  <span class="prop">background</span>: <span class="val">#7DE38D</span>;
+  <span class="prop">animation</span>: <span class="val">blink 1s step-end infinite</span>;
+}
+          </div>
+        </div>
+
+        <div class="instruction-step">
+          <h4>07 &mdash; Spacing</h4>
+          <p>Be generous. Terminals were sparse. The empty space is as important as the content. Use an 8px base scale and let things breathe.</p>
+          <div class="code-block">
+<span class="prop">--space-sm</span>: <span class="val">0.5rem</span>;   <span class="comment">/* 8px */</span>
+<span class="prop">--space-md</span>: <span class="val">1rem</span>;     <span class="comment">/* 16px */</span>
+<span class="prop">--space-lg</span>: <span class="val">1.5rem</span>;   <span class="comment">/* 24px */</span>
+<span class="prop">--space-xl</span>: <span class="val">2rem</span>;     <span class="comment">/* 32px */</span>
+<span class="prop">--space-2xl</span>: <span class="val">3rem</span>;    <span class="comment">/* 48px */</span>
+<span class="prop">--space-3xl</span>: <span class="val">4rem</span>;    <span class="comment">/* 64px */</span>
+          </div>
+        </div>
+
+      </section>
+
+      <hr class="gs-divider">
+
+      <!-- ===== CLOSING ===== -->
+      <section class="gs-story fade-in" style="margin-bottom: var(--space-2xl);">
+        <p style="text-align: center; color: var(--text-muted); font-style: italic;">The Timex 2048 taught me that a dark screen with green text is not just a colour scheme. It's a promise: type something, and the machine will answer. All these years later, this website keeps that promise alive.</p>
+        <p style="text-align: center;"><a href="index.html" style="color: var(--accent-primary);">&larr; Back to Home</a></p>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-links">
+        <a href="mailto:tiago.cunha.ferrao@me.com" aria-label="Email"><svg viewBox="0 0 512 512"><path fill="currentColor" d="M502.3 190.8c3.9-3.1 9.7-.2 9.7 4.7V400c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V195.6c0-5 5.7-7.8 9.7-4.7 22.4 17.4 52.1 39.5 154.1 113.6 21.1 15.4 56.7 47.8 92.2 47.6 35.7.3 72-32.8 92.3-47.6 102-74.1 131.6-96.3 154-113.7zM256 320c23.2.4 56.6-29.2 73.4-41.4 132.7-96.3 142.8-104.7 173.4-128.7 5.8-4.5 9.2-11.5 9.2-18.9v-19c0-26.5-21.5-48-48-48H48C21.5 64 0 85.5 0 112v19c0 7.4 3.4 14.3 9.2 18.9 30.6 23.9 40.7 32.4 173.4 128.7 16.8 12.2 50.2 41.8 73.4 41.4z"/></svg></a>
+        <a href="https://github.com/TiagoFerrao" target="_blank" rel="noopener" aria-label="GitHub"><svg viewBox="0 0 496 512"><path fill="currentColor" d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8z"/></svg></a>
+        <a href="https://www.linkedin.com/in/tiagoferrao/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 448 512"><path fill="currentColor" d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"/></svg></a>
+      </div>
+      <p class="copyright">&copy; 2026 Tiago Ferrao. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <button class="theme-toggle" aria-label="Switch theme" title="Switch theme">
+    <svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
+  </button>
+  <script src="js/main.js"></script>
+</body>
+</html>

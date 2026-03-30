@@ -1,0 +1,220 @@
+/* ============================================
+   LAYOUT
+   Header, footer, nav, containers
+   ============================================ */
+
+/* --- Container --- */
+.container {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+}
+
+/* --- Header --- */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  background: rgba(var(--accent-primary-rgb), 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.site-header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* --- Logo / Site Title --- */
+.site-brand {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+}
+
+.site-brand:hover {
+  color: var(--accent-primary);
+}
+
+.site-brand h1 {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  line-height: 1;
+  transition: color var(--transition-fast);
+}
+
+.site-brand:hover h1 {
+  color: var(--accent-primary);
+}
+
+.site-brand .subtitle {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* --- Navigation --- */
+.site-nav ul {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.site-nav a {
+  display: block;
+  padding: var(--space-sm) var(--space-md);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 400;
+  color: var(--text-secondary);
+  border-radius: var(--border-radius-sm);
+  transition: all var(--transition-fast);
+  letter-spacing: 0.02em;
+}
+
+.site-nav a:hover {
+  color: var(--text-primary);
+  background: var(--bg-surface);
+}
+
+.site-nav a.active {
+  color: var(--text-on-accent);
+  background: var(--accent-primary);
+  font-weight: 700;
+}
+
+/* --- Mobile Nav Toggle --- */
+.nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-sm);
+  color: var(--text-primary);
+}
+
+.nav-toggle svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+/* --- Main Content --- */
+main {
+  min-height: calc(100vh - var(--header-height) - 200px);
+  padding: var(--space-3xl) 0;
+}
+
+/* --- Page Header (for sub-pages) --- */
+.page-header {
+  text-align: center;
+  margin-bottom: var(--space-3xl);
+}
+
+.page-header h2 {
+  margin-bottom: var(--space-sm);
+}
+
+.page-header p {
+  font-size: var(--text-lg);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.page-header .icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto var(--space-lg);
+  color: var(--accent-primary);
+}
+
+/* --- Duotone Icon Colors (shared across hub cards and page headers) --- */
+.page-header .icon .fa-primary,
+.hub-card .card-icon .fa-primary {
+  fill: var(--accent-primary);
+}
+
+.page-header .icon .fa-secondary,
+.hub-card .card-icon .fa-secondary {
+  fill: var(--accent-secondary);
+  opacity: 0.4;
+}
+
+/* --- Footer --- */
+.site-footer {
+  padding: var(--space-2xl) 0;
+  border-top: 1px solid var(--border-subtle);
+  text-align: center;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-md);
+}
+
+.footer-links a {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  transition: color var(--transition-fast);
+}
+
+.footer-links a:hover {
+  color: var(--accent-primary);
+}
+
+.footer-links svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.site-footer .copyright {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+/* --- Theme Toggle --- */
+.theme-toggle {
+  position: fixed;
+  bottom: var(--space-lg);
+  right: var(--space-lg);
+  z-index: 200;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--border-medium);
+  background: var(--bg-surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-primary);
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-md);
+}
+
+.theme-toggle:hover {
+  background: var(--accent-glow-strong);
+  border-color: var(--accent-primary);
+  transform: scale(1.1);
+}
+
+.theme-toggle svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
