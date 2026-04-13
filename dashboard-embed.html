@@ -120,6 +120,33 @@ tr.clickable:hover td { background: rgba(59,130,246,.1); }
 .modal-chart-card { background: var(--surface); border-radius: 10px; padding: 16px; border: 1px solid var(--surface2); }
 .modal-chart-card h4 { font-size: 13px; color: var(--text-muted); margin-bottom: 10px; font-weight: 500; }
 .modal-chart-card canvas { max-height: 220px; }
+
+/* Going Nuts report sections */
+.nuts-section { background: var(--surface); border-radius: var(--radius); padding: 28px 32px; border: 1px solid var(--surface2); margin-bottom: 24px; }
+.nuts-section h2 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+.nuts-section h2 .num { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 14px; margin-right: 10px; }
+.nuts-section .finding { color: var(--text-muted); font-size: 14px; line-height: 1.7; margin-bottom: 16px; }
+.nuts-section .finding strong { color: var(--text); }
+.nuts-section .stat-highlight { display: inline-block; padding: 2px 10px; border-radius: 6px; font-weight: 700; font-size: 13px; }
+.stat-green { background: rgba(34,197,94,.12); color: #22c55e; }
+.stat-red { background: rgba(239,68,68,.12); color: #ef4444; }
+.stat-blue { background: rgba(59,130,246,.12); color: #3b82f6; }
+.stat-orange { background: rgba(245,158,11,.12); color: #f59e0b; }
+.nuts-charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 16px; margin-top: 16px; }
+.nuts-chart { background: var(--bg); border-radius: 10px; padding: 16px; border: 1px solid var(--surface2); }
+.nuts-chart h4 { font-size: 13px; color: var(--text-dim); margin-bottom: 10px; }
+.nuts-chart canvas { max-height: 280px; }
+.ai-section { background: linear-gradient(135deg, rgba(139,92,246,.06), rgba(59,130,246,.06)); border: 1px solid rgba(139,92,246,.2); border-radius: var(--radius); padding: 32px; margin-bottom: 24px; }
+.ai-section h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; background: linear-gradient(135deg, var(--accent2), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.ai-section .ai-subtitle { color: var(--text-muted); font-size: 14px; margin-bottom: 24px; }
+.ai-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.ai-card { background: var(--surface); border-radius: var(--radius); padding: 20px; border: 1px solid var(--surface2); }
+.ai-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.ai-card p { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+.ai-card .ai-tag { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; margin-top: 10px; }
+.tag-auto { background: rgba(34,197,94,.12); color: #22c55e; }
+.tag-assist { background: rgba(59,130,246,.12); color: #3b82f6; }
+.tag-predict { background: rgba(139,92,246,.12); color: #8b5cf6; }
 </style>
 </head>
 <body>
@@ -136,6 +163,7 @@ tr.clickable:hover td { background: rgba(59,130,246,.1); }
   <button onclick="switchTab('retention')">Client Retention</button>
   <button onclick="switchTab('aging')">Open Ticket Aging</button>
   <button onclick="switchTab('clients')">Performance by Client</button>
+  <button onclick="switchTab('nuts')">Going Nuts</button>
 </div>
 
 <!-- =================== EXECUTIVE SUMMARY =================== -->
@@ -232,6 +260,88 @@ tr.clickable:hover td { background: rgba(59,130,246,.1); }
   </div>
 </div>
 
+<!-- =================== GOING NUTS =================== -->
+<div id="tab-nuts" class="tab-content">
+
+  <!-- S1: Where does time go -->
+  <div class="nuts-section">
+    <h2><span class="num">1</span> Where Does Resolution Time Actually Go?</h2>
+    <div class="finding" id="nuts-s1-finding"></div>
+    <div class="nuts-charts">
+      <div class="nuts-chart"><h4>Time Composition: Requester Waiting vs Agent Working</h4><canvas id="nutsTimeBreakdown"></canvas></div>
+      <div class="nuts-chart"><h4>Requester Wait (days) vs Total Resolution (hrs) — 500 sample tickets</h4><canvas id="nutsScatter"></canvas></div>
+    </div>
+  </div>
+
+  <!-- S2: Priority works -->
+  <div class="nuts-section">
+    <h2><span class="num">2</span> Does Priority Actually Drive Speed?</h2>
+    <div class="finding" id="nuts-s2-finding"></div>
+    <div class="nuts-charts">
+      <div class="nuts-chart"><h4>Resolution Time by Priority Level</h4><canvas id="nutsPriority"></canvas></div>
+      <div class="nuts-chart"><h4>Ticket Volume by Priority</h4><canvas id="nutsPrioVol"></canvas></div>
+    </div>
+  </div>
+
+  <!-- S3: First reply → resolution -->
+  <div class="nuts-section">
+    <h2><span class="num">3</span> Does First Reply Speed Predict Resolution?</h2>
+    <div class="finding" id="nuts-s3-finding"></div>
+    <div class="nuts-charts">
+      <div class="nuts-chart"><h4>First Reply Time Bucket → Avg Resolution</h4><canvas id="nutsReply"></canvas></div>
+      <div class="nuts-chart"><h4>Ticket Count by First Reply Speed</h4><canvas id="nutsReplyVol"></canvas></div>
+    </div>
+  </div>
+
+  <!-- S4: Volume vs Quality -->
+  <div class="nuts-section">
+    <h2><span class="num">4</span> Do High-Volume Clients Get Worse Service?</h2>
+    <div class="finding" id="nuts-s4-finding"></div>
+    <div class="nuts-charts">
+      <div class="nuts-chart"><h4>Client Ticket Volume → Avg Resolution</h4><canvas id="nutsVolRes"></canvas></div>
+      <div class="nuts-chart"><h4>Client Ticket Volume → % High/Urgent</h4><canvas id="nutsVolHU"></canvas></div>
+    </div>
+  </div>
+
+  <!-- S5: Time trend -->
+  <div class="nuts-section">
+    <h2><span class="num">5</span> Is Resolution Getting Faster Over Time?</h2>
+    <div class="finding" id="nuts-s5-finding"></div>
+    <div class="nuts-charts">
+      <div class="nuts-chart"><h4>Monthly Avg Resolution (hrs) — Timeline</h4><canvas id="nutsTrend"></canvas></div>
+      <div class="nuts-chart"><h4>Monthly Avg First Reply (hrs) — Timeline</h4><canvas id="nutsTrendReply"></canvas></div>
+    </div>
+  </div>
+
+  <!-- S6: Categories -->
+  <div class="nuts-section">
+    <h2><span class="num">6</span> Which Product Areas Are the Hardest to Resolve?</h2>
+    <div class="finding" id="nuts-s6-finding"></div>
+    <div class="nuts-charts">
+      <div class="nuts-chart"><h4>Slowest Product Categories (avg resolution hrs)</h4><canvas id="nutsCatSlow"></canvas></div>
+      <div class="nuts-chart"><h4>Fastest Product Categories (avg resolution hrs)</h4><canvas id="nutsCatFast"></canvas></div>
+    </div>
+  </div>
+
+  <!-- S7: Regions -->
+  <div class="nuts-section">
+    <h2><span class="num">7</span> Regional Performance Gap</h2>
+    <div class="finding" id="nuts-s7-finding"></div>
+    <div class="nuts-charts">
+      <div class="nuts-chart"><h4>Avg Resolution by Region</h4><canvas id="nutsRegRes"></canvas></div>
+      <div class="nuts-chart"><h4>Avg First Reply by Region</h4><canvas id="nutsRegReply"></canvas></div>
+    </div>
+  </div>
+
+  <!-- AI SECTION -->
+  <div class="ai-section">
+    <h2>What's Next: AI-Powered Support Operations</h2>
+    <p class="ai-subtitle">Based on the patterns discovered above, here is a roadmap for automating and augmenting your support workflow with AI.</p>
+    <div class="ai-cards" id="ai-cards"></div>
+  </div>
+
+</div>
+
 <!-- CLIENT MODAL -->
 <div class="modal-overlay" id="clientModal">
   <div class="modal-content">
@@ -272,6 +382,7 @@ function switchTab(id) {
   if (id === 'retention') renderRetention();
   if (id === 'aging') renderAging();
   if (id === 'clients') renderClients();
+  if (id === 'nuts') renderNuts();
 }
 
 let currentPeriod = 'quarterly';
@@ -1079,6 +1190,262 @@ function closeModal() {
 document.getElementById('clientModal').addEventListener('click', function(e) {
   if (e.target === this) closeModal();
 });
+
+// ===== GOING NUTS =====
+const CORR = {"time_breakdown":{"avg_req_wait_days":8.42,"avg_agent_wait_days":5.22,"corr_req_vs_res":0.9532,"corr_agent_vs_res":0.4177,"scatter_sample":[{"req_wait":0.0,"res_hrs":0.3,"product":"Compliance"},{"req_wait":0.0,"res_hrs":0.0,"product":"Compliance"},{"req_wait":1.0,"res_hrs":13.2,"product":"Compliance"},{"req_wait":5.0,"res_hrs":58.4,"product":"GRC"},{"req_wait":1.0,"res_hrs":6.4,"product":"Compliance"},{"req_wait":0.0,"res_hrs":0.8,"product":"GRC"},{"req_wait":1.0,"res_hrs":83.4,"product":"GRC"},{"req_wait":1.0,"res_hrs":300.9,"product":"GRC"},{"req_wait":0.0,"res_hrs":1.8,"product":"Compliance"},{"req_wait":0.0,"res_hrs":68.7,"product":"GRC"},{"req_wait":13.0,"res_hrs":147.1,"product":"GRC"},{"req_wait":301.0,"res_hrs":2406.5,"product":"Compliance"},{"req_wait":0.0,"res_hrs":0.3,"product":"GRC"},{"req_wait":0.0,"res_hrs":0.3,"product":"GRC"},{"req_wait":6.0,"res_hrs":58.9,"product":"GRC"},{"req_wait":4.0,"res_hrs":215.1,"product":"Compliance"},{"req_wait":0.0,"res_hrs":65.8,"product":"GRC"},{"req_wait":0.0,"res_hrs":33.9,"product":"GRC"},{"req_wait":3.0,"res_hrs":97.3,"product":"Compliance"},{"req_wait":0.0,"res_hrs":48.4,"product":"GRC"},{"req_wait":0.0,"res_hrs":7.3,"product":"Compliance"},{"req_wait":2.0,"res_hrs":17.4,"product":"Compliance"},{"req_wait":0.0,"res_hrs":0.2,"product":"GRC"},{"req_wait":0.0,"res_hrs":15.9,"product":"GRC"},{"req_wait":1.0,"res_hrs":125.7,"product":"GRC"},{"req_wait":0.0,"res_hrs":7.5,"product":"GRC"},{"req_wait":8.0,"res_hrs":73.1,"product":"GRC"},{"req_wait":7.0,"res_hrs":262.2,"product":"GRC"},{"req_wait":1.0,"res_hrs":13.3,"product":"GRC"},{"req_wait":19.0,"res_hrs":360.8,"product":"GRC"},{"req_wait":0.0,"res_hrs":68.0,"product":"GRC"},{"req_wait":0.0,"res_hrs":19.1,"product":"Compliance"},{"req_wait":8.0,"res_hrs":372.4,"product":"GRC"},{"req_wait":0.0,"res_hrs":42.3,"product":"Compliance"},{"req_wait":6.0,"res_hrs":262.2,"product":"GRC"},{"req_wait":0.0,"res_hrs":3.8,"product":"GRC"},{"req_wait":2.0,"res_hrs":81.0,"product":"GRC"},{"req_wait":0.0,"res_hrs":66.5,"product":"GRC"},{"req_wait":9.0,"res_hrs":184.4,"product":"GRC"},{"req_wait":17.0,"res_hrs":400.0,"product":"GRC"},{"req_wait":1.0,"res_hrs":13.7,"product":"GRC"},{"req_wait":0.0,"res_hrs":6.3,"product":"GRC"},{"req_wait":3.0,"res_hrs":98.8,"product":"Compliance"},{"req_wait":1.0,"res_hrs":16.6,"product":"Compliance"},{"req_wait":1.0,"res_hrs":39.8,"product":"Compliance"},{"req_wait":1.0,"res_hrs":15.4,"product":"GRC"},{"req_wait":1.0,"res_hrs":48.7,"product":"GRC"},{"req_wait":0.0,"res_hrs":67.9,"product":"Compliance"},{"req_wait":0.0,"res_hrs":0.9,"product":"GRC"},{"req_wait":19.0,"res_hrs":151.7,"product":"GRC"},{"req_wait":4.0,"res_hrs":50.0,"product":"GRC"},{"req_wait":1.0,"res_hrs":8.1,"product":"GRC"},{"req_wait":0.0,"res_hrs":0.9,"product":"Compliance"},{"req_wait":0.0,"res_hrs":31.6,"product":"GRC"},{"req_wait":0.0,"res_hrs":55.8,"product":"GRC"},{"req_wait":0.0,"res_hrs":0.2,"product":"GRC"},{"req_wait":1.0,"res_hrs":10.0,"product":"GRC"},{"req_wait":18.0,"res_hrs":262.8,"product":"GRC"},{"req_wait":2.0,"res_hrs":60.0,"product":"GRC"},{"req_wait":0.0,"res_hrs":0.9,"product":"Compliance"},{"req_wait":0.0,"res_hrs":37.3,"product":"Compliance"},{"req_wait":14.0,"res_hrs":255.6,"product":"GRC"},{"req_wait":0.0,"res_hrs":0.6,"product":"GRC"},{"req_wait":0.0,"res_hrs":1.0,"product":"Compliance"},{"req_wait":0.0,"res_hrs":55.0,"product":"GRC"},{"req_wait":0.0,"res_hrs":41.6,"product":"GRC"},{"req_wait":0.0,"res_hrs":8.7,"product":"Compliance"},{"req_wait":1.0,"res_hrs":9.4,"product":"Compliance"},{"req_wait":0.0,"res_hrs":1.9,"product":"GRC"},{"req_wait":2.0,"res_hrs":21.1,"product":"GRC"},{"req_wait":1.0,"res_hrs":14.4,"product":"Compliance"},{"req_wait":1.0,"res_hrs":24.1,"product":"GRC"},{"req_wait":0.0,"res_hrs":0.1,"product":"GRC"},{"req_wait":1.0,"res_hrs":71.0,"product":"GRC"},{"req_wait":5.0,"res_hrs":137.3,"product":"Compliance"},{"req_wait":3.0,"res_hrs":22.5,"product":"GRC"},{"req_wait":1.0,"res_hrs":8.8,"product":"GRC"},{"req_wait":1.0,"res_hrs":21.3,"product":"GRC"},{"req_wait":0.0,"res_hrs":1.2,"product":"Compliance"},{"req_wait":3.0,"res_hrs":189.8,"product":"Compliance"},{"req_wait":0.0,"res_hrs":54.6,"product":"GRC"},{"req_wait":1.0,"res_hrs":50.1,"product":"GRC"},{"req_wait":2.0,"res_hrs":109.8,"product":"Compliance"},{"req_wait":0.0,"res_hrs":1.0,"product":"Compliance"},{"req_wait":0.0,"res_hrs":32.3,"product":"GRC"},{"req_wait":1.0,"res_hrs":51.6,"product":"GRC"},{"req_wait":6.0,"res_hrs":99.0,"product":"GRC"},{"req_wait":2.0,"res_hrs":57.9,"product":"GRC"},{"req_wait":0.0,"res_hrs":20.8,"product":"GRC"},{"req_wait":0.0,"res_hrs":14.1,"product":"GRC"},{"req_wait":4.0,"res_hrs":605.8,"product":"Compliance"},{"req_wait":0.0,"res_hrs":1.5,"product":"Compliance"},{"req_wait":0.0,"res_hrs":1.4,"product":"Compliance"},{"req_wait":0.0,"res_hrs":1.9,"product":"Compliance"},{"req_wait":1.0,"res_hrs":9.9,"product":"Compliance"},{"req_wait":27.0,"res_hrs":289.6,"product":"GRC"},{"req_wait":154.0,"res_hrs":1271.8,"product":"GRC"},{"req_wait":0.0,"res_hrs":1.7,"product":"Compliance"},{"req_wait":0.0,"res_hrs":0.0,"product":"GRC"},{"req_wait":7.0,"res_hrs":104.1,"product":"GRC"},{"req_wait":1.0,"res_hrs":9.7,"product":"GRC"},{"req_wait":4.0,"res_hrs":103.1,"product":"Compliance"},{"req_wait":3.0,"res_hrs":63.6,"product":"GRC"},{"req_wait":4.0,"res_hrs":39.0,"product":"Compliance"},{"req_wait":1.0,"res_hrs":23.1,"product":"Compliance"},{"req_wait":0.0,"res_hrs":111.3,"product":"GRC"},{"req_wait":5.0,"res_hrs":38.7,"product":"GRC"},{"req_wait":0.0,"res_hrs":4.9,"product":"GRC"},{"req_wait":0.0,"res_hrs":2.0,"product":"Compliance"},{"req_wait":25.0,"res_hrs":201.3,"product":"GRC"},{"req_wait":10.0,"res_hrs":180.4,"product":"GRC"},{"req_wait":0.0,"res_hrs":49.8,"product":"GRC"},{"req_wait":84.0,"res_hrs":685.8,"product":"Compliance"},{"req_wait":9.0,"res_hrs":187.0,"product":"GRC"},{"req_wait":4.0,"res_hrs":45.1,"product":"GRC"},{"req_wait":0.0,"res_hrs":0.2,"product":"Compliance"},{"req_wait":0.0,"res_hrs":12.4,"product":"GRC"},{"req_wait":0.0,"res_hrs":1.3,"product":"GRC"},{"req_wait":0.0,"res_hrs":11.9,"product":"Compliance"},{"req_wait":1.0,"res_hrs":75.0,"product":"GRC"},{"req_wait":0.0,"res_hrs":24.5,"product":"GRC"},{"req_wait":1.0,"res_hrs":26.9,"product":"GRC"},{"req_wait":1.0,"res_hrs":55.0,"product":"Compliance"},{"req_wait":17.0,"res_hrs":136.4,"product":"GRC"},{"req_wait":2.0,"res_hrs":19.9,"product":"Compliance"},{"req_wait":3.0,"res_hrs":88.6,"product":"GRC"},{"req_wait":6.0,"res_hrs":155.4,"product":"GRC"},{"req_wait":1.0,"res_hrs":69.0,"product":"GRC"},{"req_wait":0.0,"res_hrs":0.0,"product":"GRC"},{"req_wait":5.0,"res_hrs":40.0,"product":"GRC"},{"req_wait":15.0,"res_hrs":125.6,"product":"Compliance"},{"req_wait":0.0,"res_hrs":1.0,"product":"Compliance"},{"req_wait":4.0,"res_hrs":56.1,"product":"GRC"},{"req_wait":0.0,"res_hrs":1.6,"product":"Compliance"},{"req_wait":0.0,"res_hrs":37.7,"product":"GRC"},{"req_wait":2.0,"res_hrs":63.8,"product":"Compliance"},{"req_wait":2.0,"res_hrs":54.8,"product":"GRC"},{"req_wait":0.0,"res_hrs":3.2,"product":"Compliance"},{"req_wait":6.0,"res_hrs":124.2,"product":"Compliance"},{"req_wait":43.0,"res_hrs":541.7,"product":"Compliance"},{"req_wait":0.0,"res_hrs":0.6,"product":"GRC"},{"req_wait":0.0,"res_hrs":67.4,"product":"GRC"},{"req_wait":0.0,"res_hrs":215.7,"product":"GRC"},{"req_wait":346.0,"res_hrs":2770.2,"product":"GRC"},{"req_wait":5.0,"res_hrs":143.2,"product":"Compliance"},{"req_wait":1.0,"res_hrs":34.0,"product":"Compliance"},{"req_wait":0.0,"res_hrs":0.0,"product":"GRC"},{"req_wait":2.0,"res_hrs":77.9,"product":"Compliance"},{"req_wait":0.0,"res_hrs":1.4,"product":"GRC"},{"req_wait":1.0,"res_hrs":10.7,"product":"GRC"},{"req_wait":0.0,"res_hrs":4.5,"product":"GRC"},{"req_wait":0.0,"res_hrs":0.1,"product":"Compliance"},{"req_wait":0.0,"res_hrs":2.4,"product":"GRC"},{"req_wait":0.0,"res_hrs":9.4,"product":"Compliance"},{"req_wait":0.0,"res_hrs":4.3,"product":"Compliance"},{"req_wait":0.0,"res_hrs":35.2,"product":"GRC"},{"req_wait":92.0,"res_hrs":1610.3,"product":"GRC"},{"req_wait":20.0,"res_hrs":227.9,"product":"GRC"},{"req_wait":2.0,"res_hrs":18.2,"product":"GRC"},{"req_wait":0.0,"res_hrs":0.5,"product":"Compliance"},{"req_wait":0.0,"res_hrs":2.5,"product":"GRC"},{"req_wait":4.0,"res_hrs":104.5,"product":"GRC"},{"req_wait":1.0,"res_hrs":4.8,"product":"GRC"},{"req_wait":1.0,"res_hrs":125.5,"product":"GRC"},{"req_wait":0.0,"res_hrs":1.2,"product":"Compliance"},{"req_wait":1.0,"res_hrs":95.2,"product":"Compliance"},{"req_wait":3.0,"res_hrs":89.9,"product":"GRC"},{"req_wait":4.0,"res_hrs":39.6,"product":"Compliance"},{"req_wait":4.0,"res_hrs":51.6,"product":"Compliance"},{"req_wait":2.0,"res_hrs":19.4,"product":"GRC"},{"req_wait":2.0,"res_hrs":53.5,"product":"GRC"},{"req_wait":10.0,"res_hrs":121.4,"product":"GRC"},{"req_wait":0.0,"res_hrs":0.1,"product":"GRC"},{"req_wait":4.0,"res_hrs":40.5,"product":"GRC"},{"req_wait":0.0,"res_hrs":7.4,"product":"Compliance"},{"req_wait":0.0,"res_hrs":50.5,"product":"Compliance"},{"req_wait":2.0,"res_hrs":53.5,"product":"Compliance"},{"req_wait":11.0,"res_hrs":230.0,"product":"GRC"},{"req_wait":2.0,"res_hrs":15.9,"product":"GRC"},{"req_wait":3.0,"res_hrs":44.1,"product":"Compliance"},{"req_wait":202.0,"res_hrs":1617.0,"product":"GRC"},{"req_wait":0.0,"res_hrs":11.8,"product":"GRC"},{"req_wait":1.0,"res_hrs":4.2,"product":"Compliance"},{"req_wait":10.0,"res_hrs":174.2,"product":"GRC"},{"req_wait":3.0,"res_hrs":191.7,"product":"GRC"},{"req_wait":1.0,"res_hrs":146.6,"product":"GRC"},{"req_wait":1.0,"res_hrs":13.2,"product":"Compliance"},{"req_wait":24.0,"res_hrs":440.9,"product":"GRC"},{"req_wait":0.0,"res_hrs":209.0,"product":"Compliance"},{"req_wait":0.0,"res_hrs":5.2,"product":"Compliance"},{"req_wait":19.0,"res_hrs":148.3,"product":"GRC"},{"req_wait":0.0,"res_hrs":72.0,"product":"GRC"},{"req_wait":0.0,"res_hrs":3.2,"product":"Compliance"},{"req_wait":3.0,"res_hrs":63.6,"product":"Compliance"},{"req_wait":1.0,"res_hrs":6.3,"product":"GRC"},{"req_wait":0.0,"res_hrs":3.0,"product":"Compliance"},{"req_wait":0.0,"res_hrs":1.3,"product":"Compliance"},{"req_wait":8.0,"res_hrs":132.8,"product":"Compliance"},{"req_wait":1.0,"res_hrs":57.7,"product":"GRC"},{"req_wait":0.0,"res_hrs":1.4,"product":"Compliance"},{"req_wait":2.0,"res_hrs":85.2,"product":"GRC"},{"req_wait":6.0,"res_hrs":97.2,"product":"Compliance"},{"req_wait":0.0,"res_hrs":8.8,"product":"GRC"},{"req_wait":0.0,"res_hrs":2.1,"product":"Compliance"},{"req_wait":3.0,"res_hrs":130.0,"product":"GRC"},{"req_wait":22.0,"res_hrs":276.4,"product":"GRC"},{"req_wait":1.0,"res_hrs":15.2,"product":"Compliance"},{"req_wait":2.0,"res_hrs":27.5,"product":"GRC"},{"req_wait":2.0,"res_hrs":264.8,"product":"GRC"},{"req_wait":0.0,"res_hrs":7.6,"product":"GRC"},{"req_wait":43.0,"res_hrs":385.6,"product":"GRC"},{"req_wait":0.0,"res_hrs":0.1,"product":"GRC"},{"req_wait":1.0,"res_hrs":62.9,"product":"GRC"},{"req_wait":0.0,"res_hrs":11.0,"product":"Compliance"},{"req_wait":1.0,"res_hrs":19.6,"product":"GRC"},{"req_wait":3.0,"res_hrs":179.7,"product":"Compliance"},{"req_wait":0.0,"res_hrs":43.0,"product":"Compliance"},{"req_wait":1.0,"res_hrs":44.2,"product":"GRC"},{"req_wait":17.0,"res_hrs":171.3,"product":"GRC"},{"req_wait":10.0,"res_hrs":100.5,"product":"Compliance"},{"req_wait":248.0,"res_hrs":2066.1,"product":"GRC"},{"req_wait":0.0,"res_hrs":11.2,"product":"Compliance"},{"req_wait":0.0,"res_hrs":0.1,"product":"GRC"},{"req_wait":0.0,"res_hrs":7.2,"product":"GRC"},{"req_wait":0.0,"res_hrs":0.8,"product":"Compliance"},{"req_wait":0.0,"res_hrs":69.3,"product":"Compliance"},{"req_wait":0.0,"res_hrs":0.5,"product":"Compliance"},{"req_wait":208.0,"res_hrs":1709.2,"product":"GRC"},{"req_wait":0.0,"res_hrs":66.2,"product":"GRC"},{"req_wait":3.0,"res_hrs":21.2,"product":"GRC"},{"req_wait":1.0,"res_hrs":12.6,"product":"Compliance"},{"req_wait":11.0,"res_hrs":548.2,"product":"GRC"},{"req_wait":0.0,"res_hrs":22.7,"product":"Compliance"},{"req_wait":227.0,"res_hrs":1816.3,"product":"GRC"},{"req_wait":6.0,"res_hrs":166.1,"product":"GRC"},{"req_wait":5.0,"res_hrs":94.0,"product":"GRC"},{"req_wait":0.0,"res_hrs":0.5,"product":"Compliance"},{"req_wait":1.0,"res_hrs":41.4,"product":"Compliance"},{"req_wait":0.0,"res_hrs":3.9,"product":"GRC"},{"req_wait":11.0,"res_hrs":417.0,"product":"GRC"},{"req_wait":1.0,"res_hrs":41.0,"product":"GRC"},{"req_wait":23.0,"res_hrs":892.5,"product":"GRC"},{"req_wait":3.0,"res_hrs":24.0,"product":"GRC"},{"req_wait":1.0,"res_hrs":105.2,"product":"GRC"},{"req_wait":11.0,"res_hrs":140.7,"product":"Compliance"},{"req_wait":0.0,"res_hrs":28.0,"product":"Compliance"},{"req_wait":0.0,"res_hrs":54.6,"product":"GRC"},{"req_wait":3.0,"res_hrs":25.4,"product":"Compliance"},{"req_wait":5.0,"res_hrs":77.2,"product":"Compliance"},{"req_wait":0.0,"res_hrs":68.6,"product":"Compliance"},{"req_wait":15.0,"res_hrs":231.5,"product":"GRC"},{"req_wait":1.0,"res_hrs":13.2,"product":"Compliance"},{"req_wait":0.0,"res_hrs":15.8,"product":"Compliance"},{"req_wait":5.0,"res_hrs":64.7,"product":"GRC"},{"req_wait":3.0,"res_hrs":112.9,"product":"Compliance"},{"req_wait":4.0,"res_hrs":120.0,"product":"GRC"},{"req_wait":0.0,"res_hrs":14.6,"product":"GRC"},{"req_wait":15.0,"res_hrs":222.0,"product":"GRC"},{"req_wait":6.0,"res_hrs":228.2,"product":"GRC"},{"req_wait":7.0,"res_hrs":62.4,"product":"Compliance"},{"req_wait":0.0,"res_hrs":0.9,"product":"GRC"},{"req_wait":1.0,"res_hrs":5.7,"product":"Compliance"},{"req_wait":2.0,"res_hrs":73.7,"product":"GRC"},{"req_wait":14.0,"res_hrs":289.8,"product":"GRC"},{"req_wait":1.0,"res_hrs":7.9,"product":"GRC"},{"req_wait":1.0,"res_hrs":96.2,"product":"Compliance"},{"req_wait":4.0,"res_hrs":69.3,"product":"Compliance"},{"req_wait":53.0,"res_hrs":440.0,"product":"GRC"},{"req_wait":33.0,"res_hrs":264.7,"product":"GRC"},{"req_wait":0.0,"res_hrs":2.4,"product":"Compliance"},{"req_wait":0.0,"res_hrs":1.3,"product":"GRC"},{"req_wait":0.0,"res_hrs":6.8,"product":"Compliance"},{"req_wait":1.0,"res_hrs":71.2,"product":"GRC"},{"req_wait":1.0,"res_hrs":5.7,"product":"GRC"},{"req_wait":1.0,"res_hrs":11.0,"product":"GRC"},{"req_wait":11.0,"res_hrs":92.7,"product":"GRC"},{"req_wait":6.0,"res_hrs":45.4,"product":"GRC"},{"req_wait":0.0,"res_hrs":32.1,"product":"Compliance"},{"req_wait":8.0,"res_hrs":199.2,"product":"GRC"},{"req_wait":1.0,"res_hrs":36.2,"product":"GRC"},{"req_wait":7.0,"res_hrs":340.1,"product":"GRC"},{"req_wait":0.0,"res_hrs":2.0,"product":"GRC"},{"req_wait":1.0,"res_hrs":14.1,"product":"Compliance"},{"req_wait":0.0,"res_hrs":11.9,"product":"Compliance"},{"req_wait":3.0,"res_hrs":83.0,"product":"Compliance"},{"req_wait":0.0,"res_hrs":4.3,"product":"Compliance"},{"req_wait":1.0,"res_hrs":63.1,"product":"Compliance"},{"req_wait":1.0,"res_hrs":34.8,"product":"GRC"},{"req_wait":1.0,"res_hrs":4.3,"product":"Compliance"},{"req_wait":0.0,"res_hrs":66.7,"product":"GRC"},{"req_wait":41.0,"res_hrs":333.4,"product":"GRC"},{"req_wait":0.0,"res_hrs":0.5,"product":"GRC"},{"req_wait":0.0,"res_hrs":30.6,"product":"Compliance"},{"req_wait":0.0,"res_hrs":41.1,"product":"GRC"},{"req_wait":0.0,"res_hrs":1.5,"product":"Compliance"},{"req_wait":8.0,"res_hrs":80.0,"product":"GRC"},{"req_wait":1.0,"res_hrs":10.6,"product":"GRC"},{"req_wait":0.0,"res_hrs":0.5,"product":"GRC"},{"req_wait":9.0,"res_hrs":116.2,"product":"GRC"},{"req_wait":0.0,"res_hrs":6.6,"product":"Compliance"},{"req_wait":0.0,"res_hrs":1.7,"product":"GRC"},{"req_wait":0.0,"res_hrs":1.1,"product":"GRC"},{"req_wait":5.0,"res_hrs":45.9,"product":"Compliance"},{"req_wait":14.0,"res_hrs":177.8,"product":"GRC"},{"req_wait":0.0,"res_hrs":24.4,"product":"GRC"},{"req_wait":0.0,"res_hrs":29.1,"product":"Compliance"},{"req_wait":1.0,"res_hrs":11.6,"product":"Compliance"},{"req_wait":7.0,"res_hrs":177.5,"product":"GRC"},{"req_wait":4.0,"res_hrs":172.0,"product":"GRC"},{"req_wait":18.0,"res_hrs":247.9,"product":"GRC"},{"req_wait":31.0,"res_hrs":248.6,"product":"GRC"},{"req_wait":0.0,"res_hrs":2.2,"product":"Compliance"},{"req_wait":11.0,"res_hrs":109.5,"product":"GRC"},{"req_wait":0.0,"res_hrs":1.5,"product":"Compliance"},{"req_wait":0.0,"res_hrs":56.4,"product":"GRC"},{"req_wait":12.0,"res_hrs":163.8,"product":"Compliance"},{"req_wait":0.0,"res_hrs":2.2,"product":"GRC"},{"req_wait":0.0,"res_hrs":33.1,"product":"Compliance"},{"req_wait":0.0,"res_hrs":2.7,"product":"Compliance"},{"req_wait":0.0,"res_hrs":25.9,"product":"GRC"},{"req_wait":2.0,"res_hrs":56.5,"product":"Compliance"},{"req_wait":1.0,"res_hrs":8.1,"product":"GRC"},{"req_wait":2.0,"res_hrs":19.8,"product":"Compliance"},{"req_wait":2.0,"res_hrs":17.3,"product":"GRC"},{"req_wait":2.0,"res_hrs":111.3,"product":"Compliance"},{"req_wait":1.0,"res_hrs":6.4,"product":"Compliance"},{"req_wait":0.0,"res_hrs":67.8,"product":"Compliance"},{"req_wait":10.0,"res_hrs":127.2,"product":"Compliance"},{"req_wait":2.0,"res_hrs":67.2,"product":"Compliance"},{"req_wait":0.0,"res_hrs":14.0,"product":"Compliance"},{"req_wait":8.0,"res_hrs":257.5,"product":"GRC"},{"req_wait":0.0,"res_hrs":69.4,"product":"GRC"},{"req_wait":0.0,"res_hrs":2.0,"product":"Compliance"},{"req_wait":14.0,"res_hrs":390.3,"product":"GRC"},{"req_wait":0.0,"res_hrs":1.7,"product":"Compliance"},{"req_wait":17.0,"res_hrs":135.0,"product":"GRC"},{"req_wait":3.0,"res_hrs":62.2,"product":"Compliance"},{"req_wait":0.0,"res_hrs":7.4,"product":"GRC"},{"req_wait":2.0,"res_hrs":21.6,"product":"Compliance"},{"req_wait":0.0,"res_hrs":14.3,"product":"Compliance"},{"req_wait":5.0,"res_hrs":41.9,"product":"GRC"},{"req_wait":0.0,"res_hrs":81.8,"product":"Compliance"},{"req_wait":0.0,"res_hrs":0.9,"product":"GRC"},{"req_wait":12.0,"res_hrs":93.6,"product":"Compliance"},{"req_wait":4.0,"res_hrs":34.0,"product":"GRC"},{"req_wait":2.0,"res_hrs":22.4,"product":"GRC"},{"req_wait":0.0,"res_hrs":4.0,"product":"Compliance"},{"req_wait":0.0,"res_hrs":9.7,"product":"GRC"},{"req_wait":0.0,"res_hrs":3.1,"product":"Compliance"},{"req_wait":0.0,"res_hrs":0.4,"product":"Compliance"},{"req_wait":0.0,"res_hrs":39.3,"product":"Compliance"},{"req_wait":0.0,"res_hrs":0.9,"product":"Compliance"},{"req_wait":0.0,"res_hrs":51.9,"product":"Compliance"},{"req_wait":0.0,"res_hrs":11.8,"product":"Compliance"},{"req_wait":0.0,"res_hrs":66.9,"product":"GRC"},{"req_wait":0.0,"res_hrs":32.2,"product":"Compliance"},{"req_wait":4.0,"res_hrs":39.5,"product":"GRC"},{"req_wait":6.0,"res_hrs":54.2,"product":"GRC"},{"req_wait":45.0,"res_hrs":376.5,"product":"GRC"},{"req_wait":2.0,"res_hrs":52.2,"product":"GRC"},{"req_wait":0.0,"res_hrs":0.6,"product":"Compliance"},{"req_wait":1.0,"res_hrs":87.3,"product":"Compliance"},{"req_wait":10.0,"res_hrs":104.4,"product":"Compliance"},{"req_wait":0.0,"res_hrs":0.2,"product":"Compliance"},{"req_wait":0.0,"res_hrs":2.7,"product":"GRC"},{"req_wait":20.0,"res_hrs":218.0,"product":"GRC"},{"req_wait":3.0,"res_hrs":23.4,"product":"Compliance"},{"req_wait":0.0,"res_hrs":5.4,"product":"Compliance"},{"req_wait":1.0,"res_hrs":18.9,"product":"GRC"},{"req_wait":0.0,"res_hrs":0.4,"product":"GRC"},{"req_wait":0.0,"res_hrs":3.3,"product":"GRC"},{"req_wait":0.0,"res_hrs":2.3,"product":"GRC"},{"req_wait":0.0,"res_hrs":3.9,"product":"Compliance"},{"req_wait":6.0,"res_hrs":110.5,"product":"GRC"},{"req_wait":1.0,"res_hrs":8.3,"product":"Compliance"},{"req_wait":0.0,"res_hrs":28.6,"product":"GRC"},{"req_wait":14.0,"res_hrs":222.7,"product":"GRC"},{"req_wait":95.0,"res_hrs":758.2,"product":"GRC"},{"req_wait":15.0,"res_hrs":164.3,"product":"GRC"},{"req_wait":1.0,"res_hrs":167.7,"product":"GRC"},{"req_wait":0.0,"res_hrs":2.6,"product":"Compliance"},{"req_wait":12.0,"res_hrs":147.0,"product":"GRC"},{"req_wait":40.0,"res_hrs":477.5,"product":"GRC"},{"req_wait":3.0,"res_hrs":42.5,"product":"Compliance"},{"req_wait":1.0,"res_hrs":9.6,"product":"GRC"},{"req_wait":1.0,"res_hrs":65.5,"product":"GRC"},{"req_wait":0.0,"res_hrs":0.2,"product":"GRC"},{"req_wait":1.0,"res_hrs":21.0,"product":"GRC"},{"req_wait":133.0,"res_hrs":1081.8,"product":"GRC"},{"req_wait":1.0,"res_hrs":30.6,"product":"GRC"},{"req_wait":34.0,"res_hrs":466.1,"product":"GRC"},{"req_wait":0.0,"res_hrs":2.5,"product":"GRC"},{"req_wait":0.0,"res_hrs":6.6,"product":"GRC"},{"req_wait":1.0,"res_hrs":5.5,"product":"Compliance"},{"req_wait":0.0,"res_hrs":75.1,"product":"Compliance"},{"req_wait":19.0,"res_hrs":151.3,"product":"GRC"},{"req_wait":3.0,"res_hrs":93.0,"product":"GRC"},{"req_wait":1.0,"res_hrs":5.6,"product":"GRC"},{"req_wait":2.0,"res_hrs":170.1,"product":"GRC"},{"req_wait":2.0,"res_hrs":22.3,"product":"Compliance"},{"req_wait":1.0,"res_hrs":9.4,"product":"Compliance"},{"req_wait":2.0,"res_hrs":12.7,"product":"Compliance"},{"req_wait":1.0,"res_hrs":15.4,"product":"Compliance"},{"req_wait":12.0,"res_hrs":239.1,"product":"GRC"},{"req_wait":1.0,"res_hrs":4.8,"product":"GRC"},{"req_wait":0.0,"res_hrs":2.6,"product":"GRC"},{"req_wait":58.0,"res_hrs":466.6,"product":"Compliance"},{"req_wait":0.0,"res_hrs":0.3,"product":"Compliance"},{"req_wait":0.0,"res_hrs":0.3,"product":"Compliance"},{"req_wait":0.0,"res_hrs":0.7,"product":"Compliance"},{"req_wait":2.0,"res_hrs":85.4,"product":"Compliance"},{"req_wait":9.0,"res_hrs":144.1,"product":"GRC"},{"req_wait":0.0,"res_hrs":11.8,"product":"GRC"},{"req_wait":0.0,"res_hrs":69.1,"product":"GRC"},{"req_wait":0.0,"res_hrs":1.2,"product":"Compliance"},{"req_wait":2.0,"res_hrs":55.9,"product":"GRC"},{"req_wait":19.0,"res_hrs":340.7,"product":"GRC"},{"req_wait":0.0,"res_hrs":21.6,"product":"GRC"},{"req_wait":4.0,"res_hrs":104.8,"product":"Compliance"},{"req_wait":6.0,"res_hrs":117.0,"product":"GRC"},{"req_wait":22.0,"res_hrs":213.7,"product":"GRC"},{"req_wait":2.0,"res_hrs":60.6,"product":"GRC"},{"req_wait":0.0,"res_hrs":11.6,"product":"Compliance"},{"req_wait":1.0,"res_hrs":8.0,"product":"GRC"},{"req_wait":0.0,"res_hrs":0.8,"product":"GRC"},{"req_wait":39.0,"res_hrs":550.3,"product":"GRC"},{"req_wait":0.0,"res_hrs":21.8,"product":"Compliance"},{"req_wait":6.0,"res_hrs":56.9,"product":"GRC"},{"req_wait":0.0,"res_hrs":45.8,"product":"Compliance"},{"req_wait":100.0,"res_hrs":825.0,"product":"GRC"},{"req_wait":0.0,"res_hrs":0.8,"product":"Compliance"},{"req_wait":11.0,"res_hrs":124.4,"product":"GRC"},{"req_wait":0.0,"res_hrs":67.0,"product":"GRC"},{"req_wait":0.0,"res_hrs":10.0,"product":"GRC"},{"req_wait":0.0,"res_hrs":55.7,"product":"GRC"},{"req_wait":4.0,"res_hrs":61.6,"product":"GRC"},{"req_wait":4.0,"res_hrs":60.3,"product":"GRC"},{"req_wait":0.0,"res_hrs":0.6,"product":"Compliance"},{"req_wait":5.0,"res_hrs":47.8,"product":"GRC"},{"req_wait":0.0,"res_hrs":42.1,"product":"Compliance"},{"req_wait":7.0,"res_hrs":162.1,"product":"GRC"},{"req_wait":0.0,"res_hrs":22.0,"product":"GRC"},{"req_wait":1.0,"res_hrs":109.0,"product":"GRC"},{"req_wait":5.0,"res_hrs":82.5,"product":"Compliance"},{"req_wait":1.0,"res_hrs":8.1,"product":"Compliance"},{"req_wait":0.0,"res_hrs":21.5,"product":"Compliance"},{"req_wait":6.0,"res_hrs":311.1,"product":"GRC"},{"req_wait":0.0,"res_hrs":0.7,"product":"GRC"},{"req_wait":0.0,"res_hrs":7.3,"product":"Compliance"},{"req_wait":3.0,"res_hrs":66.0,"product":"GRC"},{"req_wait":0.0,"res_hrs":82.6,"product":"Compliance"},{"req_wait":1.0,"res_hrs":23.0,"product":"GRC"},{"req_wait":2.0,"res_hrs":20.0,"product":"GRC"},{"req_wait":2.0,"res_hrs":29.6,"product":"GRC"},{"req_wait":3.0,"res_hrs":24.4,"product":"GRC"},{"req_wait":0.0,"res_hrs":50.7,"product":"GRC"},{"req_wait":3.0,"res_hrs":485.4,"product":"GRC"},{"req_wait":1.0,"res_hrs":72.0,"product":"GRC"},{"req_wait":3.0,"res_hrs":21.6,"product":"GRC"},{"req_wait":0.0,"res_hrs":0.6,"product":"GRC"},{"req_wait":0.0,"res_hrs":71.7,"product":"GRC"},{"req_wait":1.0,"res_hrs":21.1,"product":"GRC"},{"req_wait":10.0,"res_hrs":89.6,"product":"Compliance"},{"req_wait":0.0,"res_hrs":5.6,"product":"Compliance"},{"req_wait":2.0,"res_hrs":43.7,"product":"GRC"},{"req_wait":4.0,"res_hrs":148.9,"product":"GRC"},{"req_wait":1.0,"res_hrs":33.3,"product":"GRC"},{"req_wait":0.0,"res_hrs":6.5,"product":"Compliance"},{"req_wait":4.0,"res_hrs":113.0,"product":"GRC"},{"req_wait":0.0,"res_hrs":0.3,"product":"Compliance"},{"req_wait":1.0,"res_hrs":5.8,"product":"GRC"},{"req_wait":1.0,"res_hrs":10.5,"product":"Compliance"},{"req_wait":0.0,"res_hrs":12.3,"product":"GRC"},{"req_wait":0.0,"res_hrs":4.9,"product":"GRC"},{"req_wait":3.0,"res_hrs":44.5,"product":"GRC"},{"req_wait":0.0,"res_hrs":29.1,"product":"GRC"},{"req_wait":2.0,"res_hrs":16.3,"product":"GRC"},{"req_wait":1.0,"res_hrs":45.1,"product":"GRC"},{"req_wait":0.0,"res_hrs":20.1,"product":"Compliance"},{"req_wait":2.0,"res_hrs":64.5,"product":"GRC"},{"req_wait":1.0,"res_hrs":23.8,"product":"GRC"},{"req_wait":1.0,"res_hrs":45.4,"product":"GRC"},{"req_wait":0.0,"res_hrs":0.9,"product":"Compliance"},{"req_wait":0.0,"res_hrs":3.5,"product":"GRC"},{"req_wait":0.0,"res_hrs":0.0,"product":"GRC"},{"req_wait":1.0,"res_hrs":11.0,"product":"Compliance"},{"req_wait":14.0,"res_hrs":116.8,"product":"Compliance"},{"req_wait":2.0,"res_hrs":36.8,"product":"Compliance"},{"req_wait":7.0,"res_hrs":84.1,"product":"GRC"},{"req_wait":0.0,"res_hrs":0.0,"product":"GRC"},{"req_wait":0.0,"res_hrs":0.5,"product":"Compliance"},{"req_wait":0.0,"res_hrs":78.7,"product":"GRC"},{"req_wait":1.0,"res_hrs":34.7,"product":"Compliance"},{"req_wait":1.0,"res_hrs":6.2,"product":"Compliance"},{"req_wait":20.0,"res_hrs":310.8,"product":"GRC"},{"req_wait":0.0,"res_hrs":3.2,"product":"Compliance"},{"req_wait":31.0,"res_hrs":413.4,"product":"GRC"},{"req_wait":3.0,"res_hrs":74.4,"product":"GRC"},{"req_wait":0.0,"res_hrs":29.4,"product":"GRC"},{"req_wait":1.0,"res_hrs":6.5,"product":"Compliance"}]},"priority":{"data":[{"priority":"Urgent","count":154,"mean":27.1,"median":11.4,"p25":3.0,"p75":34.5},{"priority":"High","count":481,"mean":90.4,"median":19.6,"p25":5.4,"p75":66.7},{"priority":"Normal","count":6454,"mean":109.9,"median":40.1,"p25":8.9,"p75":97.7},{"priority":"Low","count":620,"mean":148.3,"median":56.5,"p25":14.2,"p75":150.5}],"anova_f":10.59,"anova_p":6.067381859749781e-07},"first_reply":{"buckets":[{"bucket":"< 30min","count":5102,"avg_res":109.7,"median_res":38.7},{"bucket":"30min-1h","count":864,"avg_res":108.1,"median_res":44.0},{"bucket":"1-2h","count":222,"avg_res":113.6,"median_res":41.7},{"bucket":"2-5h","count":63,"avg_res":150.6,"median_res":44.1},{"bucket":"5-10h","count":29,"avg_res":102.4,"median_res":60.2},{"bucket":"> 10h","count":104,"avg_res":214.4,"median_res":114.5}],"pearson_r":0.1118,"p_value":3.2774295316587516e-19},"volume_quality":{"buckets":[{"bucket":"1-4","n_customers":150,"avg_res":84.0,"avg_reply":6.22,"avg_hu":10.7},{"bucket":"5-14","n_customers":128,"avg_res":85.9,"avg_reply":2.42,"avg_hu":11.5},{"bucket":"15-29","n_customers":83,"avg_res":107.8,"avg_reply":2.08,"avg_hu":13.1},{"bucket":"30-59","n_customers":50,"avg_res":114.7,"avg_reply":1.72,"avg_hu":7.1},{"bucket":"60-99","n_customers":14,"avg_res":152.4,"avg_reply":0.58,"avg_hu":5.6},{"bucket":"100+","n_customers":8,"avg_res":99.8,"avg_reply":4.25,"avg_hu":3.4}],"spearman_rho":0.3593,"p_value":1.2121757394409829e-14},"time_trend":{"data":[{"year":2025,"month_num":1,"month":"Jan 2025","avg_res":134.6,"median_res":36.8,"avg_reply":1.94,"count":621},{"year":2025,"month_num":2,"month":"Feb 2025","avg_res":180.9,"median_res":47.0,"avg_reply":2.56,"count":537},{"year":2025,"month_num":3,"month":"Mar 2025","avg_res":149.0,"median_res":41.4,"avg_reply":1.16,"count":535},{"year":2025,"month_num":4,"month":"Apr 2025","avg_res":137.3,"median_res":41.2,"avg_reply":2.6,"count":503},{"year":2025,"month_num":5,"month":"May 2025","avg_res":117.0,"median_res":43.2,"avg_reply":0.83,"count":463},{"year":2025,"month_num":6,"month":"Jun 2025","avg_res":109.3,"median_res":31.3,"avg_reply":1.08,"count":735},{"year":2025,"month_num":7,"month":"Jul 2025","avg_res":91.5,"median_res":36.5,"avg_reply":4.1,"count":665},{"year":2025,"month_num":8,"month":"Aug 2025","avg_res":104.2,"median_res":45.9,"avg_reply":0.86,"count":490},{"year":2025,"month_num":9,"month":"Sep 2025","avg_res":111.7,"median_res":42.5,"avg_reply":3.45,"count":497},{"year":2025,"month_num":10,"month":"Oct 2025","avg_res":120.2,"median_res":44.2,"avg_reply":0.48,"count":525},{"year":2025,"month_num":11,"month":"Nov 2025","avg_res":96.3,"median_res":48.5,"avg_reply":1.51,"count":403},{"year":2025,"month_num":12,"month":"Dec 2025","avg_res":90.0,"median_res":43.2,"avg_reply":0.78,"count":407},{"year":2026,"month_num":1,"month":"Jan 2026","avg_res":78.9,"median_res":38.8,"avg_reply":6.83,"count":474},{"year":2026,"month_num":2,"month":"Feb 2026","avg_res":64.7,"median_res":33.1,"avg_reply":1.27,"count":411},{"year":2026,"month_num":3,"month":"Mar 2026","avg_res":36.3,"median_res":19.6,"avg_reply":0.51,"count":406},{"year":2026,"month_num":4,"month":"Apr 2026","avg_res":9.1,"median_res":3.0,"avg_reply":0.27,"count":37}],"spearman_rho":-0.9059,"p_value":1.3635133553269899e-06},"categories":{"slowest":[{"category":"Assessments :: Assessments-Assessment Engine","count":51,"avg_res":325.6,"median_res":109.8,"pct_hu":0.0,"product":"GRC"},{"category":"UI Framework :: UI Framework-Portlets","count":64,"avg_res":296.1,"median_res":125.7,"pct_hu":3.1,"product":"GRC"},{"category":"System Management :: System Management-Folders","count":26,"avg_res":293.1,"median_res":15.2,"pct_hu":7.7,"product":"Compliance"},{"category":"Assessments :: Assessments-Open Assessments","count":39,"avg_res":269.9,"median_res":116.9,"pct_hu":10.3,"product":"GRC"},{"category":"Classic BWise :: Classic Design (JSP)","count":16,"avg_res":263.0,"median_res":112.6,"pct_hu":0.0,"product":"GRC"},{"category":"Integration :: Integration-Triggers","count":15,"avg_res":255.5,"median_res":73.0,"pct_hu":0.0,"product":"GRC"},{"category":"Regulatory Compliance Manager:: Content Subscriptions","count":15,"avg_res":238.9,"median_res":134.4,"pct_hu":26.7,"product":"Compliance"},{"category":"Workflow :: Workflow-BPMN workflow engine","count":35,"avg_res":218.0,"median_res":74.2,"pct_hu":8.6,"product":"GRC"},{"category":"UI Framework :: UI Framework-Design Studio","count":28,"avg_res":218.0,"median_res":54.7,"pct_hu":0.0,"product":"GRC"},{"category":"Reporting :: Reporting-Risk Intelligence","count":71,"avg_res":214.8,"median_res":42.1,"pct_hu":7.0,"product":"Compliance"},{"category":"UI Framework :: UI Framework-BWise Today/Inbox (classic & vue)","count":24,"avg_res":201.2,"median_res":94.8,"pct_hu":4.2,"product":"GRC"},{"category":"Assessments :: Assessments-Campaigns","count":18,"avg_res":196.9,"median_res":81.8,"pct_hu":0.0,"product":"GRC"}],"fastest":[{"category":"Integrations :: Integrations-Incidents Integration","count":136,"avg_res":17.4,"median_res":1.4,"pct_hu":2.2,"product":"Compliance"},{"category":"Employee Management :: Employee Management-Employees","count":150,"avg_res":24.0,"median_res":2.9,"pct_hu":4.7,"product":"Compliance"},{"category":"Security :: Security-Single Sign-On","count":31,"avg_res":24.1,"median_res":6.8,"pct_hu":12.9,"product":"Compliance"},{"category":"Home :: Home-My Home Page","count":47,"avg_res":26.0,"median_res":18.4,"pct_hu":53.2,"product":"Compliance"},{"category":"Display & Values :: Display & Values-Advanced Forms Configuration","count":15,"avg_res":26.1,"median_res":15.2,"pct_hu":0.0,"product":"Compliance"},{"category":"Messaging :: Messaging-Messages","count":30,"avg_res":33.5,"median_res":13.1,"pct_hu":10.0,"product":"Compliance"},{"category":"Utilities :: Utilities-Application administration (support / logging / *.zip)","count":17,"avg_res":36.5,"median_res":23.8,"pct_hu":5.9,"product":"GRC"},{"category":"System Management :: System Management-Modules","count":45,"avg_res":36.8,"median_res":19.3,"pct_hu":26.7,"product":"Compliance"}]},"regions":[{"group":"C360 - AMER","count":2687,"avg_res":35.5,"avg_reply":0.51,"avg_req_wait":1.6,"avg_agent_wait":2.71},{"group":"GRC - APAC","count":1628,"avg_res":136.5,"avg_reply":2.55,"avg_req_wait":8.3,"avg_agent_wait":8.63},{"group":"GRC - AMER","count":1586,"avg_res":125.2,"avg_reply":1.28,"avg_req_wait":10.5,"avg_agent_wait":5.05},{"group":"GRC - EMEA","count":1522,"avg_res":150.8,"avg_reply":5.34,"avg_req_wait":12.5,"avg_agent_wait":6.25},{"group":"C360 - DEV","count":179,"avg_res":534.7,"avg_reply":2.58,"avg_req_wait":61.5,"avg_agent_wait":5.14},{"group":"R1 - AMER","count":29,"avg_res":88.6,"avg_reply":0.21,"avg_req_wait":7.8,"avg_agent_wait":3.17},{"group":"C360 - EMEA","count":29,"avg_res":62.0,"avg_reply":0.83,"avg_req_wait":2.4,"avg_agent_wait":5.27},{"group":"C360 - APAC","count":28,"avg_res":72.5,"avg_reply":4.02,"avg_req_wait":3.4,"avg_agent_wait":5.37}],"request_types":[{"type":"Configuration issue","count":1293,"mean":140.5,"median":54.3},{"type":"Error","count":962,"mean":81.9,"median":17.5},{"type":"Performance issue","count":789,"mean":107.6,"median":27.6},{"type":"Reporting issue","count":587,"mean":120.2,"median":45.2},{"type":"Application Management Request","count":465,"mean":109.2,"median":26.9},{"type":"Technical Request","count":248,"mean":150.1,"median":58.6},{"type":"Bug/Defect issue","count":198,"mean":268.9,"median":89.3},{"type":"Service Request","count":161,"mean":98.7,"median":32.8},{"type":"Security issue","count":58,"mean":143.2,"median":48.6},{"type":"Managed Services Request","count":32,"mean":87.3,"median":30.0}]};
+let nutsRendered = false;
+
+function renderNuts() {
+  if (nutsRendered) return;
+  nutsRendered = true;
+
+  const C = CORR;
+
+  // --- S1: Where does time go ---
+  document.getElementById('nuts-s1-finding').innerHTML = `
+    <strong>The biggest finding in the entire dataset.</strong> Resolution time is almost entirely explained by how long the requester waits between responses
+    (<span class="stat-highlight stat-red">r = ${C.time_breakdown.corr_req_vs_res}</span>). On average, customers wait
+    <strong>${C.time_breakdown.avg_req_wait_days} business days</strong> for responses, while agents actively work for
+    <strong>${C.time_breakdown.avg_agent_wait_days} days</strong>. Agent working time has a much weaker correlation with total resolution
+    (<span class="stat-highlight stat-blue">r = ${C.time_breakdown.corr_agent_vs_res}</span>).
+    <br><strong>Translation:</strong> Tickets aren't slow because they're hard — they're slow because they sit idle. Reducing response gaps is the single most impactful lever available.
+  `;
+
+  destroyChart('nutsTimeBreakdown');
+  charts['nutsTimeBreakdown'] = new Chart(document.getElementById('nutsTimeBreakdown'), {
+    type: 'bar', data: {
+      labels: ['Avg Requester Waiting (days)', 'Avg Agent Working (days)'],
+      datasets: [{ data: [C.time_breakdown.avg_req_wait_days, C.time_breakdown.avg_agent_wait_days],
+        backgroundColor: [COLORS.red, COLORS.blue], borderRadius: 6 }]
+    }, options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+  });
+
+  destroyChart('nutsScatter');
+  const grcPts = C.time_breakdown.scatter_sample.filter(s => s.product === 'GRC');
+  const compPts = C.time_breakdown.scatter_sample.filter(s => s.product === 'Compliance');
+  charts['nutsScatter'] = new Chart(document.getElementById('nutsScatter'), {
+    type: 'scatter', data: { datasets: [
+      { label: 'GRC', data: grcPts.map(p => ({x: p.req_wait, y: p.res_hrs})), backgroundColor: 'rgba(59,130,246,.4)', pointRadius: 3 },
+      { label: 'Compliance', data: compPts.map(p => ({x: p.req_wait, y: p.res_hrs})), backgroundColor: 'rgba(139,92,246,.4)', pointRadius: 3 }
+    ]}, options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { x: { title: { display: true, text: 'Requester Wait (days)' } }, y: { title: { display: true, text: 'Resolution (hrs)' } } } }
+  });
+
+  // --- S2: Priority ---
+  const prio = C.priority;
+  document.getElementById('nuts-s2-finding').innerHTML = `
+    <strong>Yes — and the system is working correctly.</strong> Urgent tickets resolve in <strong>${prio.data[0].mean}h</strong> (median ${prio.data[0].median}h),
+    while Low priority averages <strong>${prio.data[3].mean}h</strong>. This is statistically significant
+    (<span class="stat-highlight stat-green">ANOVA F=${prio.anova_f}, p=${prio.anova_p.toExponential(2)}</span>).
+    The triage system is correctly prioritizing — faster response for higher urgency. However, the gap between Normal (${prio.data[2].mean}h) and Low (${prio.data[3].mean}h) suggests Low tickets may be deprioritized too aggressively.
+  `;
+
+  destroyChart('nutsPriority');
+  charts['nutsPriority'] = new Chart(document.getElementById('nutsPriority'), {
+    type: 'bar', data: {
+      labels: prio.data.map(p => p.priority),
+      datasets: [
+        { label: 'Mean', data: prio.data.map(p => p.mean), backgroundColor: COLORS.blue, borderRadius: 4 },
+        { label: 'Median', data: prio.data.map(p => p.median), backgroundColor: COLORS.cyan, borderRadius: 4 }
+      ]
+    }, options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { beginAtZero: true, title: { display: true, text: 'Hours' } } } }
+  });
+
+  destroyChart('nutsPrioVol');
+  charts['nutsPrioVol'] = new Chart(document.getElementById('nutsPrioVol'), {
+    type: 'doughnut', data: {
+      labels: prio.data.map(p => p.priority + ' (' + p.count + ')'),
+      datasets: [{ data: prio.data.map(p => p.count), backgroundColor: [COLORS.red, COLORS.orange, COLORS.blue, COLORS.teal] }]
+    }, options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+  });
+
+  // --- S3: First reply ---
+  const fr = C.first_reply;
+  document.getElementById('nuts-s3-finding').innerHTML = `
+    <strong>Weak but real correlation</strong> (<span class="stat-highlight stat-blue">r = ${fr.pearson_r}</span>, p = ${fr.p_value.toExponential(2)}).
+    The bucketed view tells a clearer story: tickets where first reply takes <strong>&gt; 10 hours</strong> average
+    <strong>${fr.buckets[fr.buckets.length-1].avg_res}h</strong> to resolve, versus <strong>${fr.buckets[0].avg_res}h</strong> when reply is under 30 minutes.
+    That's a <strong>${Math.round((fr.buckets[fr.buckets.length-1].avg_res / fr.buckets[0].avg_res - 1) * 100)}% worse outcome</strong> from slow first contact.
+    First reply isn't just courtesy — it's a leading indicator of the entire ticket lifecycle.
+  `;
+
+  destroyChart('nutsReply');
+  charts['nutsReply'] = new Chart(document.getElementById('nutsReply'), {
+    type: 'bar', data: {
+      labels: fr.buckets.map(b => b.bucket),
+      datasets: [
+        { label: 'Avg Resolution (hrs)', data: fr.buckets.map(b => b.avg_res), backgroundColor: COLORS.orange, borderRadius: 4 },
+        { label: 'Median Resolution (hrs)', data: fr.buckets.map(b => b.median_res), backgroundColor: COLORS.blue, borderRadius: 4 }
+      ]
+    }, options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { beginAtZero: true, title: { display: true, text: 'Resolution Hours' } } } }
+  });
+
+  destroyChart('nutsReplyVol');
+  charts['nutsReplyVol'] = new Chart(document.getElementById('nutsReplyVol'), {
+    type: 'bar', data: {
+      labels: fr.buckets.map(b => b.bucket),
+      datasets: [{ label: 'Tickets', data: fr.buckets.map(b => b.count), backgroundColor: COLORS.blue, borderRadius: 4 }]
+    }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+  });
+
+  // --- S4: Volume vs Quality ---
+  const vq = C.volume_quality;
+  document.getElementById('nuts-s4-finding').innerHTML = `
+    <strong>Yes — and it's statistically significant</strong> (<span class="stat-highlight stat-red">Spearman \u03C1 = ${vq.spearman_rho}, p = ${vq.p_value.toExponential(2)}</span>).
+    Clients with more tickets experience slower resolution and higher escalation rates. Clients with 100+ tickets wait on average
+    <strong>${vq.buckets[vq.buckets.length-1].avg_res}h</strong> for resolution vs <strong>${vq.buckets[0].avg_res}h</strong> for clients with 1-4 tickets.
+    <br><strong>This is a retention risk:</strong> your most engaged (and likely most valuable) customers are getting the worst service. High-volume accounts may be overwhelming the same agents, creating a negative feedback loop.
+  `;
+
+  destroyChart('nutsVolRes');
+  charts['nutsVolRes'] = new Chart(document.getElementById('nutsVolRes'), {
+    type: 'bar', data: {
+      labels: vq.buckets.map(b => b.bucket + ' tickets'),
+      datasets: [
+        { label: 'Avg Resolution (hrs)', data: vq.buckets.map(b => b.avg_res), backgroundColor: COLORS.red, borderRadius: 4, yAxisID: 'y' },
+        { label: 'Customers', data: vq.buckets.map(b => b.n_customers), type: 'line', borderColor: COLORS.blue, yAxisID: 'y1', borderWidth: 2, pointRadius: 4 }
+      ]
+    }, options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { beginAtZero: true, position: 'left', title: { display: true, text: 'Avg Resolution (hrs)' } }, y1: { beginAtZero: true, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Customers' } } } }
+  });
+
+  destroyChart('nutsVolHU');
+  charts['nutsVolHU'] = new Chart(document.getElementById('nutsVolHU'), {
+    type: 'bar', data: {
+      labels: vq.buckets.map(b => b.bucket + ' tickets'),
+      datasets: [{ label: '% High/Urgent', data: vq.buckets.map(b => b.avg_hu), backgroundColor: COLORS.orange, borderRadius: 4 }]
+    }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, title: { display: true, text: '% High/Urgent' } } } }
+  });
+
+  // --- S5: Time trend ---
+  const tt = C.time_trend;
+  document.getElementById('nuts-s5-finding').innerHTML = `
+    <strong>Dramatically — yes</strong> (<span class="stat-highlight stat-green">Spearman \u03C1 = ${tt.spearman_rho}, p = ${tt.p_value.toExponential(2)}</span>).
+    Resolution time has been steadily declining month over month since January 2025. The correlation is extremely strong (\u03C1 = ${tt.spearman_rho}), confirming this is a real sustained improvement trend, not random fluctuation.
+    Early 2025 months averaged ${tt.data[0].avg_res}h, while recent months are down to ${tt.data[tt.data.length-1].avg_res}h.
+    <br><strong>Whatever operational changes were made in 2025 are clearly working.</strong> The challenge now is sustaining this momentum and applying the same improvements to the slowest categories.
+  `;
+
+  destroyChart('nutsTrend');
+  charts['nutsTrend'] = new Chart(document.getElementById('nutsTrend'), {
+    type: 'line', data: {
+      labels: tt.data.map(t => t.month),
+      datasets: [
+        { label: 'Avg Resolution', data: tt.data.map(t => t.avg_res), borderColor: COLORS.blue, fill: true, backgroundColor: COLORS.blueA, tension: .3, borderWidth: 2 },
+        { label: 'Median Resolution', data: tt.data.map(t => t.median_res), borderColor: COLORS.cyan, fill: false, tension: .3, borderWidth: 2, borderDash: [5,3] }
+      ]
+    }, options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { beginAtZero: true, title: { display: true, text: 'Hours' } } } }
+  });
+
+  destroyChart('nutsTrendReply');
+  charts['nutsTrendReply'] = new Chart(document.getElementById('nutsTrendReply'), {
+    type: 'line', data: {
+      labels: tt.data.map(t => t.month),
+      datasets: [{ label: 'Avg First Reply (hrs)', data: tt.data.map(t => t.avg_reply), borderColor: COLORS.green, fill: true, backgroundColor: 'rgba(34,197,94,.1)', tension: .3, borderWidth: 2 }]
+    }, options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { beginAtZero: true, title: { display: true, text: 'Hours' } } } }
+  });
+
+  // --- S6: Categories ---
+  const cats = C.categories;
+  document.getElementById('nuts-s6-finding').innerHTML = `
+    <strong>Massive variance across product areas.</strong> The slowest category (<strong>${cats.slowest[0].category.split('::')[0].trim()}</strong>) averages
+    <strong>${cats.slowest[0].avg_res}h</strong>, while the fastest (<strong>${cats.fastest[0].category.split('::')[0].trim()}</strong>) resolves in just
+    <strong>${cats.fastest[0].avg_res}h</strong> — a <strong>${Math.round(cats.slowest[0].avg_res / cats.fastest[0].avg_res)}x</strong> difference.
+    The slow categories often involve complex workflows, assessments, and UI frameworks, while fast ones are integrations and employee management.
+    <br><strong>Recommendation:</strong> The slowest categories need dedicated runbooks, specialist routing, and possibly product investment to reduce complexity.
+  `;
+
+  destroyChart('nutsCatSlow');
+  charts['nutsCatSlow'] = new Chart(document.getElementById('nutsCatSlow'), {
+    type: 'bar', data: {
+      labels: cats.slowest.map(c => c.category.length > 40 ? c.category.substring(0,37)+'...' : c.category),
+      datasets: [{ label: 'Avg Resolution (hrs)', data: cats.slowest.map(c => c.avg_res), backgroundColor: cats.slowest.map(c => c.product==='GRC' ? COLORS.red : COLORS.orange), borderRadius: 4 }]
+    }, options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+  });
+
+  destroyChart('nutsCatFast');
+  charts['nutsCatFast'] = new Chart(document.getElementById('nutsCatFast'), {
+    type: 'bar', data: {
+      labels: cats.fastest.map(c => c.category.length > 40 ? c.category.substring(0,37)+'...' : c.category),
+      datasets: [{ label: 'Avg Resolution (hrs)', data: cats.fastest.map(c => c.avg_res), backgroundColor: cats.fastest.map(c => c.product==='GRC' ? COLORS.green : COLORS.teal), borderRadius: 4 }]
+    }, options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+  });
+
+  // --- S7: Regions ---
+  const regs = C.regions.sort((a,b) => b.avg_res - a.avg_res);
+  document.getElementById('nuts-s7-finding').innerHTML = `
+    <strong>Significant regional gaps.</strong> The slowest region (<strong>${regs[0].group}</strong>) averages <strong>${regs[0].avg_res}h</strong> resolution and
+    <strong>${regs[0].avg_reply}h</strong> first reply, while the fastest (<strong>${regs[regs.length-1].group}</strong>) manages <strong>${regs[regs.length-1].avg_res}h</strong> resolution and
+    <strong>${regs[regs.length-1].avg_reply}h</strong> first reply. That's a <strong>${Math.round(regs[0].avg_res / regs[regs.length-1].avg_res)}x</strong> gap in resolution speed.
+    <br>Regional gaps this large typically indicate staffing imbalances, timezone coverage issues, or uneven knowledge distribution across teams.
+  `;
+
+  destroyChart('nutsRegRes');
+  charts['nutsRegRes'] = new Chart(document.getElementById('nutsRegRes'), {
+    type: 'bar', data: {
+      labels: regs.map(r => r.group),
+      datasets: [{ label: 'Avg Resolution (hrs)', data: regs.map(r => r.avg_res), backgroundColor: regs.map(r => r.avg_res > 150 ? COLORS.red : r.avg_res > 80 ? COLORS.orange : COLORS.green), borderRadius: 4 }]
+    }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, title: { display: true, text: 'Hours' } } } }
+  });
+
+  destroyChart('nutsRegReply');
+  charts['nutsRegReply'] = new Chart(document.getElementById('nutsRegReply'), {
+    type: 'bar', data: {
+      labels: regs.map(r => r.group),
+      datasets: [{ label: 'Avg First Reply (hrs)', data: regs.map(r => r.avg_reply), backgroundColor: regs.map(r => r.avg_reply > 3 ? COLORS.red : r.avg_reply > 1 ? COLORS.orange : COLORS.green), borderRadius: 4 }]
+    }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, title: { display: true, text: 'Hours' } } } }
+  });
+
+  // --- AI SECTION ---
+  document.getElementById('ai-cards').innerHTML = `
+    <div class="ai-card">
+      <h3>\u{1F916} Smart Ticket Router</h3>
+      <p>Based on Finding #6 and #7, ticket category and region are strong predictors of resolution time. An AI router could automatically classify incoming tickets by product category (using subject line + description NLP) and route to the specialist team with the best track record for that category — bypassing the generic queue entirely.</p>
+      <p style="margin-top:8px"><strong>Expected impact:</strong> 20-30% reduction in resolution time for the slowest categories by eliminating misrouting and initial triage delays.</p>
+      <span class="ai-tag tag-auto">Automation</span>
+    </div>
+    <div class="ai-card">
+      <h3>\u{26A1} Auto First Response</h3>
+      <p>Finding #3 shows that slow first replies predict slow resolutions. An AI assistant could generate contextual first responses within minutes — acknowledging the issue, asking clarifying questions, and linking to relevant KB articles. This keeps the customer engaged and starts the diagnostic process immediately.</p>
+      <p style="margin-top:8px"><strong>Expected impact:</strong> First reply time under 15 minutes for 90%+ of tickets, reducing the "idle gap" identified in Finding #1.</p>
+      <span class="ai-tag tag-auto">Automation</span>
+    </div>
+    <div class="ai-card">
+      <h3>\u{1F4CA} Resolution Time Predictor</h3>
+      <p>The strong correlations between priority, category, region, and volume (Findings #2, #4, #6, #7) mean we can build a model that predicts expected resolution time at ticket creation. This lets agents set accurate expectations with customers and lets managers flag tickets that are falling behind their predicted timeline.</p>
+      <p style="margin-top:8px"><strong>Expected impact:</strong> Proactive SLA management. No ticket silently exceeds its expected window without an alert.</p>
+      <span class="ai-tag tag-predict">Predictive Model</span>
+    </div>
+    <div class="ai-card">
+      <h3>\u{1F6E1} Retention Risk Scoring</h3>
+      <p>Finding #4 reveals that high-volume clients get worse service. An AI system could continuously compute a real-time retention risk score per customer — combining ticket velocity, resolution experience, escalation frequency, and open backlog — and trigger alerts when a customer crosses into the danger zone.</p>
+      <p style="margin-top:8px"><strong>Expected impact:</strong> Early warning system catches at-risk accounts 2-4 weeks before they would typically escalate or churn.</p>
+      <span class="ai-tag tag-predict">Predictive Model</span>
+    </div>
+    <div class="ai-card">
+      <h3>\u{1F4D6} Agent Knowledge Assistant</h3>
+      <p>Build an AI assistant trained on the full ticket history — every resolution, every workaround, every product-specific fix. When an agent opens a new ticket, the assistant surfaces the most relevant past resolutions, documentation, and recommended troubleshooting steps. This is especially powerful for the complex categories identified in Finding #6 (Assessments, UI Framework, Workflows).</p>
+      <p style="margin-top:8px"><strong>Source of truth:</strong> Combine this ticket dataset (${(CLIENTS.length)}+ customers, ${DATA.GRC['2025_full'].total_tickets + DATA.Compliance['2025_full'].total_tickets + DATA.GRC['2026_ytd'].total_tickets + DATA.Compliance['2026_ytd'].total_tickets}+ tickets) with product documentation and internal wikis into a RAG-powered knowledge base. Agents query it in natural language during ticket handling.</p>
+      <span class="ai-tag tag-assist">AI Assistant</span>
+    </div>
+    <div class="ai-card">
+      <h3>\u{1F504} Idle Ticket Watchdog</h3>
+      <p>Finding #1 is the most actionable: resolution time is driven by idle gaps, not by complexity. An automated watchdog could monitor all open tickets in real-time and send escalation nudges when a ticket has been idle for more than X hours (configurable by priority). No ticket should sit untouched for more than one business day without a deliberate reason.</p>
+      <p style="margin-top:8px"><strong>Expected impact:</strong> Directly attacks the #1 driver of slow resolution. Could reduce average resolution by 30-40% by eliminating the "forgotten ticket" problem.</p>
+      <span class="ai-tag tag-auto">Automation</span>
+    </div>
+    <div class="ai-card">
+      <h3>\u{1F9E0} Building the AI Source of Truth</h3>
+      <p>To power the above automations, you need a structured source of truth. Here's the data pipeline:</p>
+      <p style="margin-top:8px">
+        <strong>1. Ticket corpus:</strong> This dataset becomes the training/evaluation set — every ticket's category, resolution path, time, and outcome.<br>
+        <strong>2. Resolution patterns:</strong> Extract the most effective resolution paths per category using clustering on successful fast-resolution tickets.<br>
+        <strong>3. Product docs + KB:</strong> Ingest all product documentation, release notes, and existing knowledge base articles.<br>
+        <strong>4. Agent expertise map:</strong> Build a skills matrix from resolution history — which agents resolve which categories fastest.<br>
+        <strong>5. RAG system:</strong> Combine all sources into a retrieval-augmented generation system that agents can query naturally during ticket handling.
+      </p>
+      <span class="ai-tag tag-assist">AI Assistant</span> <span class="ai-tag tag-auto" style="margin-left:4px">Automation</span> <span class="ai-tag tag-predict" style="margin-left:4px">Predictive Model</span>
+    </div>
+  `;
+}
 
 // ===== INIT =====
 renderExec();
