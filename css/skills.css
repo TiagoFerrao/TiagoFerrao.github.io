@@ -104,18 +104,70 @@
   pointer-events: none;
 }
 
-/* Quadrant labels */
+/* Sector heading (placed in the diagonal corners, behind labels) */
 .radar-svg .quad-label {
   font-family: var(--font-display);
-  font-size: 14px;
-  font-weight: 600;
-  fill: var(--accent-primary);
-  letter-spacing: 0.05em;
+  font-size: 17px;
+  font-weight: 700;
+  fill: var(--text-muted);
+  opacity: 0.65;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  transition: opacity var(--transition-base);
 }
 
-.radar-svg .quad-label.dimmed { opacity: 0.25; }
+/* Background sector fans */
+.radar-svg .sector-fan {
+  fill: var(--bg-secondary);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Leader lines from wedge tip to its label */
+.radar-svg .skill-leader {
+  stroke: var(--accent-secondary);
+  stroke-width: 0.5;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Radial skill labels */
+.radar-svg .skill-label {
+  font-family: var(--font-body);
+  font-size: 8px;
+  fill: var(--text-secondary);
+  pointer-events: none;
+}
+
+/* Tip dot — marks 10+ years of practice */
+.radar-svg .skill-dot {
+  fill: var(--bg-primary);
+  stroke: var(--accent-primary);
+  stroke-width: 1;
+}
+
+/* Center hub */
+.radar-svg .radar-center-disc {
+  fill: var(--bg-secondary);
+  stroke: var(--accent-secondary);
+  stroke-width: 1;
+}
+.radar-svg .radar-center-num {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 30px;
+  fill: var(--accent-primary);
+}
+.radar-svg .radar-center-label {
+  font-family: var(--font-body);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  fill: var(--text-secondary);
+}
+.radar-svg .radar-center-sub {
+  font-family: var(--font-body);
+  font-size: 8px;
+  fill: var(--text-muted);
+}
 
 /* Skill wedges */
 .radar-svg .wedge {

@@ -17,11 +17,8 @@
       return;
     }
     const d = window.skillsData;
-    renderHero(d.hero);
     renderRadar(d);
     renderLegend(d);
-    renderFilterTabs(d.categories);
-    initFilterBehaviour();
     initScrollAnimations();
     initTooltip(d.skills);
   });
@@ -39,120 +36,132 @@
   }
 
   // ---------- Radar SVG ----------
-  // SVG centered at (0,0). Max radius = 180. ViewBox = -220..220.
+  // Donut layout: wedges grow from an inner hub (R0) out to MAX_R.
+  // Center hub holds the headline stats; sectors get a background fan,
+  // a sector label, and radial skill labels with leader lines.
   function renderRadar(d) {
     const el = document.getElementById('skills-radar');
     if (!el) return;
 
-    const MAX_R = 180;
+    const R0    = 64;   // inner hub radius (donut hole)
+    const MAX_R = 205;  // outer radius of a level-100 wedge
+    const GAP   = MAX_R - R0;
     const LEVELS = d.levels.length;  // 5
-    const ringRadii = [];
-    for (let i = 1; i <= LEVELS; i++) {
-      ringRadii.push((i / LEVELS) * MAX_R);
-    }
 
-    // Build category angular slots
-    // Quadrants go clockwise starting at TOP-RIGHT (-90° / 270°).
-    // Q1 top-right    (-90° → 0°)   = management
-    // Q2 bottom-right (0°   → 90°)  = stem
-    // Q3 bottom-left  (90°  → 180°) = digital
-    // Q4 top-left     (180° → 270°) = soft
+    const ringRadii = [];
+    for (let i = 1; i <= LEVELS; i++) ringRadii.push(R0 + (i / LEVELS) * GAP);
+
+    // map a 0-100 level onto the [R0, MAX_R] band
+    const levelR = lvl => R0 + (Math.max(0, Math.min(100, lvl)) / 100) * GAP;
+
+    // Quadrants clockwise from TOP-RIGHT.
     const quadrantOrder = ['management', 'stem', 'digital', 'soft'];
-    const quadrantStart = { management: -90, stem: 0, digital: 90, soft: 180 }; // degrees
+    const quadrantStart = { management: -90, stem: 0, digital: 90, soft: 180 };
     const QUAD_SPAN = 90;
 
-    // Group skills by category preserving data order
+    // Group by category, then sort each sector by level (desc) for a clean fan.
     const skillsByCat = {};
     quadrantOrder.forEach(catId => skillsByCat[catId] = []);
     d.skills.forEach(s => { if (skillsByCat[s.category]) skillsByCat[s.category].push(s); });
+    quadrantOrder.forEach(catId => skillsByCat[catId].sort((a, b) => b.level - a.level));
 
-    // Status to CSS class
-    const statusClass = {
-      consolidated: 'wedge-consolidated',
-      learning:     'wedge-learning',
-    };
+    const statusClass = { consolidated: 'wedge-consolidated', learning: 'wedge-learning' };
 
-    // SVG parts — built into separate layer arrays:
-    //   rings + axes (background) → wedges (on top) → labels (top)
-    const wedgeParts = [];
-    const ringParts  = [];
-    const axisParts  = [];
-    const labelParts = [];
+    const fanParts    = [];
+    const ringParts   = [];
+    const sectorParts = [];
+    const wedgeParts  = [];
+    const dotParts    = [];
+    const leaderParts = [];
+    const labelParts  = [];
 
-    // Rings (concentric level guides) — drawn dotted in the background
-    ringRadii.forEach(r => {
-      ringParts.push(`<circle class="ring" cx="0" cy="0" r="${r}" />`);
+    // Background sector fans + sector heading at the diagonal mid-angle
+    quadrantOrder.forEach(catId => {
+      const cat = d.categories.find(c => c.id === catId);
+      const s = quadrantStart[catId];
+      fanParts.push(`<path class="sector-fan" data-category="${esc(catId)}" d="${wedgeBandPath(s + 1.5, s + QUAD_SPAN - 1.5, R0 - 2, MAX_R + 16)}"/>`);
+      if (cat) {
+        const midDeg = s + QUAD_SPAN / 2;
+        const { x, y } = polarToCart(MAX_R + 96, midDeg);
+        sectorParts.push(`<text class="quad-label" x="${x.toFixed(1)}" y="${y.toFixed(1)}" data-category="${esc(catId)}" text-anchor="middle" dominant-baseline="middle">${esc((cat.label || '').toUpperCase())}</text>`);
+      }
     });
 
-    // Quadrant separator axes (horizontal + vertical) — extend slightly past the outer ring
-    const AXIS_EXT = 20;
-    axisParts.push(`<line class="axis" x1="${-(MAX_R + AXIS_EXT)}" y1="0" x2="${MAX_R + AXIS_EXT}" y2="0" />`);
-    axisParts.push(`<line class="axis" x1="0" y1="${-(MAX_R + AXIS_EXT)}" x2="0" y2="${MAX_R + AXIS_EXT}" />`);
+    // Level guide rings (dotted, behind wedges)
+    ringRadii.forEach(r => ringParts.push(`<circle class="ring" cx="0" cy="0" r="${r.toFixed(1)}" />`));
 
-    // 3) Skill wedges per quadrant — supports 2-band rendering
-    //    If skill.consolidatedLevel < skill.level, render two bands:
-    //       inner (0 → consolidatedLevel)  = consolidated (dark, mature)
-    //       outer (consolidatedLevel → level) = learning (bright, active)
-    //    Otherwise the whole wedge uses skill.status.
+    // Skill wedges (sorted), 2-band aware, with leader + radial label + 10+yr dot
     quadrantOrder.forEach(catId => {
       const skills = skillsByCat[catId];
-      if (!skills || !skills.length) return;
+      if (!skills.length) return;
       const startDeg = quadrantStart[catId];
       const segSpan = QUAD_SPAN / skills.length;
+      const pad = segSpan * 0.12;
 
       skills.forEach((skill, i) => {
-        const a0 = startDeg + i * segSpan;
-        const a1 = a0 + segSpan;
-        const fullR = (skill.level / 100) * MAX_R;
-        const consolidatedLevel = resolveConsolidatedLevel(skill);
-        const consolidatedR = (consolidatedLevel / 100) * MAX_R;
+        const a0 = startDeg + i * segSpan + pad;
+        const a1 = startDeg + (i + 1) * segSpan - pad;
+        const am = (a0 + a1) / 2;
+        const fullR = levelR(skill.level);
+        const consR = levelR(resolveConsolidatedLevel(skill));
 
-        // Wrap each skill's wedges in <g> so hover events flow smoothly
-        // between inner and outer bands (no flicker on band crossing).
         const groupAttrs = `data-skill-name="${esc(skill.name)}" data-category="${esc(skill.category)}"`;
         const wedgeAttrs = `data-category="${esc(skill.category)}"`;
 
         let inner = '';
-        if (consolidatedLevel >= skill.level) {
-          // Single-status wedge
+        if (consR >= fullR) {
           const cls = statusClass[skill.status] || 'wedge-consolidated';
-          inner = `<path class="wedge ${cls}" ${wedgeAttrs} d="${pieWedgePath(a0, a1, fullR)}"/>`;
+          inner = `<path class="wedge ${cls}" ${wedgeAttrs} d="${wedgeBandPath(a0, a1, R0, fullR)}"/>`;
         } else {
-          // 2-band: outer learning ring slice + inner consolidated pie
-          if (consolidatedLevel < skill.level) {
-            inner += `<path class="wedge wedge-learning" ${wedgeAttrs} d="${wedgeBandPath(a0, a1, consolidatedR, fullR)}"/>`;
-          }
-          if (consolidatedLevel > 0) {
-            inner += `<path class="wedge wedge-consolidated" ${wedgeAttrs} d="${pieWedgePath(a0, a1, consolidatedR)}"/>`;
-          }
+          inner += `<path class="wedge wedge-learning" ${wedgeAttrs} d="${wedgeBandPath(a0, a1, consR, fullR)}"/>`;
+          if (consR > R0) inner += `<path class="wedge wedge-consolidated" ${wedgeAttrs} d="${wedgeBandPath(a0, a1, R0, consR)}"/>`;
         }
         wedgeParts.push(`<g class="skill-group" ${groupAttrs}>${inner}</g>`);
+
+        // tip dot — marks 10+ years of practice
+        if (skill.years >= 10) {
+          const dp = polarToCart(MAX_R + 6, am);
+          dotParts.push(`<circle class="skill-dot" cx="${dp.x.toFixed(1)}" cy="${dp.y.toFixed(1)}" r="2.4"/>`);
+        }
+
+        // leader line from wedge tip to the label ring
+        const l0 = polarToCart(fullR + 2, am);
+        const l1 = polarToCart(MAX_R + 2, am);
+        leaderParts.push(`<line class="skill-leader" x1="${l0.x.toFixed(1)}" y1="${l0.y.toFixed(1)}" x2="${l1.x.toFixed(1)}" y2="${l1.y.toFixed(1)}"/>`);
+
+        // radial label "Name: level"
+        const lp = polarToCart(MAX_R + 12, am);
+        const right = Math.cos(am * Math.PI / 180) >= 0;
+        const rot = right ? am : am + 180;
+        const anchor = right ? 'start' : 'end';
+        labelParts.push(`<text class="skill-label" x="${lp.x.toFixed(1)}" y="${lp.y.toFixed(1)}" text-anchor="${anchor}" dominant-baseline="middle" transform="rotate(${rot.toFixed(1)} ${lp.x.toFixed(1)} ${lp.y.toFixed(1)})">${esc(skill.name)}: ${skill.level}</text>`);
       });
     });
 
-    // 4) Quadrant labels (placed just outside the outer ring, at the mid-angle)
-    quadrantOrder.forEach(catId => {
-      const cat = d.categories.find(c => c.id === catId);
-      if (!cat) return;
-      const midDeg = quadrantStart[catId] + QUAD_SPAN / 2;
-      const labelR = MAX_R + 24;
-      const { x, y } = polarToCart(labelR, midDeg);
-      labelParts.push(`
-        <text class="quad-label" x="${x.toFixed(1)}" y="${y.toFixed(1)}"
-              data-category="${esc(catId)}"
-              text-anchor="middle" dominant-baseline="middle">
-          ${esc(cat.label)}
-        </text>
-      `);
-    });
+    // Center hub — headline stats (frees the old top band)
+    const total = d.skills.length;
+    const hs = (d.hero && d.hero.stats) || [];
+    const sub = hs.length >= 3
+      ? `${hs[0].number}${hs[0].suffix} yrs · ${hs[1].number} roles · ${hs[2].number} domains`
+      : '';
+    const centerPart = `
+      <circle class="radar-center-disc" cx="0" cy="0" r="${R0 - 6}"/>
+      <text class="radar-center-num" x="0" y="-6" text-anchor="middle">${total}</text>
+      <text class="radar-center-label" x="0" y="11" text-anchor="middle">SKILLS</text>
+      <text class="radar-center-sub" x="0" y="26" text-anchor="middle">${esc(sub)}</text>
+    `;
 
-    // Final layered assembly: rings + axes underneath → wedges on top → labels.
+    const V = 430;
     el.innerHTML = `
-      <svg viewBox="-220 -220 440 440" xmlns="http://www.w3.org/2000/svg" class="radar-svg" role="img" aria-label="Skills radar chart">
+      <svg viewBox="-${V} -${V} ${2 * V} ${2 * V}" xmlns="http://www.w3.org/2000/svg" class="radar-svg" role="img" aria-label="Skills radar chart">
+        ${fanParts.join('')}
+        ${sectorParts.join('')}
         ${ringParts.join('')}
-        ${axisParts.join('')}
         ${wedgeParts.join('')}
+        ${dotParts.join('')}
+        ${leaderParts.join('')}
         ${labelParts.join('')}
+        ${centerPart}
       </svg>
     `;
   }
