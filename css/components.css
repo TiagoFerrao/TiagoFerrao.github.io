@@ -263,3 +263,21 @@
   font-size: var(--text-lg);
   line-height: 1.8;
 }
+
+/* --- Energy Cards (Fire / Wind / Sun) --- */
+.energy-icon {
+  display: block;
+  width: 56px;
+  height: 56px;
+  margin: 0 auto var(--space-sm);
+  color: var(--accent-primary);
+}
+
+.energy-icon .fa-primary {
+  fill: currentColor;
+}
+
+.energy-icon .fa-secondary {
+  fill: var(--accent-secondary);
+  opacity: 0.4;
+}

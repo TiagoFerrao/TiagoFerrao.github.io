@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="teal">
 <head>
+  <!-- ============================================
+       HEAD — meta, fonts, stylesheets
+       ============================================ -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Energy | Tiago Ferrao</title>
@@ -22,9 +25,13 @@
   <meta name="twitter:title" content="Energy | Tiago Ferrao">
   <meta name="twitter:description" content="Energy sector experience — Tiago Ferrao">
   <meta name="twitter:image" content="https://ferrao.me/img/social_banner.jpg">
+
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
   <link rel="stylesheet" href="css/variables.css">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/layout.css">
@@ -33,6 +40,9 @@
 </head>
 
 <body>
+  <!-- ============================================
+       HEADER — site-wide brand + nav
+       ============================================ -->
   <header class="site-header">
     <div class="container">
       <a href="index.html" class="site-brand">
@@ -40,6 +50,7 @@
         <span class="subtitle">Digital Innovator</span>
       </a>
       <button class="nav-toggle" aria-label="Toggle navigation">
+        <!-- Icon: ui-nav-toggle (img/icons/ui-nav-toggle.svg) -->
         <svg viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
       </button>
       <nav class="site-nav">
@@ -52,46 +63,108 @@
     </div>
   </header>
 
+  <!-- ============================================
+       MAIN — page content
+       ============================================ -->
   <main>
     <div class="container">
 
+      <!-- ===== PAGE HEADER (large icon + title) ===== -->
       <section class="page-header fade-in">
-        <svg class="icon" viewBox="0 0 576 512">
-          <g>
-            <path class="fa-secondary" fill="currentColor" d="M96 352H32a32 32 0 0 0-32 32v96a32 32 0 0 0 32 32h64a32 32 0 0 0 32-32v-96a32 32 0 0 0-32-32zm192-128h-64a32 32 0 0 0-32 32v224a32 32 0 0 0 32 32h64a32 32 0 0 0 32-32V256a32 32 0 0 0-32-32z" opacity="0.4"/>
-            <path class="fa-primary" fill="currentColor" d="M480 0h-64a32 32 0 0 0-32 32v448a32 32 0 0 0 32 32h64a32 32 0 0 0 32-32V32a32 32 0 0 0-32-32z"/>
-          </g>
+        <!-- Icon: page-energy-power (img/icons/page-energy-power.svg) -->
+        <svg class="icon" viewBox="0 0 640 640" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="width:64px;height:64px;margin:0 auto var(--space-lg);color:var(--accent-primary);">
+          <!--!Font Awesome Pro 7.2.0 — Commercial License — https://fontawesome.com/license-->
+          <path class="fa-secondary" fill="currentColor" opacity="0.4" d="M288 64L288 320C288 337.7 302.3 352 320 352C337.7 352 352 337.7 352 320L352 64C352 46.3 337.7 32 320 32C302.3 32 288 46.3 288 64z"/>
+          <path class="fa-primary" fill="currentColor" d="M218.2 117.8C228.3 132.3 224.8 152.2 210.3 162.4C160.5 197.2 128 254.8 128 320C128 426 214 512 320 512C426 512 512 426 512 320C512 254.8 479.5 197.1 429.7 162.4C415.2 152.3 411.7 132.3 421.8 117.8C431.9 103.3 451.9 99.8 466.4 109.9C532.6 156.1 576 233 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320C64 233 107.4 156.1 173.7 109.9C188.2 99.8 208.1 103.3 218.3 117.8z"/>
         </svg>
         <h2>Energy</h2>
         <p>Experience in the energy sector — from renewable project development to energy management software and policy.</p>
       </section>
 
-      <section class="section-intro fade-in" style="padding: var(--space-3xl) 0; text-align: center;">
-        <svg viewBox="0 0 640 512" style="width:120px;height:120px;margin:0 auto var(--space-xl);color:var(--text-muted);opacity:0.3;">
-          <path fill="currentColor" d="M252.39 246.7c-4.72-5.6-13.28-5.6-18 0l-96 114a12 12 0 0 0 9 20.3h47.59v99a12 12 0 0 0 12 12h72a12 12 0 0 0 12-12v-99h47.59a12 12 0 0 0 9-20.3zm378 114l-96-114c-4.72-5.6-13.28-5.6-18 0l-96 114a12 12 0 0 0 9 20.3h47.59v99a12 12 0 0 0 12 12h72a12 12 0 0 0 12-12v-99h47.59a12 12 0 0 0 9-20.3zM608 0H32A32 32 0 0 0 0 32v128a32 32 0 0 0 32 32h576a32 32 0 0 0 32-32V32a32 32 0 0 0-32-32zM280 112H56a8 8 0 0 1-8-8V72a8 8 0 0 1 8-8h224a8 8 0 0 1 8 8v32a8 8 0 0 1-8 8z"/>
-        </svg>
-        <h3 style="color: var(--text-muted); font-weight: 400;">Coming Soon</h3>
-        <p>This section is being built. Check back soon for detailed content about my energy sector experience, including work in renewable energy, energy management, and sustainability policy.</p>
-        <p><a href="index.html" style="color: var(--accent-primary);">&larr; Back to Home</a></p>
+      <!-- ===== CONTENT CARDS (Fire / Wind / Sun) =====
+           TODO: replace the placeholder block below with the 3 energy cards.
+           Each card uses an SVG from img/icons/ (energy-fire / energy-wind / energy-sun).
+           See the block already prepared for the Fire card in the chat with Claude.
+           ============================================ -->
+      <!-- Cards: experience grouped by energy type -->
+      <section class="card-grid">
+
+        <!-- 🔥 FIRE -->
+        <article class="content-card fade-in">
+          <svg class="energy-icon" viewBox="0 0 640 640" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <!--!Font Awesome Pro 7.2.0 — Commercial License — https://fontawesome.com/license-->
+            <path class="fa-secondary" fill="currentColor" d="M128 380.2L128 384C128 490 214 576 320 576L337.7 576C434 576 512 498 512 401.7C512 334.2 484.4 269.7 435.6 223.1L350.9 142.2C341.4 133.1 336 120.6 336 107.5L336 85.4C336 73.6 326.4 64.1 314.7 64.1C308 64.1 301.7 67.3 297.6 72.6L281.6 93.9C265 116.1 256 143.1 256 170.8C256 204.7 269.5 237.5 293.5 261.5L332.1 300.1C344.8 312.8 352 330.1 352 348.1L352 352C352 387.3 323.3 416 288 416C252.7 416 224 387.3 224 352L224 262.6C224 250.1 213.9 240 201.4 240C195.4 240 189.6 242.4 185.4 246.6L181.9 250.1C147.4 284.6 128 331.4 128 380.2zM246.3 488.7C239 483.6 246.5 474.1 255.1 476.6C352.7 504.1 437.6 389.9 403.6 296.8C401.7 291.5 408.9 285.8 412.4 290.2C438.3 322.2 448 360 448 401.8C448 462.7 398.6 512.1 337.7 512.1L320 512C292.6 512 267.2 503.4 246.3 488.7z"/>
+            <path class="fa-primary" fill="currentColor" d="M255.1 476.6C246.5 474.2 239 483.6 246.3 488.7C267.1 503.4 292.5 512 320 512L337.7 512C398.6 512 448 462.6 448 401.7C448 359.9 438.3 322.1 412.4 290.1C408.8 285.7 401.6 291.5 403.6 296.7C437.6 389.8 352.7 504.1 255.1 476.5z"/>
+          </svg>
+          <h3 class="energy-card-title">Fire</h3>
+          <p class="energy-card-subtitle">Combustion &amp; Biomass &middot; 2002–2015</p>
+          <p>My career started in combustion. As a Junior Researcher at <strong>INETI</strong> (2002–2004) I worked on a European project for the energetic valorisation of meat and bone meal co-combusted with coal. At <strong>ENERDINÂMICA</strong> (2004–2005) I moved from the lab to policy, reviewing the Portuguese national plan for greenhouse gas mitigation and proposing a national action plan for climate change. A decade later, as Energy Programme Manager at <strong>INTELI</strong> (2012–2015), I closed the loop by leading the development of <strong>BioAtlas</strong> — the first Portuguese GIS for biomass resources.</p>
+        </article>
+
+        <!-- 🌬️ WIND -->
+        <article class="content-card fade-in">
+          <svg class="energy-icon" viewBox="0 0 640 640" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <!--!Font Awesome Pro 7.2.0 — Commercial License — https://fontawesome.com/license-->
+            <path class="fa-secondary" fill="currentColor" d="M64 320C64 337.7 78.3 352 96 352L480 352C497.7 352 512 366.3 512 384C512 401.7 497.7 416 480 416L448 416C430.3 416 416 430.3 416 448C416 465.7 430.3 480 448 480L480 480C533 480 576 437 576 384C576 331 533 288 480 288L96 288C78.3 288 64 302.3 64 320z"/>
+            <path class="fa-primary" fill="currentColor" d="M384 64C366.3 64 352 78.3 352 96C352 113.7 366.3 128 384 128L424 128C437.3 128 448 138.7 448 152C448 165.3 437.3 176 424 176L96 176C78.3 176 64 190.3 64 208C64 225.7 78.3 240 96 240L424 240C472.6 240 512 200.6 512 152C512 103.4 472.6 64 424 64L384 64zM192 576L232 576C280.6 576 320 536.6 320 488C320 439.4 280.6 400 232 400L96 400C78.3 400 64 414.3 64 432C64 449.7 78.3 464 96 464L232 464C245.3 464 256 474.7 256 488C256 501.3 245.3 512 232 512L192 512C174.3 512 160 526.3 160 544C160 561.7 174.3 576 192 576z"/>
+          </svg>
+          <h3 class="energy-card-title">Wind</h3>
+          <p class="energy-card-subtitle">Onshore Wind Development &middot; 2008–2011</p>
+          <p>Three years at <strong>MARTIFER GROUP</strong> in Rome as Deputy Country Manager, riding the European renewables boom. We analysed 2GW of project offers across Italy, Greece and Spain, performed technical and financial due diligences, fiddled with wind park layout optimisations and power curves, and closed greenfield development, EPC and O&amp;M contracts for the first 2MW of company operations in the region.</p>
+        </article>
+
+        <!-- ☀️ SUN -->
+        <article class="content-card fade-in">
+          <svg class="energy-icon" viewBox="0 0 640 640" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <!--!Font Awesome Pro 7.2.0 — Commercial License — https://fontawesome.com/license-->
+            <path class="fa-secondary" fill="currentColor" d="M32 320C32 306.7 42.7 296 56 296L120 296C133.3 296 144 306.7 144 320C144 333.3 133.3 344 120 344L56 344C42.7 344 32 333.3 32 320zM116.3 116.3C125.7 106.9 140.9 106.9 150.2 116.3L195.5 161.5C204.9 170.9 204.9 186.1 195.5 195.5C186.1 204.9 170.9 204.9 161.5 195.5L116.3 150.3C106.9 140.9 106.9 125.7 116.3 116.4zM116.3 489.7L161.5 444.4C170.9 435 186.1 435 195.5 444.4C204.9 453.8 204.9 469 195.5 478.4L150.2 523.7C140.8 533.1 125.6 533.1 116.3 523.7C107 514.3 106.9 499.1 116.3 489.8zM296 56C296 42.7 306.7 32 320 32C333.3 32 344 42.7 344 56L344 120C344 133.3 333.3 144 320 144C306.7 144 296 133.3 296 120L296 56zM296 520C296 506.7 306.7 496 320 496C333.3 496 344 506.7 344 520L344 584C344 597.3 333.3 608 320 608C306.7 608 296 597.3 296 584L296 520zM444.4 161.6L489.7 116.4C499.1 107 514.3 107 523.6 116.4C532.9 125.8 533 141 523.6 150.3L478.3 195.6C468.9 205 453.7 205 444.3 195.6C434.9 186.2 434.9 171 444.3 161.6zM444.4 444.4C453.8 435 469 435 478.4 444.4L523.7 489.7C533.1 499.1 533.1 514.3 523.7 523.6C514.3 532.9 499.1 533 489.8 523.6L444.5 478.3C435.1 468.9 435.1 453.7 444.5 444.3zM496 320C496 306.7 506.7 296 520 296L584 296C597.3 296 608 306.7 608 320C608 333.3 597.3 344 584 344L520 344C506.7 344 496 333.3 496 320z"/>
+            <path class="fa-primary" fill="currentColor" d="M192 320C192 249.3 249.3 192 320 192C390.7 192 448 249.3 448 320C448 390.7 390.7 448 320 448C249.3 448 192 390.7 192 320z"/>
+          </svg>
+          <h3 class="energy-card-title">Sun</h3>
+          <p class="energy-card-subtitle">Utility-Scale Solar &middot; 2011–2012</p>
+          <p>A short, intense year at <strong>LANCO SOLAR</strong> — a Portuguese guy working in Italy for an Indian EPC giant headquartered in London. I started as Senior Manager on the Italian development team, became Head of Development after four months, and finished in London leading European strategy. We assessed 600MW of utility-scale solar projects, three corporate finance deals, dozens of due diligences, and one M&amp;A process. The most rewarding and exhausting work experience I've ever had.</p>
+        </article>
+
+
       </section>
 
     </div>
   </main>
 
+  <!-- ============================================
+       FOOTER — social links + copyright
+       ============================================ -->
   <footer class="site-footer">
     <div class="container">
       <div class="footer-links">
-        <a href="mailto:tiago.cunha.ferrao@me.com" aria-label="Email"><svg viewBox="0 0 512 512"><path fill="currentColor" d="M502.3 190.8c3.9-3.1 9.7-.2 9.7 4.7V400c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V195.6c0-5 5.7-7.8 9.7-4.7 22.4 17.4 52.1 39.5 154.1 113.6 21.1 15.4 56.7 47.8 92.2 47.6 35.7.3 72-32.8 92.3-47.6 102-74.1 131.6-96.3 154-113.7zM256 320c23.2.4 56.6-29.2 73.4-41.4 132.7-96.3 142.8-104.7 173.4-128.7 5.8-4.5 9.2-11.5 9.2-18.9v-19c0-26.5-21.5-48-48-48H48C21.5 64 0 85.5 0 112v19c0 7.4 3.4 14.3 9.2 18.9 30.6 23.9 40.7 32.4 173.4 128.7 16.8 12.2 50.2 41.8 73.4 41.4z"/></svg></a>
-        <a href="https://github.com/TiagoFerrao" target="_blank" rel="noopener" aria-label="GitHub"><svg viewBox="0 0 496 512"><path fill="currentColor" d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8z"/></svg></a>
-        <a href="https://www.linkedin.com/in/tiagoferrao/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 448 512"><path fill="currentColor" d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"/></svg></a>
+        <a href="mailto:tiago.cunha.ferrao@me.com" aria-label="Email">
+          <!-- Icon: social-email (img/icons/social-email.svg) -->
+          <svg viewBox="0 0 512 512"><path fill="currentColor" d="M502.3 190.8c3.9-3.1 9.7-.2 9.7 4.7V400c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V195.6c0-5 5.7-7.8 9.7-4.7 22.4 17.4 52.1 39.5 154.1 113.6 21.1 15.4 56.7 47.8 92.2 47.6 35.7.3 72-32.8 92.3-47.6 102-74.1 131.6-96.3 154-113.7zM256 320c23.2.4 56.6-29.2 73.4-41.4 132.7-96.3 142.8-104.7 173.4-128.7 5.8-4.5 9.2-11.5 9.2-18.9v-19c0-26.5-21.5-48-48-48H48C21.5 64 0 85.5 0 112v19c0 7.4 3.4 14.3 9.2 18.9 30.6 23.9 40.7 32.4 173.4 128.7 16.8 12.2 50.2 41.8 73.4 41.4z"/></svg>
+        </a>
+        <a href="https://github.com/TiagoFerrao" target="_blank" rel="noopener" aria-label="GitHub">
+          <!-- Icon: social-github (img/icons/social-github.svg) -->
+          <svg viewBox="0 0 496 512"><path fill="currentColor" d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8z"/></svg>
+        </a>
+        <a href="https://www.linkedin.com/in/tiagoferrao/" target="_blank" rel="noopener" aria-label="LinkedIn">
+          <!-- Icon: social-linkedin (img/icons/social-linkedin.svg) -->
+          <svg viewBox="0 0 448 512"><path fill="currentColor" d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"/></svg>
+        </a>
       </div>
       <p class="copyright">&copy; 2026 Tiago Ferrao. All rights reserved.</p>
     </div>
   </footer>
 
+  <!-- ============================================
+       THEME TOGGLE — floating button (handled by js/main.js)
+       ============================================ -->
   <button class="theme-toggle" aria-label="Switch theme" title="Switch theme">
+    <!-- Icon: ui-theme-toggle-moon (img/icons/ui-theme-toggle-moon.svg) -->
     <svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
   </button>
+
+  <!-- ============================================
+       SCRIPTS
+       ============================================ -->
   <script src="js/main.js"></script>
 </body>
 </html>
