@@ -1,2 +1,30 @@
+# macOS
 .DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# iCloud
+.icloud
+*.icloud
+
+# Editors
+.idea/
+.vscode/*
+!.vscode/launch.json
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Local preview / scratch (don't publish)
+energy_preview.html
+
+# Local Claude / agent config (don't publish)
 .claude/
+
+# One-time migration script
+setup-git.sh
