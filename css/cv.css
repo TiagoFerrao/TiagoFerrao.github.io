@@ -1,0 +1,303 @@
+/* ============================================
+   CV PAGE STYLES
+   Only loaded by cv.html. Keeps CV-specific styling
+   isolated so it doesn't pollute components.css.
+   ============================================ */
+
+/* --- Identity / Header Card --- */
+.cv-identity {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--space-2xl);
+  align-items: end;
+  padding: var(--space-2xl) 0 var(--space-xl);
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: var(--space-2xl);
+}
+
+.cv-identity-text h2 {
+  font-size: var(--text-4xl);
+  margin: 0 0 var(--space-xs);
+  letter-spacing: 0.02em;
+}
+
+.cv-identity-text .cv-role {
+  font-size: var(--text-xl);
+  color: var(--accent-primary);
+  margin: 0 0 var(--space-xs);
+}
+
+.cv-identity-text .cv-domains {
+  font-style: italic;
+  color: var(--text-muted);
+  margin: 0;
+  letter-spacing: 0.05em;
+}
+
+.cv-identity-contact {
+  text-align: right;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.cv-identity-contact p {
+  margin: 0 0 var(--space-xs);
+}
+
+.cv-identity-contact a {
+  color: var(--text-secondary);
+  transition: color var(--transition-fast);
+}
+
+.cv-identity-contact a:hover {
+  color: var(--accent-primary);
+}
+
+/* --- PDF Download Button --- */
+.cv-pdf-btn {
+  display: inline-block;
+  margin-top: var(--space-sm);
+  padding: var(--space-xs) var(--space-md);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--border-radius-sm);
+  background: var(--bg-surface);
+  color: var(--accent-primary) !important;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  transition: all var(--transition-base);
+}
+
+.cv-pdf-btn:hover {
+  border-color: var(--accent-primary);
+  background: var(--bg-surface-hover);
+  box-shadow: var(--shadow-glow);
+}
+
+/* --- Section Wrapper & Title --- */
+.cv-section {
+  margin: var(--space-3xl) 0;
+}
+
+.cv-section-title {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  color: var(--accent-primary);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin: 0 0 var(--space-lg);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* --- Competency Pills --- */
+.competency-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.competency-pill {
+  display: inline-block;
+  padding: var(--space-xs) var(--space-md);
+  border: 1px solid var(--border-subtle);
+  border-radius: 100px;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  line-height: 1.4;
+  transition: all var(--transition-fast);
+}
+
+.competency-pill:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+/* --- Experience List (vertical stack of content cards) --- */
+.cv-experience-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.cv-experience-list .content-card ul {
+  margin: var(--space-sm) 0 0;
+  padding-left: var(--space-lg);
+}
+
+.cv-experience-list .content-card li {
+  font-size: var(--text-sm);
+  line-height: 1.7;
+  margin-bottom: var(--space-xs);
+  color: var(--text-secondary);
+}
+
+.cv-experience-list .exp-context {
+  font-style: italic;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  margin: 0 0 var(--space-sm);
+}
+
+/* --- Education Domain Cards --- */
+.edu-domain-card {
+  padding: var(--space-lg);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  transition: border-color var(--transition-base);
+}
+
+.edu-domain-card:hover {
+  border-color: var(--border-medium);
+}
+
+.edu-domain-card h3 {
+  font-size: var(--text-md, var(--text-base));
+  color: var(--accent-primary);
+  margin: 0 0 var(--space-sm);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.edu-domain-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.edu-domain-card li {
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-xs);
+  padding-left: var(--space-md);
+  position: relative;
+}
+
+.edu-domain-card li::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  color: var(--accent-primary);
+  opacity: 0.6;
+}
+
+/* --- Compact List (recognition, additional training, other) --- */
+.compact-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.compact-list li {
+  position: relative;
+  padding: var(--space-sm) 0 var(--space-sm) var(--space-lg);
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.compact-list li::before {
+  content: '◆';
+  position: absolute;
+  left: 0;
+  top: var(--space-sm);
+  color: var(--accent-primary);
+  opacity: 0.5;
+  font-size: var(--text-xs);
+}
+
+.compact-list li:last-child {
+  border-bottom: none;
+}
+
+/* --- Publications --- */
+.publication-item {
+  padding: var(--space-md) var(--space-lg);
+  margin-bottom: var(--space-md);
+  border-left: 3px solid var(--accent-secondary);
+  background: var(--bg-glass);
+  border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0;
+}
+
+.publication-item .pub-authors {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-xs);
+}
+
+.publication-item .pub-year {
+  color: var(--text-muted);
+}
+
+.publication-item .pub-title {
+  font-weight: 600;
+  font-style: italic;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-xs);
+  line-height: 1.5;
+}
+
+.publication-item .pub-venue {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.publication-item .pub-doi {
+  margin-left: var(--space-sm);
+  color: var(--accent-primary);
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+}
+
+/* --- Languages Row --- */
+.languages-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-lg);
+}
+
+.language-item {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-md) var(--space-lg);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--border-radius-sm);
+  background: var(--bg-surface);
+  min-width: 160px;
+}
+
+.language-item .lang-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--accent-primary);
+  font-size: var(--text-base);
+}
+
+.language-item .lang-level {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-top: var(--space-xs);
+  letter-spacing: 0.05em;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .cv-identity {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+
+  .cv-identity-contact {
+    text-align: left;
+  }
+
+  .cv-identity-text h2 {
+    font-size: var(--text-3xl);
+  }
+}

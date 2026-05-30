@@ -3,25 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>About | Tiago Ferrao</title>
-  <meta name="description" content="About Tiago Ferrao — Digital Innovator">
+  <title>CV | Tiago Ferrao</title>
+  <meta name="description" content="Curriculum Vitae of Tiago Ferrao — Innovation Director, Engineering · Data Science · AI · Strategy">
   <link rel="icon" href="img/bee.png">
   <link rel="apple-touch-icon" href="img/bee.png">
-
-  <!-- Open Graph -->
-  <meta property="og:title" content="About | Tiago Ferrao">
-  <meta property="og:description" content="About Tiago Ferrao — Digital Innovator">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://ferrao.me/about.html">
-  <meta property="og:image" content="https://ferrao.me/img/social_banner.jpg">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="628">
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="About | Tiago Ferrao">
-  <meta name="twitter:description" content="About Tiago Ferrao — Digital Innovator">
-  <meta name="twitter:image" content="https://ferrao.me/img/social_banner.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
@@ -30,6 +15,7 @@
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/cv.css">
 </head>
 
 <body>
@@ -46,7 +32,7 @@
       <nav class="site-nav">
         <ul>
           <li><a href="index.html">Home</a></li>
-          <li><a href="about.html" class="active">About</a></li>
+          <li><a href="about.html">About</a></li>
           <li><a href="contacts.html">Contact</a></li>
         </ul>
       </nav>
@@ -57,15 +43,61 @@
   <main>
     <div class="container">
 
-      <section class="about-content fade-in">
-        <img class="avatar" src="img/tiago.png" alt="Tiago Ferrao">
+      <!-- 1. Identity / Header card -->
+      <section id="cv-identity" class="cv-identity fade-in"></section>
 
-        <div class="about-text">
-          <h2>About this site</h2>
-          <p>Hello and welcome to my digital workbench. This site is where I test my poor design and digital skills. Right now I am having some fun with CSS grids and SVG manipulation.</p>
-          <p>Check the other home page sections to learn a bit more about my past and other projects. This site will likely change often so come back soon and don't forget to say hi!</p>
-          <p style="margin-top: var(--space-lg);">Want the full story? <a href="cv.html" style="color: var(--accent-primary);">Read my CV &rarr;</a></p>
-        </div>
+      <!-- 2. Executive Summary -->
+      <section class="cv-section fade-in">
+        <h3 class="cv-section-title">Executive Summary</h3>
+        <div id="cv-summary" class="section-intro"></div>
+      </section>
+
+      <!-- 3. Core Competencies -->
+      <section class="cv-section fade-in">
+        <h3 class="cv-section-title">Core Competencies</h3>
+        <div id="cv-competencies" class="competency-grid"></div>
+      </section>
+
+      <!-- 4. Professional Experience -->
+      <section class="cv-section fade-in">
+        <h3 class="cv-section-title">Professional Experience</h3>
+        <div id="cv-experience" class="cv-experience-list"></div>
+      </section>
+
+      <!-- 5. Education -->
+      <section class="cv-section fade-in">
+        <h3 class="cv-section-title">Education</h3>
+        <div id="cv-education" class="card-grid"></div>
+      </section>
+
+      <!-- 6. Recognition & Institutional Roles -->
+      <section class="cv-section fade-in">
+        <h3 class="cv-section-title">Recognition &amp; Institutional Roles</h3>
+        <div id="cv-recognition"></div>
+      </section>
+
+      <!-- 7. Publications -->
+      <section class="cv-section fade-in">
+        <h3 class="cv-section-title">Publications</h3>
+        <div id="cv-publications"></div>
+      </section>
+
+      <!-- 8. Languages -->
+      <section class="cv-section fade-in">
+        <h3 class="cv-section-title">Languages</h3>
+        <div id="cv-languages" class="languages-row"></div>
+      </section>
+
+      <!-- 9. Additional Training -->
+      <section class="cv-section fade-in">
+        <h3 class="cv-section-title">Additional Training &amp; Certifications</h3>
+        <div id="cv-additional-training"></div>
+      </section>
+
+      <!-- 10. Other -->
+      <section class="cv-section fade-in">
+        <h3 class="cv-section-title">Other</h3>
+        <div id="cv-other"></div>
       </section>
 
     </div>
@@ -89,10 +121,14 @@
     </div>
   </footer>
 
+  <!-- ===== THEME TOGGLE ===== -->
   <button class="theme-toggle" aria-label="Switch theme" title="Switch theme">
     <svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
   </button>
 
+  <!-- CV data + renderer, then site-wide main.js (which handles fade-ins) -->
+  <script src="js/cv-data.js"></script>
+  <script src="js/cv-render.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>
