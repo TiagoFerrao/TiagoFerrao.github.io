@@ -281,22 +281,3 @@
   fill: var(--accent-secondary);
   opacity: 0.4;
 }
-
-.energy-card-title {
-  text-align: center;
-  margin: 0 0 var(--space-xs);
-  padding-bottom: 0;
-  border-bottom: none;
-}
-
-.energy-card-subtitle {
-  text-align: center;
-  font-family: var(--font-body);
-  font-size: var(--text-sm);
-  color: var(--text-muted);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin: 0 0 var(--space-lg);
-  padding-bottom: var(--space-md);
-  border-bottom: 1px solid var(--border-subtle);
-}
