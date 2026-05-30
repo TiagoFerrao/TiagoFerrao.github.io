@@ -264,8 +264,8 @@
   line-height: 1.8;
 }
 
-/* --- Energy Cards (Fire / Wind / Sun) --- */
-.energy-icon {
+/* --- Duotone icon (generic — used inside .content-card and similar) --- */
+.duotone-icon {
   display: block;
   width: 56px;
   height: 56px;
@@ -273,11 +273,11 @@
   color: var(--accent-primary);
 }
 
-.energy-icon .fa-primary {
+.duotone-icon .fa-primary {
   fill: currentColor;
 }
 
-.energy-icon .fa-secondary {
+.duotone-icon .fa-secondary {
   fill: var(--accent-secondary);
   opacity: 0.4;
 }
