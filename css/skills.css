@@ -1,0 +1,416 @@
+/* ============================================
+   SKILLS PAGE STYLES — radar layout
+   Only loaded by skills.html.
+   ============================================ */
+
+/* --- Hero stats --- */
+.skills-hero {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-xl);
+  padding: var(--space-2xl) 0;
+  margin-bottom: var(--space-xl);
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.hero-stat { display: flex; flex-direction: column; align-items: center; text-align: center; }
+
+.hero-stat-number {
+  font-family: var(--font-display);
+  font-size: var(--text-5xl);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-stat-label {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  margin-top: var(--space-sm);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* --- Filter tabs --- */
+.skills-filter {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: var(--space-2xl);
+}
+
+.filter-tab {
+  padding: var(--space-xs) var(--space-md);
+  border: 1px solid var(--border-subtle);
+  border-radius: 100px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.filter-tab:hover {
+  border-color: var(--border-medium);
+  color: var(--accent-primary);
+}
+
+.filter-tab.active {
+  background: var(--accent-primary);
+  color: var(--text-on-accent);
+  border-color: var(--accent-primary);
+  font-weight: 600;
+}
+
+/* --- Radar dashboard layout (legend on top, radar below) --- */
+.skills-dashboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2xl);
+  margin-bottom: var(--space-3xl);
+}
+
+.skills-radar { width: 100%; max-width: 820px; margin: 0 auto; }
+
+.radar-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Rings (level guides) — dotted, well-visible in empty space (drawn behind wedges) */
+.radar-svg .ring {
+  fill: none;
+  stroke: var(--accent-secondary);
+  stroke-width: 1;
+  stroke-dasharray: 2 4;
+  pointer-events: none;
+}
+
+/* Quadrant axes — dotted, slightly stronger than rings */
+.radar-svg .axis {
+  stroke: var(--accent-secondary);
+  stroke-width: 1;
+  stroke-dasharray: 2 4;
+  pointer-events: none;
+}
+
+/* Quadrant labels */
+.radar-svg .quad-label {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  fill: var(--accent-primary);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: opacity var(--transition-base);
+}
+
+.radar-svg .quad-label.dimmed { opacity: 0.25; }
+
+/* Skill wedges */
+.radar-svg .wedge {
+  stroke: var(--bg-primary);
+  stroke-width: 0.5;
+  cursor: help;
+  transform-origin: 0 0;
+  transition: opacity var(--transition-base), filter var(--transition-fast);
+  /* Start scaled to 0; animate to 1 when radar enters viewport */
+  transform: scale(0);
+}
+
+.radar-svg.animate .wedge {
+  transform: scale(1);
+  transition: transform 700ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Stagger wedges around the chart for a subtle "sweep" feel */
+.radar-svg .wedge { transition-delay: calc(0ms); }
+.radar-svg.animate .wedge:nth-child(5n)  { transition-delay: 60ms; }
+.radar-svg.animate .wedge:nth-child(5n+1){ transition-delay: 120ms; }
+.radar-svg.animate .wedge:nth-child(5n+2){ transition-delay: 180ms; }
+.radar-svg.animate .wedge:nth-child(5n+3){ transition-delay: 240ms; }
+.radar-svg.animate .wedge:nth-child(5n+4){ transition-delay: 300ms; }
+
+/* Status colours
+   Wedges render ON TOP of dotted rings/axes with enough opacity to obscure
+   them — but still translucent enough that the grid bleeds through subtly. */
+.radar-svg .wedge-consolidated {
+  fill: #46b377;                   /* mid green — distinct from the darker grid line */
+  fill-opacity: 0.75;
+}
+.radar-svg .wedge-learning {
+  fill: var(--accent-primary);     /* bright green — active */
+  fill-opacity: 0.75;
+}
+
+/* Hover effect on wedges */
+.radar-svg .wedge:hover {
+  filter: brightness(1.2) drop-shadow(0 0 6px var(--accent-glow-strong));
+}
+
+.radar-svg .wedge.dimmed { opacity: 0.12; }
+
+/* --- Legend (horizontal bar across the top) --- */
+.skills-legend {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: var(--space-md) var(--space-2xl);
+  width: 100%;
+  padding: var(--space-lg);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--border-radius-md);
+  background: var(--bg-surface);
+  font-size: var(--text-sm);
+}
+
+.legend-title {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  color: var(--accent-primary);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0 0 var(--space-xs);
+}
+
+.legend-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.legend-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-flow: row wrap;
+  gap: var(--space-xs) var(--space-md);
+}
+
+.legend-list li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+}
+
+.status-swatch {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  background: var(--accent-primary);
+  flex-shrink: 0;
+}
+.status-swatch-consolidated { background: #46b377; }
+.status-swatch-learning     { background: var(--accent-primary); }
+
+.level-list li { color: var(--text-muted); }
+
+.level-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid var(--border-medium);
+  color: var(--accent-primary);
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.legend-note {
+  flex-basis: 100%;
+  text-align: center;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin: var(--space-sm) 0 0;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+/* --- HTML tooltip (follows cursor) --- */
+.radar-tooltip {
+  position: fixed;
+  pointer-events: none;
+  z-index: 200;
+  max-width: 340px;
+  padding: var(--space-md);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-md), 0 0 24px var(--accent-glow);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 140ms ease, transform 140ms ease;
+}
+
+.radar-tooltip.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.radar-tooltip .tt-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xs);
+}
+
+.radar-tooltip .tt-name {
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.radar-tooltip .tt-status {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+
+.radar-tooltip .tt-status-consolidated {
+  background: #46b377;
+  color: var(--text-on-accent);
+}
+.radar-tooltip .tt-status-learning {
+  background: var(--accent-primary);
+  color: var(--text-on-accent);
+}
+
+.radar-tooltip .tt-meta {
+  display: flex;
+  gap: var(--space-md);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-bottom: var(--space-sm);
+  letter-spacing: 0.05em;
+}
+
+.radar-tooltip .tt-cat {
+  text-transform: uppercase;
+  color: var(--accent-primary);
+}
+
+.radar-tooltip .tt-bar {
+  margin-bottom: var(--space-md);
+}
+
+.radar-tooltip .tt-bar-track {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-subtle);
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.radar-tooltip .tt-bar-consolidated,
+.radar-tooltip .tt-bar-learning {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.radar-tooltip .tt-bar-consolidated {
+  background: #46b377;
+  opacity: 0.92;
+}
+.radar-tooltip .tt-bar-learning {
+  background: var(--accent-primary);
+  opacity: 0.95;
+}
+
+.radar-tooltip .tt-bar-numbers {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-top: var(--space-xs);
+}
+
+.radar-tooltip .tt-bar-numbers strong {
+  color: var(--accent-primary);
+  font-weight: 600;
+}
+
+.radar-tooltip .tt-evidence-label {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: var(--space-xs);
+}
+
+.radar-tooltip .tt-evidence {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.radar-tooltip .tt-evidence li {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  padding-left: var(--space-md);
+  position: relative;
+  margin-bottom: 2px;
+  line-height: 1.5;
+}
+
+.radar-tooltip .tt-evidence li::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  color: var(--accent-primary);
+  opacity: 0.6;
+}
+
+/* --- Responsive --- */
+@media (max-width: 900px) {
+  .skills-radar {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .skills-hero {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+  .hero-stat-number {
+    font-size: var(--text-4xl);
+  }
+  .radar-svg .quad-label {
+    font-size: 11px;
+  }
+  .filter-tab {
+    flex: 1;
+    text-align: center;
+  }
+}
