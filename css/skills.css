@@ -77,9 +77,28 @@
   gap: var(--space-2xl);
   align-items: center;
   margin-bottom: var(--space-3xl);
+  transition: grid-template-columns var(--transition-slow);
+}
+
+/* Focused: give the skill list more room on the right */
+.skills-dashboard.focused {
+  grid-template-columns: 1fr 1.15fr;
 }
 
 .skills-radar { width: 100%; max-width: 100%; margin: 0 auto; }
+
+/* Radial "fan close" when switching into a focused domain */
+.radar-svg.closing .wedge {
+  transform: scale(0);
+  transition: transform 280ms ease-in;
+}
+.radar-svg.closing .skill-dot,
+.radar-svg.closing .sector-bg,
+.radar-svg.closing .quad-label,
+.radar-svg.closing .hybrid-hub {
+  opacity: 0;
+  transition: opacity 240ms ease-in;
+}
 
 .radar-svg {
   width: 100%;
@@ -169,6 +188,19 @@
   font-family: var(--font-body);
   font-size: 8px;
   fill: var(--text-muted);
+}
+
+/* Focused-mode hub label */
+.radar-svg .focus-hub-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 12px;
+  fill: var(--accent-primary);
+}
+.radar-svg .focus-hub-sub {
+  font-family: var(--font-body);
+  font-size: 8px;
+  fill: var(--text-secondary);
 }
 
 /* Hybridization tooltip body */

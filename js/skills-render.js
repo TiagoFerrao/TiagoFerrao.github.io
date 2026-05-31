@@ -240,10 +240,13 @@
 
   // ---------- HTML tooltip (rich, follows cursor) ----------
   function initTooltip(skills) {
-    const tooltip = document.createElement('div');
-    tooltip.className = 'radar-tooltip';
-    tooltip.setAttribute('role', 'tooltip');
-    document.body.appendChild(tooltip);
+    let tooltip = document.querySelector('.radar-tooltip.skill-tt');
+    if (!tooltip) {
+      tooltip = document.createElement('div');
+      tooltip.className = 'radar-tooltip skill-tt';
+      tooltip.setAttribute('role', 'tooltip');
+      document.body.appendChild(tooltip);
+    }
 
     const skillMap = new Map();
     skills.forEach(s => skillMap.set(s.name, s));
@@ -370,10 +373,13 @@
   function initHybridTooltip(d) {
     const hub = document.querySelector('.hybrid-hub');
     if (!hub) return;
-    const tip = document.createElement('div');
-    tip.className = 'radar-tooltip';
-    tip.setAttribute('role', 'tooltip');
-    document.body.appendChild(tip);
+    let tip = document.querySelector('.radar-tooltip.hybrid-tt');
+    if (!tip) {
+      tip = document.createElement('div');
+      tip.className = 'radar-tooltip hybrid-tt';
+      tip.setAttribute('role', 'tooltip');
+      document.body.appendChild(tip);
+    }
     const html = `
       <div class="tt-head"><span class="tt-name">Hybridization ${esc(hub.dataset.h)}/100</span></div>
       <p class="tt-hybrid-note">Geometric mean of the average skill level across the four domains — high only when you are strong in <em>all</em> four; a weak domain pulls it down (the aggregation the UN's HDI uses).</p>
@@ -403,25 +409,98 @@
     `;
   }
 
-  // Selecting a domain tab lights up that quadrant, collapses (dims) the others,
-  // and swaps the side legend for a bar list of that domain's skills.
+  // Selecting a domain tab closes the full radar (wedges collapse radially),
+  // then opens that domain as a half-fan on the left with its skill bar list on the right.
   function initFilterBehaviour(d) {
     const tabs = document.querySelectorAll('.filter-tab');
     if (!tabs.length) return;
-    const groups = document.querySelectorAll('.radar-svg .skill-group, .radar-svg .quad-label, .radar-svg .skill-dot');
-
+    const dashboard = document.querySelector('.skills-dashboard');
     tabs.forEach(tab => {
       tab.addEventListener('click', function () {
         const filter = this.dataset.filter;
         tabs.forEach(t => t.classList.toggle('active', t === this));
-        groups.forEach(el => {
-          const match = filter === 'all' || el.dataset.category === filter;
-          el.classList.toggle('dimmed', !match);
-        });
-        if (filter === 'all') renderLegend(d);
-        else renderAreaBars(d, filter);
+        selectDomain(d, filter, dashboard);
       });
     });
+  }
+
+  function selectDomain(d, filter, dashboard) {
+    const radar = document.getElementById('skills-radar');
+    if (!radar) return;
+    const current = radar.querySelector('.radar-svg');
+
+    const finish = () => {
+      if (filter === 'all') {
+        if (dashboard) dashboard.classList.remove('focused');
+        renderRadar(d);
+        renderLegend(d);
+        initHybridTooltip(d);
+      } else {
+        if (dashboard) dashboard.classList.add('focused');
+        renderRadarFocus(d, filter);
+        renderAreaBars(d, filter);
+      }
+      const next = radar.querySelector('.radar-svg');
+      if (next) requestAnimationFrame(() => next.classList.add('animate'));
+      initTooltip(d.skills);
+    };
+
+    // Radial close of the current radar, then swap.
+    if (current) {
+      current.classList.add('closing');
+      setTimeout(finish, 300);
+    } else {
+      finish();
+    }
+  }
+
+  // Focused render: one domain as a 180° fan opening right, hub on the left.
+  function renderRadarFocus(d, catId) {
+    const el = document.getElementById('skills-radar');
+    if (!el) return;
+    const cat = d.categories.find(c => c.id === catId) || {};
+    const skills = d.skills.filter(s => s.category === catId).sort((a, b) => b.level - a.level);
+
+    const R0 = 46, MAX_R = 180, GAP = MAX_R - R0;
+    const lvlR = l => R0 + (Math.max(0, Math.min(100, l)) / 100) * GAP;
+    const A0 = -90, SPAN = 180;
+    const seg = skills.length ? SPAN / skills.length : SPAN;
+
+    const wedgeParts = [], dotParts = [];
+    skills.forEach((s, i) => {
+      const a0 = A0 + i * seg + seg * 0.1;
+      const a1 = A0 + (i + 1) * seg - seg * 0.1;
+      const am = (a0 + a1) / 2;
+      const fullR = lvlR(s.level);
+      const consR = lvlR(resolveConsolidatedLevel(s));
+      let inner = '';
+      if (consR >= fullR) {
+        const cls = s.status === 'learning' ? 'wedge-learning' : 'wedge-consolidated';
+        inner = `<path class="wedge ${cls}" d="${wedgeBandPath(a0, a1, R0, fullR)}"/>`;
+      } else {
+        inner += `<path class="wedge wedge-learning" d="${wedgeBandPath(a0, a1, consR, fullR)}"/>`;
+        if (consR > R0) inner += `<path class="wedge wedge-consolidated" d="${wedgeBandPath(a0, a1, R0, consR)}"/>`;
+      }
+      wedgeParts.push(`<g class="skill-group" data-skill-name="${esc(s.name)}" data-category="${esc(s.category)}">${inner}</g>`);
+      if (s.years >= 10) {
+        const dp = polarToCart(MAX_R + 6, am);
+        dotParts.push(`<circle class="skill-dot" cx="${dp.x.toFixed(1)}" cy="${dp.y.toFixed(1)}" r="2.4"/>`);
+      }
+    });
+
+    const hub = `
+      <circle class="radar-center-disc" cx="0" cy="0" r="${R0 - 6}"/>
+      <text class="focus-hub-name" x="0" y="-1" text-anchor="middle">${esc(cat.label || catId)}</text>
+      <text class="focus-hub-sub" x="0" y="13" text-anchor="middle">${skills.length} skills</text>`;
+
+    el.innerHTML = `
+      <svg viewBox="-80 -210 300 420" xmlns="http://www.w3.org/2000/svg" class="radar-svg focus" role="img" aria-label="${esc(cat.label || catId)} skills">
+        <circle class="sector-bg" cx="0" cy="0" r="${MAX_R + 10}"/>
+        ${wedgeParts.join('')}
+        ${dotParts.join('')}
+        ${hub}
+      </svg>
+    `;
   }
 
   // Bar list of one domain's skills (sorted), shown in the side panel.
