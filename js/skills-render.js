@@ -125,7 +125,7 @@
           inner += `<path class="wedge wedge-learning" ${wedgeAttrs} d="${wedgeBandPath(a0, a1, consR, fullR)}"/>`;
           if (consR > R0) inner += `<path class="wedge wedge-consolidated" ${wedgeAttrs} d="${wedgeBandPath(a0, a1, R0, consR)}"/>`;
         }
-        wedgeParts.push(`<g class="skill-group" ${groupAttrs}>${inner}</g>`);
+        wedgeParts.push(`<g class="skill-group" ${groupAttrs} style="--mid:${am.toFixed(1)}">${inner}</g>`);
 
         // tip dot — marks 10+ years of practice
         if (skill.years >= 10) {
@@ -412,16 +412,26 @@
   // Selecting a domain tab closes the full radar (wedges collapse radially),
   // then opens that domain as a half-fan on the left with its skill bar list on the right.
   function initFilterBehaviour(d) {
-    const tabs = document.querySelectorAll('.filter-tab');
+    const tabs = [...document.querySelectorAll('.filter-tab')];
     if (!tabs.length) return;
     const dashboard = document.querySelector('.skills-dashboard');
-    tabs.forEach(tab => {
-      tab.addEventListener('click', function () {
-        const filter = this.dataset.filter;
-        tabs.forEach(t => t.classList.toggle('active', t === this));
-        selectDomain(d, filter, dashboard);
+
+    function activate(filter) {
+      tabs.forEach(t => t.classList.toggle('active', t.dataset.filter === filter));
+      selectDomain(d, filter, dashboard);
+    }
+
+    tabs.forEach(tab => tab.addEventListener('click', () => activate(tab.dataset.filter)));
+
+    // Clicking a sector label around the radar selects that domain too.
+    // Delegated on the container so it survives re-renders.
+    const radar = document.getElementById('skills-radar');
+    if (radar) {
+      radar.addEventListener('click', e => {
+        const lbl = e.target.closest('.quad-label');
+        if (lbl && lbl.dataset.category) activate(lbl.dataset.category);
       });
-    });
+    }
   }
 
   function selectDomain(d, filter, dashboard) {
@@ -445,10 +455,10 @@
       initTooltip(d.skills);
     };
 
-    // Radial close of the current radar, then swap.
+    // Angular "fan close" of the current radar, then swap.
     if (current) {
       current.classList.add('closing');
-      setTimeout(finish, 300);
+      setTimeout(finish, 430);
     } else {
       finish();
     }
@@ -481,7 +491,7 @@
         inner += `<path class="wedge wedge-learning" d="${wedgeBandPath(a0, a1, consR, fullR)}"/>`;
         if (consR > R0) inner += `<path class="wedge wedge-consolidated" d="${wedgeBandPath(a0, a1, R0, consR)}"/>`;
       }
-      wedgeParts.push(`<g class="skill-group" data-skill-name="${esc(s.name)}" data-category="${esc(s.category)}">${inner}</g>`);
+      wedgeParts.push(`<g class="skill-group" data-skill-name="${esc(s.name)}" data-category="${esc(s.category)}" style="--mid:${am.toFixed(1)}">${inner}</g>`);
       if (s.years >= 10) {
         const dp = polarToCart(MAX_R + 6, am);
         dotParts.push(`<circle class="skill-dot" cx="${dp.x.toFixed(1)}" cy="${dp.y.toFixed(1)}" r="2.4"/>`);
