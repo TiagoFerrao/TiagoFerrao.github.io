@@ -19,8 +19,10 @@
     const d = window.skillsData;
     renderRadar(d);
     renderLegend(d);
+    renderHighlights(d);
     initScrollAnimations();
     initTooltip(d.skills);
+    initHybridTooltip(d);
   });
 
   // ---------- Hero stats ----------
@@ -138,17 +140,29 @@
       });
     });
 
-    // Center hub — headline stats (frees the old top band)
-    const total = d.skills.length;
-    const hs = (d.hero && d.hero.stats) || [];
-    const sub = hs.length >= 3
-      ? `${hs[0].number}${hs[0].suffix} yrs · ${hs[1].number} roles · ${hs[2].number} domains`
-      : '';
+    // Center hub — hybridization index (geometric mean of per-domain mean level)
+    // with a 270° gauge filled to the index. Tooltip explains the calc.
+    const means = areaMeans(d);
+    const H = Math.round(hybridIndex(means));
+    const gaugeR = 46, gStart = 135, gSweep = 270;
+    const gaugeArc = frac => {
+      const a0 = gStart, a1 = gStart + gSweep * frac;
+      const p0 = polarToCart(gaugeR, a0), p1 = polarToCart(gaugeR, a1);
+      const la = (gSweep * frac) > 180 ? 1 : 0;
+      return `M ${p0.x.toFixed(1)} ${p0.y.toFixed(1)} A ${gaugeR} ${gaugeR} 0 ${la} 1 ${p1.x.toFixed(1)} ${p1.y.toFixed(1)}`;
+    };
+    const areaAttr = means
+      .map(m => `${(d.categories.find(c => c.id === m.id) || {}).label || m.id} ${Math.round(m.mean)}`)
+      .join(' · ');
     const centerPart = `
-      <circle class="radar-center-disc" cx="0" cy="0" r="${R0 - 6}"/>
-      <text class="radar-center-num" x="0" y="-6" text-anchor="middle">${total}</text>
-      <text class="radar-center-label" x="0" y="11" text-anchor="middle">SKILLS</text>
-      <text class="radar-center-sub" x="0" y="26" text-anchor="middle">${esc(sub)}</text>
+      <g class="hybrid-hub" tabindex="0" role="img" aria-label="Hybridization index ${H} of 100"
+         data-h="${H}" data-areas="${esc(areaAttr)}">
+        <circle class="radar-center-disc" cx="0" cy="0" r="${R0 - 6}"/>
+        <path class="gauge-bg" d="${gaugeArc(1)}"/>
+        <path class="gauge-fg" d="${gaugeArc(H / 100)}"/>
+        <text class="radar-center-num" x="0" y="2" text-anchor="middle">${H}</text>
+        <text class="radar-center-label" x="0" y="22" text-anchor="middle">HYBRIDIZATION</text>
+      </g>
     `;
 
     const V = 430;
@@ -209,6 +223,25 @@
       case 'consolidated':
       default:            return skill.level;
     }
+  }
+
+  // Mean skill level per domain (count-robust, unlike a raw sum).
+  function areaMeans(d) {
+    const cats = ['management', 'stem', 'digital', 'soft'];
+    const by = {}; cats.forEach(c => by[c] = []);
+    d.skills.forEach(s => { if (by[s.category]) by[s.category].push(s.level); });
+    return cats.map(id => {
+      const arr = by[id];
+      const mean = arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
+      return { id, mean };
+    });
+  }
+
+  // Hybridization index = geometric mean of the per-domain strengths (0-100).
+  // Like the UN HDI (post-2010): a weak domain can't be fully offset by a strong one.
+  function hybridIndex(means) {
+    const prod = means.reduce((a, m) => a * (m.mean / 100), 1);
+    return Math.pow(prod, 1 / means.length) * 100;
   }
 
   // ---------- HTML tooltip (rich, follows cursor) ----------
@@ -337,6 +370,41 @@
       </div>
       <p class="legend-note">Dark inner band = consolidated; bright outer = currently being pushed. Hover any wedge for evidence, years, and consolidation point.</p>
     `;
+  }
+
+  // ---------- Highlights line (under the page title) ----------
+  function renderHighlights(d) {
+    const el = document.getElementById('skills-highlights');
+    if (!el) return;
+    const hs = (d.hero && d.hero.stats) || [];
+    const parts = [`${d.skills.length} skills`];
+    if (hs.length >= 3) parts.push(`${hs[0].number}${hs[0].suffix} yrs`, `${hs[1].number} roles`, `${hs[2].number} domains`);
+    el.textContent = parts.join('  ·  ');
+  }
+
+  // ---------- Hybridization hub tooltip (explains the calculation) ----------
+  function initHybridTooltip(d) {
+    const hub = document.querySelector('.hybrid-hub');
+    if (!hub) return;
+    const tip = document.createElement('div');
+    tip.className = 'radar-tooltip';
+    tip.setAttribute('role', 'tooltip');
+    document.body.appendChild(tip);
+    const html = `
+      <div class="tt-head"><span class="tt-name">Hybridization ${esc(hub.dataset.h)}/100</span></div>
+      <p class="tt-hybrid-note">Geometric mean of the average skill level across the four domains — high only when you are strong in <em>all</em> four; a weak domain pulls it down (the aggregation the UN's HDI uses).</p>
+      <div class="tt-hybrid-areas">${esc(hub.dataset.areas)}</div>
+    `;
+    const show = e => { tip.innerHTML = html; tip.classList.add('visible'); positionTooltip(tip, e); };
+    hub.addEventListener('mouseenter', show);
+    hub.addEventListener('mousemove', e => positionTooltip(tip, e));
+    hub.addEventListener('mouseleave', () => tip.classList.remove('visible'));
+    hub.addEventListener('focus', () => {
+      tip.innerHTML = html; tip.classList.add('visible');
+      const r = hub.getBoundingClientRect();
+      positionTooltip(tip, { clientX: r.left + r.width / 2, clientY: r.top });
+    });
+    hub.addEventListener('blur', () => tip.classList.remove('visible'));
   }
 
   // ---------- Filter tabs ----------

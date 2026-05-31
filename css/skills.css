@@ -146,6 +146,20 @@
 }
 
 /* Center hub */
+.radar-svg .hybrid-hub { cursor: help; outline: none; }
+.radar-svg .gauge-bg {
+  fill: none;
+  stroke: var(--accent-secondary);
+  stroke-width: 5;
+  stroke-linecap: round;
+  opacity: 0.35;
+}
+.radar-svg .gauge-fg {
+  fill: none;
+  stroke: var(--accent-primary);
+  stroke-width: 5;
+  stroke-linecap: round;
+}
 .radar-svg .radar-center-disc {
   fill: var(--bg-secondary);
   stroke: var(--accent-secondary);
@@ -167,6 +181,29 @@
   font-family: var(--font-body);
   font-size: 8px;
   fill: var(--text-muted);
+}
+
+/* Highlights line under the page title */
+.skills-highlights {
+  text-align: center;
+  margin-top: var(--space-sm);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+}
+
+/* Hybridization tooltip body */
+.radar-tooltip .tt-hybrid-note {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0 0 var(--space-sm);
+}
+.radar-tooltip .tt-hybrid-areas {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
 }
 
 /* Skill wedges */
