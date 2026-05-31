@@ -70,16 +70,16 @@
   font-weight: 600;
 }
 
-/* --- Radar dashboard layout (legend on top, radar below) --- */
+/* --- Radar dashboard layout (radar left, legend right) --- */
 .skills-dashboard {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 1fr 220px;
   gap: var(--space-2xl);
+  align-items: center;
   margin-bottom: var(--space-3xl);
 }
 
-.skills-radar { width: 100%; max-width: 820px; margin: 0 auto; }
+.skills-radar { width: 100%; max-width: 100%; margin: 0 auto; }
 
 .radar-svg {
   width: 100%;
@@ -115,28 +115,16 @@
   text-transform: uppercase;
 }
 
-/* Background sector fans */
-.radar-svg .sector-fan {
+/* Continuous background disc (seamless across sectors) */
+.radar-svg .sector-bg {
   fill: var(--bg-secondary);
   opacity: 0.5;
   pointer-events: none;
 }
 
-/* Leader lines from wedge tip to its label */
-.radar-svg .skill-leader {
-  stroke: var(--accent-secondary);
-  stroke-width: 0.5;
-  opacity: 0.5;
-  pointer-events: none;
-}
-
-/* Radial skill labels */
-.radar-svg .skill-label {
-  font-family: var(--font-body);
-  font-size: 8px;
-  fill: var(--text-secondary);
-  pointer-events: none;
-}
+/* Dimmed (collapsed) elements when a domain is selected */
+.radar-svg .skill-group.dimmed,
+.radar-svg .skill-dot.dimmed { opacity: 0.1; }
 
 /* Tip dot — marks 10+ years of practice */
 .radar-svg .skill-dot {
@@ -173,24 +161,14 @@
 }
 .radar-svg .radar-center-label {
   font-family: var(--font-body);
-  font-size: 10px;
-  letter-spacing: 0.15em;
+  font-size: 7px;
+  letter-spacing: 0.04em;
   fill: var(--text-secondary);
 }
 .radar-svg .radar-center-sub {
   font-family: var(--font-body);
   font-size: 8px;
   fill: var(--text-muted);
-}
-
-/* Highlights line under the page title */
-.skills-highlights {
-  text-align: center;
-  margin-top: var(--space-sm);
-  font-family: var(--font-body);
-  font-size: var(--text-sm);
-  color: var(--text-muted);
-  letter-spacing: 0.06em;
 }
 
 /* Hybridization tooltip body */
@@ -249,14 +227,11 @@
 
 .radar-svg .wedge.dimmed { opacity: 0.12; }
 
-/* --- Legend (horizontal bar across the top) --- */
+/* --- Legend (side panel, right of the radar) --- */
 .skills-legend {
   display: flex;
-  flex-flow: row wrap;
-  justify-content: center;
-  align-items: flex-start;
-  gap: var(--space-md) var(--space-2xl);
-  width: 100%;
+  flex-direction: column;
+  gap: var(--space-md);
   padding: var(--space-lg);
   border: 1px solid var(--border-subtle);
   border-radius: var(--border-radius-md);
@@ -284,8 +259,8 @@
   padding: 0;
   margin: 0;
   display: flex;
-  flex-flow: row wrap;
-  gap: var(--space-xs) var(--space-md);
+  flex-direction: column;
+  gap: var(--space-xs);
 }
 
 .legend-list li {
@@ -325,14 +300,55 @@
 }
 
 .legend-note {
-  flex-basis: 100%;
-  text-align: center;
   font-size: var(--text-xs);
   color: var(--text-muted);
   margin: var(--space-sm) 0 0;
   font-style: italic;
   line-height: 1.5;
 }
+
+/* Per-domain skill bar list (shown in the side panel on tab select) */
+.area-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 520px;
+  overflow-y: auto;
+}
+.area-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 3px 6px;
+  align-items: baseline;
+}
+.area-name {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.area-lvl {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+.abar-track {
+  grid-column: 1 / -1;
+  position: relative;
+  height: 6px;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-subtle);
+  border-radius: 100px;
+  overflow: hidden;
+}
+.abar-track span { position: absolute; top: 0; bottom: 0; left: 0; }
+.abar-consolidated { background: #46b377; }
+.abar-learning { background: #7DE38D; }
 
 /* --- HTML tooltip (follows cursor) --- */
 .radar-tooltip {
@@ -482,8 +498,11 @@
 
 /* --- Responsive --- */
 @media (max-width: 900px) {
+  .skills-dashboard {
+    grid-template-columns: 1fr;
+  }
   .skills-radar {
-    max-width: 100%;
+    max-width: 560px;
   }
 }
 

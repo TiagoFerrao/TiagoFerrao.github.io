@@ -17,9 +17,11 @@
       return;
     }
     const d = window.skillsData;
+    renderHero(d.hero);
     renderRadar(d);
     renderLegend(d);
-    renderHighlights(d);
+    renderFilterTabs(d.categories);
+    initFilterBehaviour(d);
     initScrollAnimations();
     initTooltip(d.skills);
     initHybridTooltip(d);
@@ -69,30 +71,35 @@
 
     const statusClass = { consolidated: 'wedge-consolidated', learning: 'wedge-learning' };
 
-    const fanParts    = [];
+    const defsParts   = [];
     const ringParts   = [];
     const sectorParts = [];
     const wedgeParts  = [];
     const dotParts    = [];
-    const leaderParts = [];
-    const labelParts  = [];
 
-    // Background sector fans + sector heading at the diagonal mid-angle
+    // Single continuous background disc — no per-quadrant seams.
+    const bgParts = [`<circle class="sector-bg" cx="0" cy="0" r="${(MAX_R + 16).toFixed(1)}"/>`];
+
+    // Curved sector headings on an arc above each quadrant (bottom arcs reversed so text stays upright).
+    const RL = MAX_R + 22;
     quadrantOrder.forEach(catId => {
       const cat = d.categories.find(c => c.id === catId);
+      if (!cat) return;
       const s = quadrantStart[catId];
-      fanParts.push(`<path class="sector-fan" data-category="${esc(catId)}" d="${wedgeBandPath(s + 1.5, s + QUAD_SPAN - 1.5, R0 - 2, MAX_R + 16)}"/>`);
-      if (cat) {
-        const midDeg = s + QUAD_SPAN / 2;
-        const { x, y } = polarToCart(MAX_R + 96, midDeg);
-        sectorParts.push(`<text class="quad-label" x="${x.toFixed(1)}" y="${y.toFixed(1)}" data-category="${esc(catId)}" text-anchor="middle" dominant-baseline="middle">${esc((cat.label || '').toUpperCase())}</text>`);
-      }
+      const bottom = Math.sin((s + QUAD_SPAN / 2) * Math.PI / 180) > 0;
+      const a0 = bottom ? s + QUAD_SPAN : s;
+      const a1 = bottom ? s : s + QUAD_SPAN;
+      const sweep = bottom ? 0 : 1;
+      const p0 = polarToCart(RL, a0), p1 = polarToCart(RL, a1);
+      const id = `sector-arc-${catId}`;
+      defsParts.push(`<path id="${id}" d="M ${p0.x.toFixed(1)} ${p0.y.toFixed(1)} A ${RL} ${RL} 0 0 ${sweep} ${p1.x.toFixed(1)} ${p1.y.toFixed(1)}" fill="none"/>`);
+      sectorParts.push(`<text class="quad-label" data-category="${esc(catId)}"><textPath href="#${id}" startOffset="50%" text-anchor="middle">${esc((cat.label || '').toUpperCase())}</textPath></text>`);
     });
 
     // Level guide rings (dotted, behind wedges)
     ringRadii.forEach(r => ringParts.push(`<circle class="ring" cx="0" cy="0" r="${r.toFixed(1)}" />`));
 
-    // Skill wedges (sorted), 2-band aware, with leader + radial label + 10+yr dot
+    // Skill wedges (sorted), 2-band aware, with a 10+yr tip dot. Names read on hover.
     quadrantOrder.forEach(catId => {
       const skills = skillsByCat[catId];
       if (!skills.length) return;
@@ -123,20 +130,8 @@
         // tip dot — marks 10+ years of practice
         if (skill.years >= 10) {
           const dp = polarToCart(MAX_R + 6, am);
-          dotParts.push(`<circle class="skill-dot" cx="${dp.x.toFixed(1)}" cy="${dp.y.toFixed(1)}" r="2.4"/>`);
+          dotParts.push(`<circle class="skill-dot" data-category="${esc(skill.category)}" cx="${dp.x.toFixed(1)}" cy="${dp.y.toFixed(1)}" r="2.4"/>`);
         }
-
-        // leader line from wedge tip to the label ring
-        const l0 = polarToCart(fullR + 2, am);
-        const l1 = polarToCart(MAX_R + 2, am);
-        leaderParts.push(`<line class="skill-leader" x1="${l0.x.toFixed(1)}" y1="${l0.y.toFixed(1)}" x2="${l1.x.toFixed(1)}" y2="${l1.y.toFixed(1)}"/>`);
-
-        // radial label "Name: level"
-        const lp = polarToCart(MAX_R + 12, am);
-        const right = Math.cos(am * Math.PI / 180) >= 0;
-        const rot = right ? am : am + 180;
-        const anchor = right ? 'start' : 'end';
-        labelParts.push(`<text class="skill-label" x="${lp.x.toFixed(1)}" y="${lp.y.toFixed(1)}" text-anchor="${anchor}" dominant-baseline="middle" transform="rotate(${rot.toFixed(1)} ${lp.x.toFixed(1)} ${lp.y.toFixed(1)})">${esc(skill.name)}: ${skill.level}</text>`);
       });
     });
 
@@ -165,16 +160,15 @@
       </g>
     `;
 
-    const V = 430;
+    const V = 272;
     el.innerHTML = `
       <svg viewBox="-${V} -${V} ${2 * V} ${2 * V}" xmlns="http://www.w3.org/2000/svg" class="radar-svg" role="img" aria-label="Skills radar chart">
-        ${fanParts.join('')}
-        ${sectorParts.join('')}
+        <defs>${defsParts.join('')}</defs>
+        ${bgParts.join('')}
         ${ringParts.join('')}
         ${wedgeParts.join('')}
         ${dotParts.join('')}
-        ${leaderParts.join('')}
-        ${labelParts.join('')}
+        ${sectorParts.join('')}
         ${centerPart}
       </svg>
     `;
@@ -372,16 +366,6 @@
     `;
   }
 
-  // ---------- Highlights line (under the page title) ----------
-  function renderHighlights(d) {
-    const el = document.getElementById('skills-highlights');
-    if (!el) return;
-    const hs = (d.hero && d.hero.stats) || [];
-    const parts = [`${d.skills.length} skills`];
-    if (hs.length >= 3) parts.push(`${hs[0].number}${hs[0].suffix} yrs`, `${hs[1].number} roles`, `${hs[2].number} domains`);
-    el.textContent = parts.join('  ·  ');
-  }
-
   // ---------- Hybridization hub tooltip (explains the calculation) ----------
   function initHybridTooltip(d) {
     const hub = document.querySelector('.hybrid-hub');
@@ -419,24 +403,42 @@
     `;
   }
 
-  function initFilterBehaviour() {
+  // Selecting a domain tab lights up that quadrant, collapses (dims) the others,
+  // and swaps the side legend for a bar list of that domain's skills.
+  function initFilterBehaviour(d) {
     const tabs = document.querySelectorAll('.filter-tab');
-    const wedges = document.querySelectorAll('.wedge');
-    const labels = document.querySelectorAll('.quad-label');
+    if (!tabs.length) return;
+    const groups = document.querySelectorAll('.radar-svg .skill-group, .radar-svg .quad-label, .radar-svg .skill-dot');
+
     tabs.forEach(tab => {
       tab.addEventListener('click', function () {
         const filter = this.dataset.filter;
         tabs.forEach(t => t.classList.toggle('active', t === this));
-        wedges.forEach(w => {
-          const match = filter === 'all' || w.dataset.category === filter;
-          w.classList.toggle('dimmed', !match);
+        groups.forEach(el => {
+          const match = filter === 'all' || el.dataset.category === filter;
+          el.classList.toggle('dimmed', !match);
         });
-        labels.forEach(l => {
-          const match = filter === 'all' || l.dataset.category === filter;
-          l.classList.toggle('dimmed', !match);
-        });
+        if (filter === 'all') renderLegend(d);
+        else renderAreaBars(d, filter);
       });
     });
+  }
+
+  // Bar list of one domain's skills (sorted), shown in the side panel.
+  function renderAreaBars(d, catId) {
+    const el = document.getElementById('skills-legend');
+    if (!el) return;
+    const cat = d.categories.find(c => c.id === catId) || {};
+    const skills = d.skills.filter(s => s.category === catId).sort((a, b) => b.level - a.level);
+    const rows = skills.map(s => {
+      const cons = resolveConsolidatedLevel(s);
+      const banded = cons < s.level;
+      const bar = banded
+        ? `<span class="abar-consolidated" style="width:${cons}%"></span><span class="abar-learning" style="left:${cons}%;width:${s.level - cons}%"></span>`
+        : `<span class="abar-${esc(s.status)}" style="width:${s.level}%"></span>`;
+      return `<li class="area-row"><span class="area-name">${esc(s.name)}</span><span class="area-lvl">${s.level}</span><span class="abar-track">${bar}</span></li>`;
+    }).join('');
+    el.innerHTML = `<h4 class="legend-title">${esc(cat.label || catId)} — ${skills.length} skills</h4><ul class="area-list">${rows}</ul>`;
   }
 
   // ---------- Scroll animations ----------

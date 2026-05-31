@@ -27,7 +27,7 @@ const cvData = {
     location: "Lisbon, Portugal",
     email: "tiago.cunha.ferrao@me.com",
     phone: "+351 917 101 075",
-    linkedin: "https://linkedin.com/in/tiagoferrao",
+    linkedin: "https://linkedin.com/in/tferrao",
     github: "https://github.com/TiagoFerrao"
   },
 
