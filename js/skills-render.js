@@ -75,7 +75,6 @@
     const ringParts   = [];
     const sectorParts = [];
     const wedgeParts  = [];
-    const dotParts    = [];
 
     // Single continuous background disc — no per-quadrant seams.
     const bgParts = [`<circle class="sector-bg" cx="0" cy="0" r="${(MAX_R + 16).toFixed(1)}"/>`];
@@ -125,13 +124,7 @@
           inner += `<path class="wedge wedge-learning" ${wedgeAttrs} d="${wedgeBandPath(a0, a1, consR, fullR)}"/>`;
           if (consR > R0) inner += `<path class="wedge wedge-consolidated" ${wedgeAttrs} d="${wedgeBandPath(a0, a1, R0, consR)}"/>`;
         }
-        wedgeParts.push(`<g class="skill-group" ${groupAttrs} style="--mid:${am.toFixed(1)}">${inner}</g>`);
-
-        // tip dot — marks 10+ years of practice
-        if (skill.years >= 10) {
-          const dp = polarToCart(MAX_R + 6, am);
-          dotParts.push(`<circle class="skill-dot" data-category="${esc(skill.category)}" cx="${dp.x.toFixed(1)}" cy="${dp.y.toFixed(1)}" r="2.4"/>`);
-        }
+        wedgeParts.push(`<g class="skill-group" ${groupAttrs} data-mid="${am.toFixed(2)}" style="--mid:${am.toFixed(1)}">${inner}</g>`);
       });
     });
 
@@ -167,7 +160,6 @@
         ${bgParts.join('')}
         ${ringParts.join('')}
         ${wedgeParts.join('')}
-        ${dotParts.join('')}
         ${sectorParts.join('')}
         ${centerPart}
       </svg>
@@ -438,30 +430,690 @@
     const radar = document.getElementById('skills-radar');
     if (!radar) return;
     const current = radar.querySelector('.radar-svg');
+    const isOnFull = dashboard && !dashboard.classList.contains('focused');
 
-    const finish = () => {
-      if (filter === 'all') {
-        if (dashboard) dashboard.classList.remove('focused');
-        renderRadar(d);
-        renderLegend(d);
-        initHybridTooltip(d);
-      } else {
-        if (dashboard) dashboard.classList.add('focused');
-        renderRadarFocus(d, filter);
-        renderAreaBars(d, filter);
+    // Smooth in-place finish after Phase 1+2 — NO SVG swap.
+    // Triggers dashboard grid resize, area-bar reveal, and viewBox zoom in parallel.
+    const finishInPlace = (svg) => {
+      // Remember which category is focused so reverseToFull can undo it later
+      svg.dataset.focusedCategory = filter;
+
+      const DASH_DUR = 500;
+      const VB_DUR   = 600;
+      const BARS_DUR = 400;
+
+      if (dashboard) {
+        dashboard.style.transition = `grid-template-columns ${DASH_DUR}ms ease`;
+        dashboard.classList.add('focused');
       }
+
+      renderAreaBars(d, filter);
+      const legend = document.getElementById('skills-legend');
+      if (legend) {
+        legend.style.opacity = '0';
+        requestAnimationFrame(() => {
+          legend.style.transition = `opacity ${BARS_DUR}ms ease ${Math.round(BARS_DUR * 0.2)}ms`;
+          legend.style.opacity = '1';
+        });
+      }
+
+      // Drop in the focus-state hub (category name + skill count) since the
+      // original hybridization hub was faded out during Phase 1.
+      const focusHub = addFocusHub(svg, d, filter);
+      if (focusHub) {
+        requestAnimationFrame(() => {
+          focusHub.style.transition = `opacity ${VB_DUR}ms ease ${Math.round(VB_DUR * 0.35)}ms`;
+          focusHub.style.opacity = '1';
+        });
+      }
+
+      transitionViewBox(svg, [-80, -210, 300, 420], VB_DUR, () => {
+        initTooltip(d.skills);
+      });
+    };
+
+    // Fallback: original behaviour with SVG swap (used for non-Phase1+2 paths)
+    const finishToFocusedSwap = () => {
+      if (dashboard) dashboard.classList.add('focused');
+      renderRadarFocus(d, filter);
+      renderAreaBars(d, filter);
+      const next = radar.querySelector('.radar-svg');
+      if (next) requestAnimationFrame(() => next.classList.add('animate'));
+      initTooltip(d.skills);
+    };
+    const finishToFull = () => {
+      if (dashboard) dashboard.classList.remove('focused');
+      renderRadar(d);
+      renderLegend(d);
+      initHybridTooltip(d);
       const next = radar.querySelector('.radar-svg');
       if (next) requestAnimationFrame(() => next.classList.add('animate'));
       initTooltip(d.skills);
     };
 
-    // Angular "fan close" of the current radar, then swap.
-    if (current) {
+    // From the FULL radar to a category: Phase 1 + Phase 2 + smooth in-place finish.
+    // From a category back to All: reverse Phase 3 → Phase 2 → Phase 1 in place.
+    // Other transitions (focused → other focused) fall back to close + re-render.
+    if (current && isOnFull && filter !== 'all') {
+      foldNonSelected(current, filter, () => {
+        slideAndExpand(current, filter, d, () => {
+          finishInPlace(current);
+        });
+      });
+    } else if (current && !isOnFull && filter === 'all') {
+      const prevCat = current.dataset.focusedCategory;
+      if (prevCat) {
+        reverseToFull(current, prevCat, d, dashboard);
+      } else {
+        current.classList.add('closing');
+        setTimeout(finishToFull, 430);
+      }
+    } else if (current && !isOnFull && filter !== 'all') {
+      // Focused → other focused: radial wipe between categories
+      const prevCat = current.dataset.focusedCategory;
+      if (prevCat && prevCat !== filter) {
+        radialSwapCategory(current, prevCat, filter, d);
+      } else if (prevCat === filter) {
+        return; // tab already active, no-op
+      } else {
+        current.classList.add('closing');
+        setTimeout(finishToFocusedSwap, 430);
+      }
+    } else if (current) {
       current.classList.add('closing');
-      setTimeout(finish, 430);
+      setTimeout(() => {
+        if (filter === 'all') finishToFull();
+        else finishToFocusedSwap();
+      }, 430);
     } else {
-      finish();
+      if (filter === 'all') finishToFull();
+      else finishToFocusedSwap();
     }
+  }
+
+  // ---------- REVERSE Phase 1: unfold non-selected wedges, fade decorations back in ----------
+  function unfoldNonSelected(svg, selectedCat, callback) {
+    const cwEdge  = { management: 0,   stem: 90, digital: 180, soft: 270 };
+    const ccwEdge = { management: -90, stem: 0,  digital: 90,  soft: 180 };
+    const start  = cwEdge[selectedCat]  || 0;
+    const target = ccwEdge[selectedCat] || 0;
+
+    const allGroups = [...svg.querySelectorAll('.skill-group')];
+    const toUnfold = allGroups.filter(g => g.dataset.category !== selectedCat);
+
+    // Reverse stagger: wedges that folded LAST unfold FIRST
+    toUnfold.sort((a, b) => {
+      const cw = mid => ((mid - start) % 360 + 360) % 360;
+      return cw(parseFloat(b.dataset.mid) || 0) - cw(parseFloat(a.dataset.mid) || 0);
+    });
+
+    // Each wedge's folded-state rotation (same formula as foldNonSelected)
+    const folded = toUnfold.map(g => {
+      const mid = parseFloat(g.dataset.mid) || 0;
+      let cw = ((target - mid) % 360 + 360) % 360;
+      if (cw === 0) cw = 360;
+      return cw;
+    });
+
+    const decorations = [...svg.querySelectorAll('.quad-label, .hybrid-hub, .sector-bg, .ring')];
+
+    const PER_WEDGE_DUR = 360;
+    const STEP = 11;
+    const startTime = performance.now();
+    const totalDur = (toUnfold.length - 1) * STEP + PER_WEDGE_DUR + 20;
+
+    function tick(now) {
+      const elapsed = now - startTime;
+
+      toUnfold.forEach((g, i) => {
+        const delay = i * STEP;
+        const lt = Math.max(0, Math.min(1, (elapsed - delay) / PER_WEDGE_DUR));
+        const eased = 1 - Math.pow(1 - lt, 3);
+        const angle = folded[i] * (1 - eased);
+        g.setAttribute('transform', `rotate(${angle.toFixed(2)})`);
+        g.style.opacity = String(eased);
+      });
+
+      // Decorations fade IN over the full unfold duration
+      const decorT = Math.min(1, elapsed / totalDur);
+      const decorEased = 1 - Math.pow(1 - decorT, 2);
+      const decorOpacity = String(decorEased);
+      decorations.forEach(el => { el.style.opacity = decorOpacity; });
+
+      if (elapsed < totalDur) requestAnimationFrame(tick);
+      else {
+        // Clean up inline styles so CSS defaults apply on next render
+        toUnfold.forEach(g => {
+          g.removeAttribute('transform');
+          g.style.opacity = '';
+        });
+        decorations.forEach(el => { el.style.opacity = ''; });
+        if (callback) callback();
+      }
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  // ---------- REVERSE Phase 2: contract selected wedges from right hemisphere back to quadrant ----------
+  function unslideSelectedWedges(svg, selectedCat, dataObj, duration, callback) {
+    const skills = dataObj.skills
+      .filter(s => s.category === selectedCat)
+      .sort((a, b) => b.level - a.level);
+    const N = skills.length;
+    if (N === 0) { if (callback) callback(); return; }
+
+    const R0 = 64;
+    const MAX_R = 205;
+    const GAP = MAX_R - R0;
+    const lvlR = lvl => R0 + (Math.max(0, Math.min(100, lvl)) / 100) * GAP;
+
+    const quadStartMap = { management: -90, stem: 0, digital: 90, soft: 180 };
+    const quadStart = quadStartMap[selectedCat];
+    const QUAD_SEG = 90 / N;
+    const QUAD_PAD = QUAD_SEG * 0.12;
+    const HEMI_SEG = 180 / N;
+    const HEMI_PAD = HEMI_SEG * 0.12;
+    const HEMI_START = -90;
+
+    const groups = [...svg.querySelectorAll('.skill-group')]
+      .filter(g => g.dataset.category === selectedCat);
+
+    const entries = skills.map((skill, i) => {
+      const group = groups.find(g => g.dataset.skillName === skill.name);
+      if (!group) return null;
+      const paths = [...group.querySelectorAll('path.wedge')];
+      const fullR = lvlR(skill.level);
+      const consR = lvlR(resolveConsolidatedLevel(skill));
+      return {
+        paths, fullR, consR,
+        startA0:  HEMI_START + i * HEMI_SEG + HEMI_PAD,
+        startA1:  HEMI_START + (i + 1) * HEMI_SEG - HEMI_PAD,
+        targetA0: quadStart + i * QUAD_SEG + QUAD_PAD,
+        targetA1: quadStart + (i + 1) * QUAD_SEG - QUAD_PAD,
+      };
+    }).filter(Boolean);
+
+    const startTime = performance.now();
+    function tick(now) {
+      const t = Math.min(1, (now - startTime) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+
+      entries.forEach(({ paths, fullR, consR, startA0, startA1, targetA0, targetA1 }) => {
+        const a0 = startA0 + (targetA0 - startA0) * eased;
+        const a1 = startA1 + (targetA1 - startA1) * eased;
+        if (consR >= fullR) {
+          if (paths[0]) paths[0].setAttribute('d', wedgeBandPath(a0, a1, R0, fullR));
+        } else {
+          if (paths[0]) paths[0].setAttribute('d', wedgeBandPath(a0, a1, consR, fullR));
+          if (paths[1] && consR > R0) paths[1].setAttribute('d', wedgeBandPath(a0, a1, R0, consR));
+        }
+      });
+
+      if (t < 1) requestAnimationFrame(tick);
+      else if (callback) callback();
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // ---------- REVERSE Phase 3: uncrop viewBox, unfocus dashboard, restore legend, remove focus hub ----------
+  function reversePhase3(svg, dataObj, dashboard, duration, callback) {
+    // Focus hub fades out quickly and gets removed
+    const focusHub = svg.querySelector('.focus-hub-overlay');
+    if (focusHub) {
+      const halfDur = Math.round(duration * 0.5);
+      focusHub.style.transition = `opacity ${halfDur}ms ease`;
+      focusHub.style.opacity = '0';
+      setTimeout(() => focusHub.remove(), halfDur + 50);
+    }
+
+    if (dashboard) {
+      dashboard.style.transition = `grid-template-columns ${duration}ms ease`;
+      dashboard.classList.remove('focused');
+    }
+
+    // Swap area-bars back to the original legend, with a cross-fade
+    const legend = document.getElementById('skills-legend');
+    if (legend) {
+      const fadeDur = Math.round(duration * 0.4);
+      legend.style.transition = `opacity ${fadeDur}ms ease`;
+      legend.style.opacity = '0';
+      setTimeout(() => {
+        renderLegend(dataObj);
+        requestAnimationFrame(() => { legend.style.opacity = '1'; });
+      }, fadeDur);
+    }
+
+    transitionViewBox(svg, [-272, -272, 544, 544], duration, callback);
+  }
+
+  // Orchestrate the full reverse: Phase 3 first (so focus hub fully fades before
+  // hybrid hub starts coming back), then Phase 2 + Phase 1 in parallel.
+  function reverseToFull(svg, prevCat, dataObj, dashboard) {
+    reversePhase3(svg, dataObj, dashboard, 600, () => {
+      unslideSelectedWedges(svg, prevCat, dataObj, 600, null);
+      unfoldNonSelected(svg, prevCat, () => {
+        delete svg.dataset.focusedCategory;
+      });
+    });
+  }
+
+  // ---------- Radial wipe between two focused categories ----------
+  // Old category's wedges retract into the hub, new category's wedges grow back out.
+  // Hub text and area-bars cross-fade in parallel. ViewBox & dashboard stay focused.
+  function radialSwapCategory(svg, prevCat, newCat, dataObj) {
+    if (prevCat === newCat) return;
+
+    const RETRACT_DUR = 400;
+    const GROW_DUR = 400;
+    const OVERLAP = 100; // grow starts this many ms before retract finishes
+
+    // Update tracked focused category up-front so concurrent state checks see new value
+    svg.dataset.focusedCategory = newCat;
+
+    // Cross-fade the focus-hub text (whole overlay fades so disc fades briefly too — acceptable)
+    const focusHub = svg.querySelector('.focus-hub-overlay');
+    if (focusHub) {
+      const cat = dataObj.categories.find(c => c.id === newCat) || {};
+      const count = dataObj.skills.filter(s => s.category === newCat).length;
+      focusHub.style.transition = 'opacity 250ms ease';
+      focusHub.style.opacity = '0';
+      setTimeout(() => {
+        const nameText = focusHub.querySelector('.focus-hub-name');
+        const subText = focusHub.querySelector('.focus-hub-sub');
+        if (nameText) nameText.textContent = (cat.label || newCat).toUpperCase();
+        if (subText) subText.textContent = `${count} skills`;
+        requestAnimationFrame(() => { focusHub.style.opacity = '1'; });
+      }, 250);
+    }
+
+    // Cross-fade the area-bars
+    const legend = document.getElementById('skills-legend');
+    if (legend) {
+      legend.style.transition = 'opacity 200ms ease';
+      legend.style.opacity = '0';
+      setTimeout(() => {
+        renderAreaBars(dataObj, newCat);
+        requestAnimationFrame(() => { legend.style.opacity = '1'; });
+      }, 200);
+    }
+
+    // Retract old wedges into the hub
+    retractSelectedWedges(svg, prevCat, dataObj, RETRACT_DUR, () => {
+      // Old wedges are now collapsed — restore their paths to original quadrant
+      // geometry and fold them at the NEW category's target (invisible, but consistent
+      // state for later reverseToFull).
+      resetWedgePathsToOriginal(svg, prevCat, dataObj);
+      foldGroupToTarget(svg, prevCat, newCat);
+
+      // Re-fold the OTHER non-newCat categories (they were folded at prevCat's target)
+      // so they're consistent with the new focused state.
+      const allCats = ['management', 'stem', 'digital', 'soft'];
+      allCats.filter(c => c !== prevCat && c !== newCat)
+        .forEach(c => foldGroupToTarget(svg, c, newCat));
+    });
+
+    // Slightly before the retract finishes, start growing the new wedges from the hub
+    setTimeout(() => {
+      growNewWedges(svg, newCat, dataObj, GROW_DUR, null);
+    }, RETRACT_DUR - OVERLAP);
+  }
+
+  // Animate a category's wedges' outer radii from their level-R down to R0 (collapse to hub).
+  function retractSelectedWedges(svg, selectedCat, dataObj, duration, callback) {
+    const skills = dataObj.skills.filter(s => s.category === selectedCat).sort((a, b) => b.level - a.level);
+    const N = skills.length;
+    if (N === 0) { if (callback) callback(); return; }
+
+    const R0 = 64;
+    const MAX_R = 205;
+    const GAP = MAX_R - R0;
+    const lvlR = lvl => R0 + (Math.max(0, Math.min(100, lvl)) / 100) * GAP;
+
+    const HEMI_SEG = 180 / N;
+    const HEMI_PAD = HEMI_SEG * 0.12;
+    const HEMI_START = -90;
+
+    const groups = [...svg.querySelectorAll('.skill-group')]
+      .filter(g => g.dataset.category === selectedCat);
+
+    const entries = skills.map((skill, i) => {
+      const group = groups.find(g => g.dataset.skillName === skill.name);
+      if (!group) return null;
+      const paths = [...group.querySelectorAll('path.wedge')];
+      const fullR = lvlR(skill.level);
+      const consR = lvlR(resolveConsolidatedLevel(skill));
+      return {
+        paths, fullR, consR,
+        a0: HEMI_START + i * HEMI_SEG + HEMI_PAD,
+        a1: HEMI_START + (i + 1) * HEMI_SEG - HEMI_PAD,
+      };
+    }).filter(Boolean);
+
+    const startTime = performance.now();
+    function tick(now) {
+      const t = Math.min(1, (now - startTime) / duration);
+      const eased = t * t; // ease-in: slow start, fast end — like inhaling
+
+      entries.forEach(({ paths, fullR, consR, a0, a1 }) => {
+        const currFullR = fullR + (R0 - fullR) * eased;
+        const currConsR = consR + (R0 - consR) * eased;
+        if (consR >= fullR) {
+          if (paths[0]) paths[0].setAttribute('d', wedgeBandPath(a0, a1, R0, currFullR));
+        } else {
+          if (paths[0]) paths[0].setAttribute('d', wedgeBandPath(a0, a1, currConsR, currFullR));
+          if (paths[1] && consR > R0) paths[1].setAttribute('d', wedgeBandPath(a0, a1, R0, currConsR));
+        }
+      });
+
+      if (t < 1) requestAnimationFrame(tick);
+      else if (callback) callback();
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // Grow a category's wedges from R0 outward into the right-hemisphere fan.
+  // Resets the groups' transforms and opacities first so they appear at HEMI angles.
+  function growNewWedges(svg, newCat, dataObj, duration, callback) {
+    const skills = dataObj.skills.filter(s => s.category === newCat).sort((a, b) => b.level - a.level);
+    const N = skills.length;
+    if (N === 0) { if (callback) callback(); return; }
+
+    const R0 = 64;
+    const MAX_R = 205;
+    const GAP = MAX_R - R0;
+    const lvlR = lvl => R0 + (Math.max(0, Math.min(100, lvl)) / 100) * GAP;
+
+    const HEMI_SEG = 180 / N;
+    const HEMI_PAD = HEMI_SEG * 0.12;
+    const HEMI_START = -90;
+
+    const groups = [...svg.querySelectorAll('.skill-group')]
+      .filter(g => g.dataset.category === newCat);
+
+    const entries = skills.map((skill, i) => {
+      const group = groups.find(g => g.dataset.skillName === skill.name);
+      if (!group) return null;
+      group.removeAttribute('transform'); // un-fold (no animation)
+      group.style.opacity = '0';
+      const paths = [...group.querySelectorAll('path.wedge')];
+      const fullR = lvlR(skill.level);
+      const consR = lvlR(resolveConsolidatedLevel(skill));
+      const a0 = HEMI_START + i * HEMI_SEG + HEMI_PAD;
+      const a1 = HEMI_START + (i + 1) * HEMI_SEG - HEMI_PAD;
+      // Start collapsed at hub
+      if (consR >= fullR) {
+        if (paths[0]) paths[0].setAttribute('d', wedgeBandPath(a0, a1, R0, R0));
+      } else {
+        if (paths[0]) paths[0].setAttribute('d', wedgeBandPath(a0, a1, R0, R0));
+        if (paths[1] && consR > R0) paths[1].setAttribute('d', wedgeBandPath(a0, a1, R0, R0));
+      }
+      return { group, paths, fullR, consR, a0, a1 };
+    }).filter(Boolean);
+
+    const startTime = performance.now();
+    function tick(now) {
+      const t = Math.min(1, (now - startTime) / duration);
+      const eased = 1 - Math.pow(1 - t, 3); // ease-out: fast start, slow finish
+
+      entries.forEach(({ group, paths, fullR, consR, a0, a1 }) => {
+        const currFullR = R0 + (fullR - R0) * eased;
+        const currConsR = R0 + (consR - R0) * eased;
+        if (consR >= fullR) {
+          if (paths[0]) paths[0].setAttribute('d', wedgeBandPath(a0, a1, R0, currFullR));
+        } else {
+          if (paths[0]) paths[0].setAttribute('d', wedgeBandPath(a0, a1, currConsR, currFullR));
+          if (paths[1] && consR > R0) paths[1].setAttribute('d', wedgeBandPath(a0, a1, R0, currConsR));
+        }
+        group.style.opacity = String(eased);
+      });
+
+      if (t < 1) requestAnimationFrame(tick);
+      else {
+        entries.forEach(({ group }) => { group.style.opacity = ''; });
+        if (callback) callback();
+      }
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // Instantly reset a category's wedge paths to their original quadrant geometry
+  function resetWedgePathsToOriginal(svg, catId, dataObj) {
+    const skills = dataObj.skills.filter(s => s.category === catId).sort((a, b) => b.level - a.level);
+    const N = skills.length;
+    if (N === 0) return;
+
+    const R0 = 64;
+    const MAX_R = 205;
+    const GAP = MAX_R - R0;
+    const lvlR = lvl => R0 + (Math.max(0, Math.min(100, lvl)) / 100) * GAP;
+
+    const quadStartMap = { management: -90, stem: 0, digital: 90, soft: 180 };
+    const quadStart = quadStartMap[catId];
+    const QUAD_SEG = 90 / N;
+    const QUAD_PAD = QUAD_SEG * 0.12;
+
+    const groups = [...svg.querySelectorAll('.skill-group')]
+      .filter(g => g.dataset.category === catId);
+
+    skills.forEach((skill, i) => {
+      const group = groups.find(g => g.dataset.skillName === skill.name);
+      if (!group) return;
+      const paths = [...group.querySelectorAll('path.wedge')];
+      const fullR = lvlR(skill.level);
+      const consR = lvlR(resolveConsolidatedLevel(skill));
+      const a0 = quadStart + i * QUAD_SEG + QUAD_PAD;
+      const a1 = quadStart + (i + 1) * QUAD_SEG - QUAD_PAD;
+      if (consR >= fullR) {
+        if (paths[0]) paths[0].setAttribute('d', wedgeBandPath(a0, a1, R0, fullR));
+      } else {
+        if (paths[0]) paths[0].setAttribute('d', wedgeBandPath(a0, a1, consR, fullR));
+        if (paths[1] && consR > R0) paths[1].setAttribute('d', wedgeBandPath(a0, a1, R0, consR));
+      }
+    });
+  }
+
+  // Instantly set a category's wedges to the "folded for newSelectedCat" state (no animation)
+  function foldGroupToTarget(svg, catId, newSelectedCat) {
+    const ccwEdge = { management: -90, stem: 0, digital: 90, soft: 180 };
+    const target = ccwEdge[newSelectedCat] || 0;
+
+    const groups = [...svg.querySelectorAll('.skill-group')]
+      .filter(g => g.dataset.category === catId);
+
+    groups.forEach(g => {
+      const mid = parseFloat(g.dataset.mid) || 0;
+      let cw = ((target - mid) % 360 + 360) % 360;
+      if (cw === 0) cw = 360;
+      g.setAttribute('transform', `rotate(${cw.toFixed(2)})`);
+      g.style.opacity = '0';
+    });
+  }
+
+  // Build a fresh hub overlay (disc + category label + count) and append it to the SVG.
+  // Returns the new <g> element so the caller can fade it in.
+  function addFocusHub(svg, dataObj, selectedCat) {
+    if (svg.querySelector('.focus-hub-overlay')) return null;
+
+    const cat = dataObj.categories.find(c => c.id === selectedCat) || {};
+    const count = dataObj.skills.filter(s => s.category === selectedCat).length;
+    const ns = 'http://www.w3.org/2000/svg';
+    const R0 = 64; // matches renderRadar's R0 — keeps the disc the right size in the SVG's user space
+
+    const g = document.createElementNS(ns, 'g');
+    g.setAttribute('class', 'focus-hub-overlay');
+    g.style.opacity = '0';
+
+    const disc = document.createElementNS(ns, 'circle');
+    disc.setAttribute('class', 'radar-center-disc');
+    disc.setAttribute('cx', '0');
+    disc.setAttribute('cy', '0');
+    disc.setAttribute('r', String(R0 - 6));
+
+    const nameText = document.createElementNS(ns, 'text');
+    nameText.setAttribute('class', 'focus-hub-name');
+    nameText.setAttribute('x', '0');
+    nameText.setAttribute('y', '-2');
+    nameText.setAttribute('text-anchor', 'middle');
+    nameText.setAttribute('font-size', '16');
+    nameText.textContent = (cat.label || selectedCat).toUpperCase();
+
+    const subText = document.createElementNS(ns, 'text');
+    subText.setAttribute('class', 'focus-hub-sub');
+    subText.setAttribute('x', '0');
+    subText.setAttribute('y', '16');
+    subText.setAttribute('text-anchor', 'middle');
+    subText.setAttribute('font-size', '11');
+    subText.textContent = `${count} skills`;
+
+    g.appendChild(disc);
+    g.appendChild(nameText);
+    g.appendChild(subText);
+    svg.appendChild(g);
+    return g;
+  }
+
+  // Animate the SVG's viewBox attribute over `duration` ms to crop/zoom smoothly.
+  function transitionViewBox(svg, targetVB, duration, callback) {
+    const startVB = (svg.getAttribute('viewBox') || '0 0 0 0').split(/\s+/).map(parseFloat);
+    const startTime = performance.now();
+    function tick(now) {
+      const t = Math.min(1, (now - startTime) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      const vb = startVB.map((s, i) => s + (targetVB[i] - s) * eased);
+      svg.setAttribute('viewBox', vb.map(v => v.toFixed(1)).join(' '));
+      if (t < 1) requestAnimationFrame(tick);
+      else if (callback) callback();
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // ---------- Phase 1: fold non-selected wedges flat to the 0° axis ----------
+  // Uses SVG's native `transform` attribute (rotate around 0,0 by default),
+  // which avoids the CSS transform-box quirks that broke earlier attempts.
+  // Stagger order: clockwise distance from the selected quadrant's leading edge.
+  function foldNonSelected(svg, selectedCat, callback) {
+    // Stagger STARTS at the selected quadrant's clockwise edge (so the wedge
+    // just past selected — e.g. first stem wedge for management — falls first).
+    const cwEdge  = { management: 0,   stem: 90, digital: 180, soft: 270 };
+    // Wedges CONVERGE at the selected quadrant's counter-clockwise edge
+    // (e.g. -90°/top for management) — that's where the CW spin stops.
+    const ccwEdge = { management: -90, stem: 0,  digital: 90,  soft: 180 };
+    const start  = cwEdge[selectedCat]  || 0;
+    const target = ccwEdge[selectedCat] || 0;
+
+    const allGroups = [...svg.querySelectorAll('.skill-group')];
+    const toFold = allGroups.filter(g => g.dataset.category !== selectedCat);
+
+    toFold.sort((a, b) => {
+      const cw = mid => ((mid - start) % 360 + 360) % 360;
+      return cw(parseFloat(a.dataset.mid) || 0) - cw(parseFloat(b.dataset.mid) || 0);
+    });
+
+    const decorations = [...svg.querySelectorAll('.quad-label, .hybrid-hub, .sector-bg, .ring')];
+
+    const PER_WEDGE_DUR = 360;
+    const STEP = 11;
+    const DECOR_FADE_DUR = 300;
+    const startTime = performance.now();
+    const totalDur = (toFold.length - 1) * STEP + PER_WEDGE_DUR + 20;
+
+    function tick(now) {
+      const elapsed = now - startTime;
+
+      toFold.forEach((g, i) => {
+        const delay = i * STEP;
+        const lt = Math.max(0, Math.min(1, (elapsed - delay) / PER_WEDGE_DUR));
+        const eased = 1 - Math.pow(1 - lt, 3);
+        const mid = parseFloat(g.dataset.mid) || 0;
+        // Always clockwise (positive) the long way around to reach `target`.
+        // Wedges nearest the target spin the most — first in the stagger = biggest swing.
+        let cw = ((target - mid) % 360 + 360) % 360;
+        if (cw === 0) cw = 360;
+        const angle = cw * eased;
+        g.setAttribute('transform', `rotate(${angle.toFixed(2)})`);
+        g.style.opacity = String(1 - eased);
+      });
+
+      // Fade decorations over the slower debug window so they don't disappear instantly
+      const decorT = Math.min(1, elapsed / DECOR_FADE_DUR);
+      const decorEased = 1 - Math.pow(1 - decorT, 2);
+      const decorOpacity = String(1 - decorEased);
+      decorations.forEach(el => { el.style.opacity = decorOpacity; });
+
+      if (elapsed < totalDur) requestAnimationFrame(tick);
+      else if (callback) callback();
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  // ---------- Phase 2: slide & expand selected wedges to the right hemisphere ----------
+  // Interpolates each wedge's path `d` attribute from its quadrant slot (90° fan)
+  // to its new slot in the right-hemisphere fan (180°). No CSS transforms involved.
+  function slideAndExpand(svg, selectedCat, dataObj, callback) {
+    const skills = dataObj.skills
+      .filter(s => s.category === selectedCat)
+      .sort((a, b) => b.level - a.level);
+    const N = skills.length;
+    if (N === 0) { if (callback) callback(); return; }
+
+    // Must match the geometry constants used in renderRadar()
+    const R0 = 64;
+    const MAX_R = 205;
+    const GAP = MAX_R - R0;
+    const lvlR = lvl => R0 + (Math.max(0, Math.min(100, lvl)) / 100) * GAP;
+
+    const quadStartMap = { management: -90, stem: 0, digital: 90, soft: 180 };
+    const quadStart = quadStartMap[selectedCat];
+    const ORIG_SEG = 90 / N;
+    const ORIG_PAD = ORIG_SEG * 0.12;
+    const NEW_SEG = 180 / N;
+    const NEW_PAD = NEW_SEG * 0.12;
+    const NEW_START = -90;
+
+    const groups = [...svg.querySelectorAll('.skill-group')]
+      .filter(g => g.dataset.category === selectedCat);
+
+    const entries = skills.map((skill, i) => {
+      const group = groups.find(g => g.dataset.skillName === skill.name);
+      if (!group) return null;
+      const paths = [...group.querySelectorAll('path.wedge')];
+      const fullR = lvlR(skill.level);
+      const consR = lvlR(resolveConsolidatedLevel(skill));
+      return {
+        paths, fullR, consR,
+        origA0: quadStart + i * ORIG_SEG + ORIG_PAD,
+        origA1: quadStart + (i + 1) * ORIG_SEG - ORIG_PAD,
+        newA0:  NEW_START + i * NEW_SEG + NEW_PAD,
+        newA1:  NEW_START + (i + 1) * NEW_SEG - NEW_PAD,
+      };
+    }).filter(Boolean);
+
+    const DURATION = 600;
+    const startTime = performance.now();
+
+    function tick(now) {
+      const t = Math.min(1, (now - startTime) / DURATION);
+      const eased = 1 - Math.pow(1 - t, 3);
+
+      entries.forEach(({ paths, fullR, consR, origA0, origA1, newA0, newA1 }) => {
+        const a0 = origA0 + (newA0 - origA0) * eased;
+        const a1 = origA1 + (newA1 - origA1) * eased;
+        // Recompute path d matching renderRadar's wedge-band layout
+        if (consR >= fullR) {
+          if (paths[0]) paths[0].setAttribute('d', wedgeBandPath(a0, a1, R0, fullR));
+        } else {
+          if (paths[0]) paths[0].setAttribute('d', wedgeBandPath(a0, a1, consR, fullR));
+          if (paths[1] && consR > R0) paths[1].setAttribute('d', wedgeBandPath(a0, a1, R0, consR));
+        }
+      });
+
+      if (t < 1) requestAnimationFrame(tick);
+      else if (callback) callback();
+    }
+
+    requestAnimationFrame(tick);
   }
 
   // Focused render: one domain as a 180° fan opening right, hub on the left.
@@ -476,7 +1128,7 @@
     const A0 = -90, SPAN = 180;
     const seg = skills.length ? SPAN / skills.length : SPAN;
 
-    const wedgeParts = [], dotParts = [];
+    const wedgeParts = [];
     skills.forEach((s, i) => {
       const a0 = A0 + i * seg + seg * 0.1;
       const a1 = A0 + (i + 1) * seg - seg * 0.1;
@@ -491,11 +1143,7 @@
         inner += `<path class="wedge wedge-learning" d="${wedgeBandPath(a0, a1, consR, fullR)}"/>`;
         if (consR > R0) inner += `<path class="wedge wedge-consolidated" d="${wedgeBandPath(a0, a1, R0, consR)}"/>`;
       }
-      wedgeParts.push(`<g class="skill-group" data-skill-name="${esc(s.name)}" data-category="${esc(s.category)}" style="--mid:${am.toFixed(1)}">${inner}</g>`);
-      if (s.years >= 10) {
-        const dp = polarToCart(MAX_R + 6, am);
-        dotParts.push(`<circle class="skill-dot" cx="${dp.x.toFixed(1)}" cy="${dp.y.toFixed(1)}" r="2.4"/>`);
-      }
+      wedgeParts.push(`<g class="skill-group" data-skill-name="${esc(s.name)}" data-category="${esc(s.category)}" data-mid="${am.toFixed(2)}" style="--mid:${am.toFixed(1)}">${inner}</g>`);
     });
 
     const hub = `
@@ -507,7 +1155,6 @@
       <svg viewBox="-80 -210 300 420" xmlns="http://www.w3.org/2000/svg" class="radar-svg focus" role="img" aria-label="${esc(cat.label || catId)} skills">
         <circle class="sector-bg" cx="0" cy="0" r="${MAX_R + 10}"/>
         ${wedgeParts.join('')}
-        ${dotParts.join('')}
         ${hub}
       </svg>
     `;

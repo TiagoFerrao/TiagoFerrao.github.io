@@ -7,41 +7,62 @@
 
 /* Small phones */
 @media (max-width: 400px) {
-  .hub-gallery {
-    grid-template-columns: 1fr;
-  }
-
-  .hub-card .card-desc {
-    display: none;
-  }
-
   .hero h1 {
     font-size: var(--text-3xl);
   }
 }
 
-/* --- Tablet (600px+) --- */
-@media (min-width: 600px) {
-  .hub-gallery {
-    grid-template-columns: repeat(2, 1fr);
+/* --- Hub: stack to a single list below the two-pane breakpoint --- */
+@media (max-width: 768px) {
+  .hub {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  /* No preview pane on touch — the list becomes the menu */
+  .hub-panel {
+    display: none;
+  }
+
+  /* Each row becomes a self-contained card with its description visible */
+  .hub-item {
+    flex-wrap: wrap;
+    padding: var(--space-md);
+    border-color: var(--border-subtle);
+    background: var(--bg-surface);
+  }
+
+  .hub-item-desc {
+    display: block;
+    flex-basis: 100%;
+    padding-left: calc(24px + var(--space-md));
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  /* Pin the "soon" tag to the card corner instead of wrapping a line */
+  .hub-item-tag {
+    position: absolute;
+    top: var(--space-md);
+    right: var(--space-md);
+    margin-left: 0;
+  }
+
+  /* The "active" highlight only means something next to the panel */
+  .hub-item.active {
+    border-color: var(--border-subtle);
+  }
+
+  .hub-item.active::before {
+    display: none;
   }
 }
 
 /* --- Desktop (900px+) --- */
 @media (min-width: 900px) {
-  .hub-gallery {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
   .hero h1 {
     font-size: var(--text-5xl);
-  }
-}
-
-/* --- Wide Desktop (1100px+) --- */
-@media (min-width: 1100px) {
-  .hub-gallery {
-    grid-template-columns: repeat(3, 1fr);
   }
 }
 
@@ -81,6 +102,37 @@
   .site-nav a {
     padding: var(--space-md);
     text-align: center;
+  }
+
+  /* Sections dropdown expands inline inside the mobile nav panel */
+  .has-dropdown {
+    width: 100%;
+  }
+
+  .nav-dropdown-toggle {
+    width: 100%;
+    justify-content: center;
+    padding: var(--space-md);
+  }
+
+  .nav-dropdown {
+    position: static;
+    margin-top: var(--space-xs);
+    padding: 0;
+    min-width: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height var(--transition-base);
+  }
+
+  .has-dropdown.open .nav-dropdown {
+    max-height: 600px;
   }
 
   /* Contact grid stacks on mobile */

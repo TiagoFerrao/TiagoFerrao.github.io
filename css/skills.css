@@ -70,10 +70,12 @@
   font-weight: 600;
 }
 
-/* --- Radar dashboard layout (radar left, legend right) --- */
+/* --- Radar dashboard layout (radar left, legend right) ---
+   Both states use fr units so grid-template-columns can actually interpolate
+   (mixing px and fr makes the browser snap rather than animate). */
 .skills-dashboard {
   display: grid;
-  grid-template-columns: 1fr 220px;
+  grid-template-columns: 4fr 1fr;
   gap: var(--space-2xl);
   align-items: center;
   margin-bottom: var(--space-3xl);
@@ -95,13 +97,13 @@
   opacity: 0;
   transition: transform 420ms ease-in, opacity 420ms ease-in !important;
 }
-.radar-svg.closing .skill-dot,
 .radar-svg.closing .sector-bg,
 .radar-svg.closing .quad-label,
 .radar-svg.closing .hybrid-hub {
   opacity: 0;
   transition: opacity 300ms ease-in;
 }
+
 
 /* Focused fan slides in from the centre and grows open */
 .radar-svg.focus {
@@ -162,15 +164,7 @@
 }
 
 /* Dimmed (collapsed) elements when a domain is selected */
-.radar-svg .skill-group.dimmed,
-.radar-svg .skill-dot.dimmed { opacity: 0.1; }
-
-/* Tip dot — marks 10+ years of practice */
-.radar-svg .skill-dot {
-  fill: var(--bg-primary);
-  stroke: var(--accent-primary);
-  stroke-width: 1;
-}
+.radar-svg .skill-group.dimmed { opacity: 0.1; }
 
 /* Center hub */
 .radar-svg .hybrid-hub { cursor: help; outline: none; }
