@@ -93,6 +93,98 @@
   font-weight: 700;
 }
 
+/* --- Sections Dropdown --- */
+.has-dropdown {
+  position: relative;
+}
+
+.nav-dropdown-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--border-radius-sm);
+  letter-spacing: 0.02em;
+  transition: all var(--transition-fast);
+}
+
+.nav-dropdown-toggle:hover {
+  color: var(--text-primary);
+  background: var(--bg-surface);
+}
+
+.nav-dropdown-toggle.active {
+  color: var(--text-on-accent);
+  background: var(--accent-primary);
+  font-weight: 700;
+}
+
+.nav-caret {
+  width: 14px;
+  height: 14px;
+  transition: transform var(--transition-fast);
+}
+
+.has-dropdown:hover .nav-caret,
+.has-dropdown.open .nav-caret {
+  transform: rotate(180deg);
+}
+
+.nav-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: var(--space-sm);
+  min-width: 210px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-xs);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+  transition: all var(--transition-fast);
+  z-index: 200;
+}
+
+.has-dropdown:hover .nav-dropdown,
+.has-dropdown:focus-within .nav-dropdown,
+.has-dropdown.open .nav-dropdown {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
+}
+
+.nav-dropdown a {
+  display: block;
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  border-radius: var(--border-radius-sm);
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.nav-dropdown a:hover {
+  color: var(--text-primary);
+  background: var(--bg-surface);
+}
+
+.nav-dropdown a.active {
+  color: var(--accent-primary);
+  font-weight: 700;
+}
+
 /* --- Mobile Nav Toggle --- */
 .nav-toggle {
   display: none;
