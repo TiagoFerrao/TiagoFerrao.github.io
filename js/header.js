@@ -53,8 +53,8 @@
   header.innerHTML = `
     <div class="container">
       <a href="index.html" class="site-brand">
-        <h1>Tiago Ferrao</h1>
-        <span class="subtitle">Digital Innovator</span>
+        <h1>Tiago Ferrão</h1>
+        <span class="subtitle">Innovation Leader · Hybrid Manager</span>
       </a>
       <button class="nav-toggle" aria-label="Toggle navigation">
         <!-- Icon: ui-nav-toggle (img/icons/ui-nav-toggle.svg) -->
