@@ -4,11 +4,16 @@
    ============================================ */
 
 /* --- Container --- */
+/* Fluid container: always keeps a gutter on each side, caps on big screens.
+   width = min(viewport minus two gutters, the content cap) */
 .container {
-  width: 100%;
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 0 var(--space-lg);
+  width: min(100% - (2 * var(--gutter)), var(--shell-max));
+  margin-inline: auto;
+}
+
+/* Long-form text blocks — readable line length regardless of shell width */
+.prose {
+  max-width: var(--prose-max);
 }
 
 /* --- Header --- */

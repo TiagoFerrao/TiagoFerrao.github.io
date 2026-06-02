@@ -101,7 +101,10 @@
   --text-5xl: 3.5rem;
 
   /* Layout */
-  --max-width: 1200px;
+  --max-width: 1200px;                  /* legacy alias (kept for any refs) */
+  --shell-max: clamp(1100px, 80vw, 1400px); /* cap grows on wide screens: 1100 → 1400 */
+  --prose-max: 72ch;                    /* readable text measure (~720px) */
+  --gutter: clamp(1.5rem, 5vw, 4rem);   /* fluid side margin: 24px → 64px */
   --header-height: 72px;
   --border-radius-sm: 8px;
   --border-radius-md: 12px;
