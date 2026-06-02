@@ -10,18 +10,22 @@
    The render/layout code keys off the internal id (position); the
    displayed name comes from `label`. Relabel here, not in the renderer.
 
-   Fields per skill:
-   - name:             display name
-   - category:         management | stem | digital | soft   (= position id)
-   - level:            0-100  (outer radius on the radar)
-   - consolidatedLevel: optional 0-100 (inner solid radius)
-                        Default behaviour if absent → derived from status:
-                          consolidated → level     (single band)
-                          learning     → level * 0.4
-                        Override per-skill to fine-tune the story.
-   - years:            optional
-   - status:           'consolidated' | 'learning'
-   - evidence:         array of strings (shown in hover tooltip)
+   Skill schema (canonical):
+   - name:          display name
+   - category:      management | stem | digital | soft   (= position id)
+   - consolidated:  0-100  inner dark band — bedrock mastery
+   - total:         0-100  outer band ceiling — active-practice reach
+                    (consolidated <= total; if equal, no bright band)
+   - years:         optional (tooltip)
+   - evidence:      array of strings (tooltip)
+
+   Back-compat: the renderer consumes level / consolidatedLevel / status.
+   Those are DERIVED from consolidated/total in the normalisation pass at
+   the bottom of this file, so the radar/SVG logic stays untouched and the
+   two bands are driven by the explicit consolidated/total values:
+     level           = total            (outer radius)
+     consolidatedLevel = consolidated   (inner band depth)
+     status          = consolidated >= total ? 'consolidated' : 'learning'
    ============================================ */
 
 const skillsData = {
@@ -59,89 +63,100 @@ const skillsData = {
   skills: [
 
     // ===== STRATEGIST  (id: management, top-right) — 13 =====
-    { name: 'ISO 56000 series',         category: 'management', level: 95, years: 8,  status: 'consolidated',
-      evidence: ['National rep ISO TC 279 WG3', 'IPAC accreditation expert', 'CT 169 IPQ member'] },
-    { name: 'Innovation Strategy',      category: 'management', level: 90, years: 12, status: 'consolidated',
+    { name: 'Innovation Strategy',      category: 'management', consolidated: 70, total: 86, years: 12,
       evidence: ['Innovation Director AdP VALOR', 'CEiiA Policy Manager', 'INTELI'] },
-    { name: 'Portfolio Management',     category: 'management', level: 85, years: 8,  status: 'consolidated',
+    { name: 'ISO 56000 series',         category: 'management', consolidated: 64, total: 80, years: 8,
+      evidence: ['National rep ISO TC 279 WG3', 'IPAC accreditation expert', 'CT 169 IPQ member'] },
+    { name: 'Innovation Portfolio Management', category: 'management', consolidated: 57, total: 80, years: 8,
       evidence: ['~€1M/yr R&D portfolio AdP', 'CEiiA portfolios'] },
-    { name: 'Multi-year Roadmaps',      category: 'management', level: 80, years: 6,  status: 'consolidated',
+    { name: 'Multi-year Roadmaps',      category: 'management', consolidated: 75, total: 80, years: 6,
       evidence: ['AdP multi-horizon roadmaps (short/medium/long)'] },
-    { name: 'Operating Models',         category: 'management', level: 80, years: 8,  status: 'consolidated',
+    { name: 'Operating Models',         category: 'management', consolidated: 75, total: 80, years: 8,
       evidence: ['Built AdP innovation from scratch', 'SmartEnergyLab governance'] },
-    { name: 'Business Case Construction', category: 'management', level: 80, years: 12, status: 'consolidated',
+    { name: 'Business Case Construction', category: 'management', consolidated: 75, total: 80, years: 12,
       evidence: ['AdP innovation cases', 'M&A Lanco / Martifer'] },
-    { name: 'Cross-border Operations',  category: 'management', level: 80, years: 10, status: 'consolidated',
-      evidence: ['PT, IT, UK teams across Lanco, Martifer, Sonae'] },
-    { name: 'Strategic Intelligence',   category: 'management', level: 80, years: 4,  status: 'consolidated',
+    { name: 'Strategic Intelligence',   category: 'management', consolidated: 70, total: 70, years: 4,
       evidence: ['SmartEnergyLab methodology for major utility'] },
-    { name: 'Financial Modelling',      category: 'management', level: 70, years: 12, status: 'consolidated',
-      evidence: ['Multi-scale (M&A → pilot)', 'Lanco/Martifer DD'] },
-    { name: 'Compliance Frameworks',    category: 'management', level: 65, years: 8,  status: 'consolidated',
+    { name: 'Compliance Frameworks',    category: 'management', consolidated: 60, total: 65, years: 8,
       evidence: ['IPAC ISO 56002 / NP 4457'] },
-    { name: 'KPI Design',               category: 'management', level: 60, years: 8,  status: 'learning',
-      evidence: ['AdP innovation governance', 'CEiiA indicators'] },
-    { name: 'M&A Due Diligence',        category: 'management', level: 55, years: 6,  status: 'consolidated',
-      evidence: ['Lanco Solar (1 M&A)', 'Martifer PV + wind acquisitions'] },
-    { name: 'Process Optimization',     category: 'management', level: 55, years: 8,  status: 'consolidated',
+    { name: 'Financial Modelling',      category: 'management', consolidated: 60, total: 60, years: 12,
+      evidence: ['Multi-scale (M&A → pilot)', 'Lanco/Martifer DD'] },
+    { name: 'Process Optimization',     category: 'management', consolidated: 50, total: 60, years: 8,
       evidence: ['AdP Group process owners', 'Simplification + automation'] },
+    { name: 'Cross-border Operations',  category: 'management', consolidated: 45, total: 47, years: 10,
+      evidence: ['PT, IT, UK teams across Lanco, Martifer, Sonae'] },
+    { name: 'KPI Design',               category: 'management', consolidated: 40, total: 42, years: 8,
+      evidence: ['AdP innovation governance', 'CEiiA indicators'] },
+    { name: 'M&A Due Diligence',        category: 'management', consolidated: 40, total: 42, years: 6,
+      evidence: ['Lanco Solar (1 M&A)', 'Martifer PV + wind acquisitions'] },
 
     // ===== ENGINEER  (id: stem, bottom-right) — 6 =====
-    { name: 'Energy Systems',           category: 'stem', level: 75, years: 18, status: 'consolidated',
-      evidence: ['INTELI Energy Programme', 'Martifer renewables', 'Lanco Solar utility-scale PV', 'SmartEnergyLab CoLAB'] },
-    { name: 'Environmental Engineering', category: 'stem', level: 70, years: 20, status: 'consolidated',
+    { name: 'Environmental Engineering', category: 'stem', consolidated: 60, total: 80, years: 20,
       evidence: ['Graduate degree — University of Aveiro (1995-2002)', 'Air pollution specialisation', 'Sonae Sierra EMS work'] },
-    { name: 'Sustainability (GHG/LCA/EMS)', category: 'stem', level: 70, years: 15, status: 'consolidated',
-      evidence: ['Enerdinâmica GHG mitigation plan', 'Sonae Sierra EMS rep', 'WWF One Planet Living'] },
-    { name: 'Research Methodology',     category: 'stem', level: 70, years: 6, status: 'learning',
+    { name: 'Research Methodology',     category: 'stem', consolidated: 50, total: 70, years: 6,
       evidence: ['PhD candidate NOVA IMS (Data-Driven Innovation)', 'WIT Transactions paper (2014)'] },
-    { name: 'Data Science',             category: 'stem', level: 60, years: 4, status: 'learning',
+    { name: 'Energy Systems',           category: 'stem', consolidated: 60, total: 65, years: 18,
+      evidence: ['INTELI Energy Programme', 'Martifer renewables', 'Lanco Solar utility-scale PV', 'SmartEnergyLab CoLAB'] },
+    { name: 'Sustainability (GHG/LCA/EMS)', category: 'stem', consolidated: 60, total: 60, years: 15,
+      evidence: ['Enerdinâmica GHG mitigation plan', 'Sonae Sierra EMS rep', 'WWF One Planet Living'] },
+    { name: 'Data Science',             category: 'stem', consolidated: 35, total: 50, years: 4,
       evidence: ['Lisbon Data Science Academy — Batch #5', 'PhD NOVA IMS'] },
-    { name: 'Scientific Writing',       category: 'stem', level: 55, years: 8, status: 'consolidated',
+    { name: 'Scientific Writing',       category: 'stem', consolidated: 40, total: 50, years: 8,
       evidence: ['Co-authored Cosmi et al. 2014 (WIT Transactions)', 'Master\'s dissertation', 'PhD research papers in progress'] },
 
     // ===== BUILDER  (id: digital, bottom-left) — 11 =====
-    { name: 'Innovation tooling (Notion/Asana/Miro)', category: 'digital', level: 85, years: 5, status: 'consolidated',
+    { name: 'Innovation tooling (Notion/Asana/Miro)', category: 'digital', consolidated: 75, total: 90, years: 5,
       evidence: ['AdP VALOR innovation stack', 'CEiiA portfolio tools'] },
-    { name: 'GenAI / LLM integration',  category: 'digital', level: 75, years: 2, status: 'learning',
+    { name: 'GenAI / LLM integration',  category: 'digital', consolidated: 30, total: 75, years: 2,
       evidence: ['AdP VALOR — embed AI into operations', 'Daily Claude/MCP work', 'Agentic workflows'] },
-    { name: 'MCP / Agentic workflows',  category: 'digital', level: 70, years: 1, status: 'learning',
+    { name: 'MCP / Agentic workflows',  category: 'digital', consolidated: 50, total: 60, years: 1,
       evidence: ['Current AdP work', 'CV explicit', 'Active experimentation'] },
-    { name: 'Prompt engineering',       category: 'digital', level: 70, years: 2, status: 'learning',
-      evidence: ['Daily Claude / LLM work', 'Innovation workflow design'] },
-    { name: 'Python',                   category: 'digital', level: 60, years: 5, status: 'learning',
-      evidence: ['Le Wagon Full Stack Bootcamp', 'Lisbon Data Science Academy', 'AdP VALOR pipelines'] },
-    { name: 'HTML / CSS / JS',          category: 'digital', level: 60, years: 5, status: 'consolidated',
+    { name: 'HTML / CSS / JS',          category: 'digital', consolidated: 50, total: 60, years: 5,
       evidence: ['This portfolio site (active build)', 'Le Wagon Bootcamp'] },
-    { name: 'SQL',                      category: 'digital', level: 60, years: 4, status: 'consolidated',
-      evidence: ['Lisbon Data Science Academy'] },
-    { name: 'ERP integration (SAP)',    category: 'digital', level: 55, years: 8, status: 'consolidated',
-      evidence: ['AdP VALOR ERP + collab stack', 'Sonae Sierra processes'] },
-    { name: 'Vector / SVG',             category: 'digital', level: 50, years: 3, status: 'consolidated',
-      evidence: ['This portfolio icon system', 'Design refinement'] },
-    { name: 'Data Visualization',       category: 'digital', level: 45, status: 'learning',
-      evidence: ['Hand-built SVG skills radar on this site', 'Lisbon Data Science Academy'] },
-    { name: 'UI/UX Design',             category: 'digital', level: 45, years: 8, status: 'learning',
+    { name: 'UI/UX Design',             category: 'digital', consolidated: 30, total: 60, years: 8,
       evidence: ['Site design choices', 'SportSpots product UI', 'Innovation-driven design'] },
+    { name: 'Python',                   category: 'digital', consolidated: 35, total: 55, years: 5,
+      evidence: ['Le Wagon Full Stack Bootcamp', 'Lisbon Data Science Academy', 'AdP VALOR pipelines'] },
+    { name: 'Prompt engineering',       category: 'digital', consolidated: 30, total: 50, years: 2,
+      evidence: ['Daily Claude / LLM work', 'Innovation workflow design'] },
+    { name: 'Vector / SVG',             category: 'digital', consolidated: 45, total: 48, years: 3,
+      evidence: ['This portfolio icon system', 'Design refinement'] },
+    { name: 'SQL',                      category: 'digital', consolidated: 30, total: 40, years: 4,
+      evidence: ['Lisbon Data Science Academy'] },
+    { name: 'Data Visualization',       category: 'digital', consolidated: 25, total: 40,
+      evidence: ['Hand-built SVG skills radar on this site', 'Lisbon Data Science Academy'] },
+    { name: 'ERP integration (SAP)',    category: 'digital', consolidated: 0,  total: 30, years: 8,
+      evidence: ['AdP VALOR ERP + collab stack', 'Sonae Sierra processes'] },
 
     // ===== CONNECTOR  (id: soft, top-left) — 8 =====
-    { name: 'Cross-cultural Fluency',   category: 'soft', level: 90, years: 18, status: 'consolidated',
-      evidence: ['PT working in IT for Indian co. HQ London (Lanco)', 'Multinational teams'] },
-    { name: 'Teaching / Knowledge Transfer', category: 'soft', level: 85, years: 3, status: 'consolidated',
+    { name: 'Teaching / Knowledge Transfer', category: 'soft', consolidated: 60, total: 90, years: 3,
       evidence: ['Invited Professor — International Innovation Management, ISCTE Executive Education'] },
-    { name: 'Multilingual (PT native · EN C2 · IT C2 · FR A1)', category: 'soft', level: 85, years: 20, status: 'consolidated',
+    { name: 'Multilingual (PT native · EN C2 · IT C2 · FR A1)', category: 'soft', consolidated: 90, total: 90, years: 20,
       evidence: ['Portuguese (native)', 'English C2 — TOEFL 110/120', 'Italian C2', 'French A1'] },
-    { name: 'Stakeholder Management',   category: 'soft', level: 80, years: 15, status: 'consolidated',
-      evidence: ['Municipalities, grid operators, financial counterparties (Martifer)', 'Multi-entity AdP Group'] },
-    { name: 'Sector Adaptability',      category: 'soft', level: 80, years: 20, status: 'consolidated',
-      evidence: ['Energy, environment, automotive, water, sports tech', 'Research → consulting → corporate → startup'] },
-    { name: 'Lean Startup Mindset',     category: 'soft', level: 75, years: 7, status: 'consolidated',
+    { name: 'Cross-cultural Fluency',   category: 'soft', consolidated: 80, total: 82, years: 18,
+      evidence: ['PT working in IT for Indian co. HQ London (Lanco)', 'Multinational teams'] },
+    { name: 'Lean Startup Mindset',     category: 'soft', consolidated: 70, total: 70, years: 7,
       evidence: ['Implemented Eric Ries methodology at SmartEnergyLab'] },
-    { name: 'Team Building',            category: 'soft', level: 70, years: 8, status: 'consolidated',
+    { name: 'Team Building',            category: 'soft', consolidated: 65, total: 70, years: 8,
       evidence: ['Innovation teams from scratch at AdP'] },
-    { name: 'Design Thinking',          category: 'soft', level: 65, years: 8, status: 'consolidated',
-      evidence: ['Innovation methodology toolkit'] }
+    { name: 'Stakeholder Management',   category: 'soft', consolidated: 60, total: 60, years: 15,
+      evidence: ['Municipalities, grid operators, financial counterparties (Martifer)', 'Multi-entity AdP Group'] },
+    { name: 'Design Thinking',          category: 'soft', consolidated: 60, total: 60, years: 8,
+      evidence: ['Innovation methodology toolkit'] },
+    { name: 'Sector Adaptability',      category: 'soft', consolidated: 35, total: 45, years: 20,
+      evidence: ['Energy, environment, automotive, water, sports tech', 'Research → consulting → corporate → startup'] }
   ]
 };
+
+/* --- Normalisation: derive legacy render fields from consolidated/total ---
+   Keeps the radar/SVG/animation logic untouched while the two bands are
+   driven by the explicit consolidated/total values. */
+skillsData.skills.forEach(s => {
+  s.total = Math.max(0, Math.min(100, s.total));
+  s.consolidated = Math.max(0, Math.min(s.total, s.consolidated)); // clamp consolidated <= total
+  s.level = s.total;                                               // outer band ceiling
+  s.consolidatedLevel = s.consolidated;                            // inner band depth
+  s.status = s.consolidated >= s.total ? 'consolidated' : 'learning';
+});
 
 window.skillsData = skillsData;
