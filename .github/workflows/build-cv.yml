@@ -44,5 +44,9 @@ jobs:
             echo "PDF unchanged; nothing to commit."
           else
             git commit -m "chore: auto-regenerate CV PDF from cv-data.js [skip ci]"
+            # Rebase onto the latest master in case it advanced since checkout
+            # (e.g. a re-run of an old run, or back-to-back pushes), so the
+            # push is a clean fast-forward instead of a rejected non-ff.
+            git pull --rebase --autostash origin master
             git push
           fi
