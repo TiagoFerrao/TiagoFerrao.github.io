@@ -262,6 +262,7 @@ const cvData = {
   ],
 
   additionalTraining: [
+    { course: "Data Analysis & Visualization with Python — paths + 12 projects (2022–2025)", institution: "Dataquest" },
     { course: "Full Stack Development Bootcamp", institution: "Le Wagon" },
     { course: "Energy and Environment Economics", institution: "York University" },
     { course: "Environmental Auditing and Environmental Management Systems", institution: "Jacques Whitford Institute" },
