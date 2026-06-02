@@ -1,0 +1,191 @@
+/* ============================================
+   CAREER TIMELINE (business.html)
+   Vertical timeline at all sizes (newest-first): year | dot | company.
+   Mobile: tap a role to expand its story inline (accordion).
+   Desktop (>=900px): two columns — timeline left; worked-cities map +
+   wide detail panel on the right. Clicking a role lights its city/cities
+   and fills the panel below the map. Map visuals mirror contacts (.wm-*).
+   ============================================ */
+
+/* ---------- Layout ---------- */
+.biz-layout {
+  display: grid;
+  grid-template-columns: 1fr;     /* single column on mobile */
+  gap: var(--space-xl);
+}
+
+.biz-map-wrap { display: none; }   /* map + detail are a desktop-only enhancement */
+
+/* ---------- Timeline (vertical) ---------- */
+.timeline { position: relative; width: 100%; }
+
+.timeline-items {
+  position: relative;
+  display: flex;
+  flex-direction: column-reverse;  /* newest entry at the top */
+  gap: var(--space-lg);
+}
+
+.timeline-items::before {          /* vertical spine, runs through the dot column */
+  content: '';
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 69px;
+  width: 2px;
+  background: linear-gradient(var(--accent-primary), var(--accent-secondary));
+  opacity: 0.45;
+}
+
+.tl-item { position: relative; }
+
+.tl-dot {
+  display: grid;
+  grid-template-columns: 48px 16px 1fr; /* year | marker | company */
+  column-gap: 14px;
+  align-items: center;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: var(--space-xs) 0;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-display);
+  color: var(--text-primary);
+}
+
+.tl-year {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  text-align: right;
+  transition: color var(--transition-fast);
+}
+
+.tl-marker {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--bg-primary);
+  border: 2px solid var(--accent-primary);
+  box-shadow: 0 0 0 4px var(--accent-glow);
+  transition: all var(--transition-fast);
+}
+
+.tl-company {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: color var(--transition-fast);
+}
+
+.tl-dot:hover .tl-marker,
+.tl-item.is-open .tl-marker {
+  background: var(--accent-primary);
+  box-shadow: 0 0 14px var(--accent-glow-strong);
+}
+.tl-dot:hover .tl-company,
+.tl-item.is-open .tl-company { color: var(--accent-primary); }
+.tl-item.is-open .tl-year { color: var(--text-secondary); }
+
+/* reveal panel — accordion (mobile) */
+.tl-panel {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  margin-top: var(--space-xs);
+  padding-left: 78px;              /* align under the company column */
+  transition: max-height var(--transition-base), opacity var(--transition-base);
+}
+.tl-item.is-open .tl-panel { max-height: 600px; opacity: 1; }
+
+.tl-role { margin: 0 0 2px; }
+.tl-meta {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  margin: 0 0 var(--space-sm);
+}
+.tl-blurb {
+  font-size: var(--text-sm);
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin: 0;
+}
+.tl-panel .accent, .biz-detail .accent { color: var(--accent-primary); font-weight: 600; }
+
+/* ---------- Map (mirrors contacts world map) ---------- */
+.wm-title {
+  text-align: center;
+  color: var(--text-primary);
+  margin-bottom: var(--space-md);
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+.biz-map { position: relative; }
+.wm-frame {                         /* clips the map to rounded corners */
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-primary);
+  box-shadow: var(--shadow-glow), var(--shadow-md);
+}
+.wm-svg { display: block; width: 100%; height: auto; }
+.wm-land {
+  fill: var(--bg-surface);
+  stroke: var(--accent-primary);
+  stroke-width: 0.2;
+  stroke-opacity: 0.45;
+  stroke-linejoin: round;
+}
+
+/* worked-city circles — unlit; size encodes how many roles touched the city */
+.wm-work {
+  fill: var(--bg-surface);
+  stroke: var(--accent-primary);
+  stroke-width: 0.45;
+  stroke-opacity: 0.85;
+  cursor: default;
+  transition: fill var(--transition-fast), stroke-opacity var(--transition-fast);
+}
+.wm-work.is-active {
+  fill: var(--accent-primary);
+  stroke-opacity: 1;
+  filter: drop-shadow(0 0 3px var(--accent-glow-strong));
+}
+
+/* wide story panel below the map */
+.biz-detail {
+  margin-top: var(--space-lg);
+  padding: var(--space-xl);
+  min-height: 180px;
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.biz-detail h4 {
+  margin: 0 0 var(--space-sm);
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  color: var(--accent-primary);
+  letter-spacing: 0.02em;
+}
+.biz-detail .tl-blurb { font-size: var(--text-base); }
+
+/* ---------- Desktop: two columns + map/detail visible ---------- */
+@media (min-width: 900px) {
+  .biz-layout {
+    grid-template-columns: minmax(260px, 360px) 1fr;
+    gap: var(--space-2xl);
+    align-items: start;
+  }
+  .biz-map-wrap {
+    display: block;
+    position: sticky;
+    top: calc(var(--header-height) + var(--space-lg));
+  }
+  /* on desktop the story shows in the panel below the map, not inline */
+  .tl-panel { display: none; }
+}
