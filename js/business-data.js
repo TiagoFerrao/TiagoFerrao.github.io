@@ -27,8 +27,8 @@ const businessData = [
     blurb: 'My first "real" job after college. I joined the Portuguese research team in the European project "Co-combustion of Coal and Meat and Bone Meal" looking for solutions for hazardous residues originated by the BSE crisis in Europe.'
   },
   {
-    company: 'Enerdinamica',
-    role: 'Coordinator for Energy and Sustainability',
+    company: 'Enerdinâmica',
+    role: 'Junior Consultant',
     year: '2004',
     dates: 'Jan 2004 – Aug 2005',
     location: 'Lisbon',
@@ -42,20 +42,20 @@ const businessData = [
     dates: 'Sep 2005 – Jan 2008',
     location: 'Lisbon | Milan',
     cities: ['lisboa', 'milao'],
-    blurb: 'My collaboration with Sonae Sierra started as an intern of the "NetworkContacto Program". I was placed in Milan, Italy where I implemented all the procedures and best practices required by the holding company for environmental management across their shopping centres.'
+    blurb: 'My collaboration with Sonae Sierra started as an intern of the "NetworkContacto Program", placed in Milan, Italy, where I implemented environmental standards and procedures across the Italian shopping centre portfolio. I then returned to the Portuguese headquarters as Environmental Technician, delivering environmental compliance and EMS services to Sonae Sierra shopping centres worldwide — my final year inside a mature global shared services operating model.'
   },
   {
     company: 'Martifer',
     role: 'Deputy Country Manager',
     year: '2008',
     dates: 'Jan 2008 – Jan 2011',
-    location: 'Rome',
-    cities: ['roma'],
-    blurb: 'I started at Martifer because of my experience with the Italian market and work culture developed at Sonae, but my expertise in the renewable sector was almost none. It was the boom of the renewable sector and I grew tremendously in this role managing solar and wind projects.'
+    location: 'Lisbon | Rome',
+    cities: ['lisboa', 'roma'],
+    blurb: 'I started at Martifer Renewables in Lisbon as International Business Manager — analysing renewable project pipelines across the Mediterranean during the peak of the European renewables boom. I was then deployed to Rome as Deputy Country Manager, running the Italian subsidiary as a lean two-person operation, conducting M&A due diligence on PV and wind plant acquisitions and closing high-value deal packages.'
   },
   {
     company: 'Lanco Solar',
-    role: 'Senior Manager',
+    role: 'Business Development',
     year: '2011',
     dates: 'Jan 2011 – Dec 2011',
     location: 'Milan | London',
@@ -90,13 +90,40 @@ const businessData = [
     blurb: 'IPAC is the official Portuguese entity responsible for the accreditation of national certification bodies. Certifications such as ISO9001 or NP4457 can only be emitted by accredited certification bodies. My role involves evaluating innovation management systems across organisations.'
   },
   {
-    company: 'READYIINNOV',
+    company: 'Ready2innov',
     role: 'Partner | Digital Disruption',
     year: '2019',
     dates: 'Sep 2019 – present',
     location: 'Lisbon',
     cities: ['lisboa'],
-    blurb: 'READYIINNOV is my consultancy project on the innovation management subject. Our mission is to support the development of innovative products, services and processes but most of all to capacitate all kinds of organisations to develop their own innovation competences and culture.'
+    blurb: 'Ready2innov is my consultancy project on the innovation management subject. Our mission is to support the development of innovative products, services and processes but most of all to capacitate all kinds of organisations to develop their own innovation competences and culture.'
+  },
+  {
+    company: 'SmartEnergyLab',
+    role: 'Innovation Manager',
+    year: '2021',
+    dates: '2021 – 2022',
+    location: 'Lisbon',
+    cities: ['lisboa'],
+    blurb: 'SmartEnergyLab is EDP\'s National Collaborative Laboratory for Energy Transition. As Innovation Manager I implemented Eric Ries\' Lean Startup methodology across the lab\'s energy transition project portfolio and built innovation governance, a technology validation pipeline, and a strategic intelligence framework for a major national utility.'
+  },
+  {
+    company: 'AdP VALOR',
+    role: 'Innovation Director',
+    year: '2022',
+    dates: '2022 – present',
+    location: 'Lisbon',
+    cities: ['lisboa'],
+    blurb: 'AdP VALOR is the innovation and shared services arm of Águas de Portugal Group, serving all group operating companies. As Innovation Director I lead a small team orchestrating innovation across four areas — strategy, open innovation and EU R&D, innovation shared services, and new product and service development — including a ~€1M/year program of new innovation projects executed by teams across the group.'
+  },
+  {
+    company: 'ISCTE Executive Education',
+    role: 'Invited Professor',
+    year: '2023',
+    dates: '2023 – present',
+    location: 'Lisbon',
+    cities: ['lisboa'],
+    blurb: 'ISCTE Executive Education is one of Portugal\'s leading executive education institutions. As Invited Professor in the International Management Master\'s programme, I teach innovation management in international corporate environments — covering methodology, governance, data-driven decision-making, and innovation\'s impact on corporate competitiveness.'
   }
 ];
 
