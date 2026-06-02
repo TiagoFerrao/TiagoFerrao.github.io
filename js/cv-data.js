@@ -168,27 +168,30 @@ const cvData = {
       start: "2006",
       end: "2008",
       location: "Lisbon, PT",
-      context: "Global shared services delivery to Sonae Sierra's international shopping centre portfolio.",
+      context: "Global EMS Shared Services Delivery",
       bullets: [
-        "Delivered environmental compliance and EMS services from Portugal to Sonae Sierra shopping centres worldwide — early-career exposure to a mature global shared services operating model."
+        "Returned to Portuguese headquarters to deliver environmental compliance and EMS services to Sonae Sierra shopping centres worldwide — final year inside a mature global shared services operating model."
       ]
     },
     {
-      role: "Environmental Manager Representative",
+      role: "International Intern",
       company: "Sonae Sierra",
       start: "2005",
       end: "2006",
       location: "Milan, IT",
       bullets: [
-        "Deployed to the Italian branch as Environmental Manager Representative to conduct on-the-ground audits and assure Group process compliance across European subsidiaries."
+        "International intern at the Italian branch, responsible for implementing environmental standards and procedures across the Italian shopping centre portfolio."
       ]
     },
     {
-      role: "Coordinator for Energy and Sustainability",
+      role: "Junior Consultant",
       company: "Enerdinâmica",
       start: "2004",
       end: "2005",
-      location: "Lisbon, PT"
+      location: "Lisbon, PT",
+      bullets: [
+        "Designed strategic plans for energy neutrality — covering zero-carbon and low-carbon transitions, emissions reduction roadmaps, and broader sustainability strategy."
+      ]
     },
     {
       role: "Junior Researcher",
@@ -197,7 +200,7 @@ const cvData = {
       end: "2004",
       location: "Lisbon, PT",
       bullets: [
-        "Energy and environment applied research at Portugal's national engineering and industrial technology institute."
+        "Applied research at Portugal's national engineering and industrial technology institute. Operated a fluidized bed reactor for the safe incineration of meat-and-bone meal potentially contaminated with BSE (mad cow disease), and monitored dioxin emissions in the exhaust during the peak European BSE crisis."
       ]
     }
   ],
