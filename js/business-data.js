@@ -57,7 +57,7 @@ const businessData = [
     company: 'Lanco Solar',
     role: 'Business Development',
     year: '2011',
-    dates: 'Jan 2011 – Dec 2011',
+    dates: 'Jan 2011 – 2012',
     location: 'Milan | London',
     cities: ['milao', 'londres'],
     blurb: 'LANCO SOLAR was part of the Lanco group, an Indian company leader in Engineering, Procurement and Construction (EPC), Power, Solar, Natural Resources and Infrastructure. My experience here covered solar project development across European markets.'
@@ -66,7 +66,7 @@ const businessData = [
     company: 'INTELI',
     role: 'Energy Program Manager',
     year: '2012',
-    dates: 'Mar 2012 – May 2015',
+    dates: 'Mar 2012 – 2016',
     location: 'Lisbon',
     cities: ['lisboa'],
     blurb: 'INTELI was a Portuguese think-tank that provides technical consultancy in nation-wide strategic areas. The company operated with 4 main areas of expertise including Energy, Smart-cities, Aeronautics and Automotive. I managed the energy programme, leading projects like BioAtlas.'
@@ -74,8 +74,8 @@ const businessData = [
   {
     company: 'CEIIA',
     role: 'Innovation Policy Manager',
-    year: '2015',
-    dates: 'May 2015 – Jan 2018',
+    year: '2016',
+    dates: '2016 – 2018',
     location: 'Porto',
     cities: ['matosinhos'],
     blurb: 'CEIIA is a Centre of Engineering and Product Development that designs, implements and operates innovative products and systems. The dimension and heterogeneity of this organisation\'s portfolio offered a great opportunity to study and apply innovation management methods across very different contexts.'
@@ -83,8 +83,8 @@ const businessData = [
   {
     company: 'IPAC',
     role: 'Innovation Expert',
-    year: '2018',
-    dates: '2018 – present',
+    year: '2017',
+    dates: '2017 – 2021',
     location: 'Lisbon',
     cities: ['lisboa'],
     blurb: 'IPAC is the official Portuguese entity responsible for the accreditation of national certification bodies. Certifications such as ISO9001 or NP4457 can only be emitted by accredited certification bodies. My role involves evaluating innovation management systems across organisations.'
