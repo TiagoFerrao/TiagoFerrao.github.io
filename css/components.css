@@ -83,6 +83,16 @@
   transition: transform var(--transition-fast);
 }
 
+/* Duotone: primary at full accent, secondary muted (matches .duotone-icon look) */
+.hub-item-icon .fa-primary {
+  fill: currentColor;
+}
+
+.hub-item-icon .fa-secondary {
+  fill: var(--accent-secondary);
+  opacity: 0.4;
+}
+
 .hub-item:hover .hub-item-icon,
 .hub-item.active .hub-item-icon {
   transform: scale(1.1);
@@ -264,6 +274,15 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+.hero h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: 0.06em;
+  margin-bottom: var(--space-md);
 }
 
 .hero .tagline {
