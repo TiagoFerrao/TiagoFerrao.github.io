@@ -2,9 +2,17 @@
    SKILLS DATA
    Structured source for skills.html (radar visualisation).
 
+   Quadrant identity (label) → fixed geographic position (internal id):
+     Strategist → id "management" (top-right)
+     Engineer   → id "stem"       (bottom-right)
+     Builder    → id "digital"    (bottom-left)
+     Connector  → id "soft"       (top-left)
+   The render/layout code keys off the internal id (position); the
+   displayed name comes from `label`. Relabel here, not in the renderer.
+
    Fields per skill:
    - name:             display name
-   - category:         management | stem | digital | soft
+   - category:         management | stem | digital | soft   (= position id)
    - level:            0-100  (outer radius on the radar)
    - consolidatedLevel: optional 0-100 (inner solid radius)
                         Default behaviour if absent → derived from status:
@@ -26,12 +34,13 @@ const skillsData = {
     ]
   },
 
-  // Quadrant order = clockwise starting at TOP-RIGHT
+  // Quadrant order = clockwise starting at TOP-RIGHT.
+  // id = fixed geographic position; label = identity-coded role name.
   categories: [
-    { id: 'management', label: 'Management', tagline: 'Strategy, governance, finance' },
-    { id: 'stem',       label: 'STEM',       tagline: 'Science, engineering, research' },
-    { id: 'digital',    label: 'Digital',    tagline: 'Code, AI, tools' },
-    { id: 'soft',       label: 'Soft',       tagline: 'Connect & inspire' }
+    { id: 'management', label: 'Strategist', tagline: 'Strategy, governance, finance' },
+    { id: 'stem',       label: 'Engineer',   tagline: 'Science, engineering, research' },
+    { id: 'digital',    label: 'Builder',    tagline: 'Code, AI, tools' },
+    { id: 'soft',       label: 'Connector',  tagline: 'Connect & inspire' }
   ],
 
   statuses: [
@@ -49,7 +58,7 @@ const skillsData = {
 
   skills: [
 
-    // ===== MANAGEMENT (14) =====
+    // ===== STRATEGIST  (id: management, top-right) — 13 =====
     { name: 'ISO 56000 series',         category: 'management', level: 95, years: 8,  status: 'consolidated',
       evidence: ['National rep ISO TC 279 WG3', 'IPAC accreditation expert', 'CT 169 IPQ member'] },
     { name: 'Innovation Strategy',      category: 'management', level: 90, years: 12, status: 'consolidated',
@@ -68,8 +77,6 @@ const skillsData = {
       evidence: ['SmartEnergyLab methodology for major utility'] },
     { name: 'Financial Modelling',      category: 'management', level: 70, years: 12, status: 'consolidated',
       evidence: ['Multi-scale (M&A → pilot)', 'Lanco/Martifer DD'] },
-    { name: 'Team Building',            category: 'management', level: 70, years: 8,  status: 'consolidated',
-      evidence: ['Innovation teams from scratch at AdP'] },
     { name: 'Compliance Frameworks',    category: 'management', level: 65, years: 8,  status: 'consolidated',
       evidence: ['IPAC ISO 56002 / NP 4457'] },
     { name: 'KPI Design',               category: 'management', level: 60, years: 8,  status: 'learning',
@@ -79,7 +86,7 @@ const skillsData = {
     { name: 'Process Optimization',     category: 'management', level: 55, years: 8,  status: 'consolidated',
       evidence: ['AdP Group process owners', 'Simplification + automation'] },
 
-    // ===== STEM (6) =====
+    // ===== ENGINEER  (id: stem, bottom-right) — 6 =====
     { name: 'Energy Systems',           category: 'stem', level: 75, years: 18, status: 'consolidated',
       evidence: ['INTELI Energy Programme', 'Martifer renewables', 'Lanco Solar utility-scale PV', 'SmartEnergyLab CoLAB'] },
     { name: 'Environmental Engineering', category: 'stem', level: 70, years: 20, status: 'consolidated',
@@ -93,7 +100,7 @@ const skillsData = {
     { name: 'Scientific Writing',       category: 'stem', level: 55, years: 8, status: 'consolidated',
       evidence: ['Co-authored Cosmi et al. 2014 (WIT Transactions)', 'Master\'s dissertation', 'PhD research papers in progress'] },
 
-    // ===== DIGITAL (11) =====
+    // ===== BUILDER  (id: digital, bottom-left) — 11 =====
     { name: 'Innovation tooling (Notion/Asana/Miro)', category: 'digital', level: 85, years: 5, status: 'consolidated',
       evidence: ['AdP VALOR innovation stack', 'CEiiA portfolio tools'] },
     { name: 'GenAI / LLM integration',  category: 'digital', level: 75, years: 2, status: 'learning',
@@ -117,7 +124,7 @@ const skillsData = {
     { name: 'UI/UX Design',             category: 'digital', level: 45, years: 8, status: 'learning',
       evidence: ['Site design choices', 'SportSpots product UI', 'Innovation-driven design'] },
 
-    // ===== SOFT (7) =====
+    // ===== CONNECTOR  (id: soft, top-left) — 8 =====
     { name: 'Cross-cultural Fluency',   category: 'soft', level: 90, years: 18, status: 'consolidated',
       evidence: ['PT working in IT for Indian co. HQ London (Lanco)', 'Multinational teams'] },
     { name: 'Teaching / Knowledge Transfer', category: 'soft', level: 85, years: 3, status: 'consolidated',
@@ -130,6 +137,8 @@ const skillsData = {
       evidence: ['Energy, environment, automotive, water, sports tech', 'Research → consulting → corporate → startup'] },
     { name: 'Lean Startup Mindset',     category: 'soft', level: 75, years: 7, status: 'consolidated',
       evidence: ['Implemented Eric Ries methodology at SmartEnergyLab'] },
+    { name: 'Team Building',            category: 'soft', level: 70, years: 8, status: 'consolidated',
+      evidence: ['Innovation teams from scratch at AdP'] },
     { name: 'Design Thinking',          category: 'soft', level: 65, years: 8, status: 'consolidated',
       evidence: ['Innovation methodology toolkit'] }
   ]
