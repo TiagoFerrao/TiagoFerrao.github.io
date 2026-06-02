@@ -1,0 +1,48 @@
+name: Build CV PDF
+
+# Runs whenever cv-data.js (the source of truth) or build_cv.py (the generator)
+# changes on the master branch. Regenerates docs/CV_TiagoFerrao_2026.pdf and
+# commits it back to the repo. Triggered manually via workflow_dispatch too.
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'js/cv-data.js'
+      - 'scripts/build_cv.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-pdf:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install --quiet json5 reportlab
+
+      - name: Generate PDF
+        run: |
+          mkdir -p docs
+          python scripts/build_cv.py js/cv-data.js docs/CV_TiagoFerrao_2026.pdf
+
+      - name: Commit regenerated PDF (if changed)
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/CV_TiagoFerrao_2026.pdf
+          if git diff --staged --quiet; then
+            echo "PDF unchanged; nothing to commit."
+          else
+            git commit -m "chore: auto-regenerate CV PDF from cv-data.js [skip ci]"
+            git push
+          fi
