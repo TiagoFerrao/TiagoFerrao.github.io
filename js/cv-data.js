@@ -32,7 +32,7 @@ const cvData = {
     github: "https://github.com/TiagoFerrao"
   },
 
-  summary: "Hybrid manager with a STEM foundation and 20+ years of innovation leadership across R&D, EU-funded programmes, and digital transformation — combining environmental engineering, business management, innovation management, and data science. Currently Innovation Director at AdP VALOR, the innovation and shared services arm of Águas de Portugal Group, where a small team orchestrates a ~€1M/year program of new innovation projects across all group operating companies — selection, execution control, payments, and reporting — with project teams embedded at each operating company. Experienced in implementing innovation culture, aligning it with corporate strategy, and scaling AI and automation across organizations. National representative for innovation management methodology — ISO TC 279 WG3 (Tools and Methods), Portuguese Technical Commission 169 (R&D&I), IPAC accreditation expert for Innovation Management Systems, and European Innovation Council Expert Evaluator. Invited Professor for International Innovation Management at ISCTE Executive Education. Executive Master's in Innovation Management, with specialist training in data science at Lisbon Data Science Academy.",
+  summary: "Hybrid manager with a STEM foundation and 20+ years of innovation leadership across R&D, EU-funded programmes, and digital transformation — combining environmental engineering, business management, innovation management, and data science. Currently Innovation Director at AdP VALOR, the innovation and shared services arm of Águas de Portugal Group, where a small team orchestrates a ~€1M/year program of new innovation projects across all group operating companies — selection, execution control, payments, and reporting — with project teams embedded at each operating company. Experienced in implementing innovation culture, aligning it with corporate strategy, and scaling AI and automation across organizations. National representative for innovation management methodology — ISO TC 279 WG3 (Tools and Methods), Portuguese Technical Commission 169 (R&D&I), IPAC accreditation expert for Innovation Management Systems, and European Innovation Council Expert Evaluator. Invited Professor for International Innovation Management at ISCTE Business School. Executive Master's in Innovation Management, with specialist training in data science at Lisbon Data Science Academy.",
 
   competencies: [
     "Innovation Strategy, Portfolio Management & Multi-Year Roadmap",
@@ -66,7 +66,7 @@ const cvData = {
     },
     {
       role: "Invited Professor — International Innovation Management",
-      company: "ISCTE Executive Education",
+      company: "ISCTE Business School",
       start: "2023",
       end: "Present",
       location: "Lisbon, PT",

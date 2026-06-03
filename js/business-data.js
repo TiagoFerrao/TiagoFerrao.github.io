@@ -117,13 +117,13 @@ const businessData = [
     blurb: 'AdP VALOR is the innovation and shared services arm of Águas de Portugal Group, serving all group operating companies. As Innovation Director I lead a small team orchestrating innovation across four areas — strategy, open innovation and EU R&D, innovation shared services, and new product and service development — including a ~€1M/year program of new innovation projects executed by teams across the group.'
   },
   {
-    company: 'ISCTE Executive Education',
+    company: 'ISCTE Business School',
     role: 'Invited Professor',
     year: '2023',
     dates: '2023 – present',
     location: 'Lisbon',
     cities: ['lisboa'],
-    blurb: 'ISCTE Executive Education is one of Portugal\'s leading executive education institutions. As Invited Professor in the International Management Master\'s programme, I teach innovation management in international corporate environments — covering methodology, governance, data-driven decision-making, and innovation\'s impact on corporate competitiveness.'
+    blurb: 'ISCTE Business School is one of Portugal\'s leading business schools. As Invited Professor in the International Management Master\'s programme, I teach innovation management in international corporate environments — covering methodology, governance, data-driven decision-making, and innovation\'s impact on corporate competitiveness.'
   }
 ];
 
