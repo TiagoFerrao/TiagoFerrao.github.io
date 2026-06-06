@@ -69,7 +69,7 @@ const businessData = [
     dates: 'Mar 2012 – 2016',
     location: 'Lisbon',
     cities: ['lisboa'],
-    blurb: 'INTELI was a Portuguese think-tank that provides technical consultancy in nation-wide strategic areas. The company operated with 4 main areas of expertise including Energy, Smart-cities, Aeronautics and Automotive. I managed the energy programme, leading projects like BioAtlas.'
+    blurb: 'INTELI was a Portuguese think-tank that provides technical consultancy in nation-wide strategic areas. The company operated with 4 main areas of expertise including Energy, Smart-cities, Aeronautics and Automotive. I managed the energy programme, leading projects like BioAtlas, and was part of the team behind the energy and sustainability indicator frameworks INTELI developed for Portuguese cities.'
   },
   {
     company: 'CEIIA',
@@ -96,7 +96,7 @@ const businessData = [
     dates: 'Sep 2019 – present',
     location: 'Lisbon',
     cities: ['lisboa'],
-    blurb: 'Ready2innov is my consultancy project on the innovation management subject. Our mission is to support the development of innovative products, services and processes but most of all to capacitate all kinds of organisations to develop their own innovation competences and culture.'
+    blurb: 'Ready2innov is my consultancy project on the innovation management subject. Our mission is to support the development of innovative products, services and processes but most of all to capacitate all kinds of organisations to develop their own innovation competences and culture. Through Ready2innov I delivered innovation-management training for APQ — the Portuguese Association for Quality — with a proposal pipeline spanning consultancies, industrial groups and research institutes. The brand was registered with INPI in 2020.'
   },
   {
     company: 'SmartEnergyLab',

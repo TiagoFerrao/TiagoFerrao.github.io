@@ -111,6 +111,16 @@ const cvData = {
       ]
     },
     {
+      role: "Innovation Teacher — SETUP Programme",
+      company: "Colégio de S. Tomás & Colégio de S. José do Ramalhão",
+      start: "2017",
+      end: "2018",
+      location: "Lisbon, PT",
+      bullets: [
+        "Designed and taught a full Innovation Management course for the SETUP programme — curriculum, student guide, QFD-based product development project, a business game with its own grading model, and final exams."
+      ]
+    },
+    {
       role: "Innovation Policy Manager",
       company: "CEiiA",
       start: "2016",
@@ -128,7 +138,8 @@ const cvData = {
       location: "Lisbon, PT",
       bullets: [
         "Developed a nationwide digital platform for biomass resources mapping and management, with significant technical sophistication.",
-        "Led a multinational research project on local energy strategies (published in WIT Transactions on Ecology and the Environment, 2014)."
+        "Led a multinational research project on local energy strategies (published in WIT Transactions on Ecology and the Environment, 2014).",
+        "Authored EU funding proposals at the energy-buildings-mobility intersection — FP7 ReBuildIT (multi-criteria decision platform for building retrofits) and IEE proposals on car-sharing and SME energy literacy."
       ]
     },
     {

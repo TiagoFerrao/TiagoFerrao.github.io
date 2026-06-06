@@ -139,8 +139,8 @@ const skillsData = {
       evidence: ['AdP VALOR ERP + collab stack', 'Sonae Sierra processes'] },
 
     // ===== CONNECTOR  (id: soft, top-left) — 9 =====
-    { name: 'Teaching / Knowledge Transfer', category: 'soft', consolidated: 60, total: 90, years: 3,
-      evidence: ['Invited Professor — International Innovation Management, ISCTE Business School'] },
+    { name: 'Teaching / Knowledge Transfer', category: 'soft', consolidated: 60, total: 90, years: 9,
+      evidence: ['Invited Professor — International Innovation Management, ISCTE Business School', 'SETUP Programme — Innovation Management course (2017-18)'] },
     { name: 'Multilingual (PT native · EN C2 · IT C2 · FR A1)', category: 'soft', consolidated: 90, total: 90, years: 20,
       evidence: ['Portuguese (native)', 'English C2 — TOEFL 110/120', 'Italian C2', 'French A1'] },
     { name: 'Cross-cultural Fluency',   category: 'soft', consolidated: 80, total: 82, years: 18,
