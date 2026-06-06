@@ -129,6 +129,7 @@ body.landing::after {
 .lp-spacer { flex: 1; min-height: var(--space-xl); }
 
 /* --- Terminal --- */
+.lp-term-wrap { max-width: 640px; margin: var(--space-xl) auto 0; }
 .lp-term-hint { color: var(--text-muted); font-size: 12px; margin: 0 0 var(--space-sm); }
 .lp-term-hint b { color: var(--lp-teal); font-weight: 400; }
 .lp-term {
