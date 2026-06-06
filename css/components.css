@@ -293,6 +293,26 @@
   text-transform: uppercase;
 }
 
+.hero-cv {
+  margin-top: var(--space-md);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+}
+
+.hero-cv a {
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.hero-cv a:hover,
+.hero-cv a:focus-visible {
+  color: var(--accent-primary);
+  border-bottom-color: var(--accent-primary);
+}
+
 /* --- About Section --- */
 .about-content {
   display: flex;
