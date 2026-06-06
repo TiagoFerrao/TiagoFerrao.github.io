@@ -62,7 +62,7 @@ const skillsData = {
 
   skills: [
 
-    // ===== STRATEGIST  (id: management, top-right) — 13 =====
+    // ===== STRATEGIST  (id: management, top-right) — 16 =====
     { name: 'Innovation Strategy',      category: 'management', consolidated: 70, total: 86, years: 12,
       evidence: ['Innovation Director AdP VALOR', 'CEiiA Policy Manager', 'INTELI'] },
     { name: 'ISO 56000 series',         category: 'management', consolidated: 64, total: 80, years: 8,
@@ -89,6 +89,12 @@ const skillsData = {
       evidence: ['AdP innovation governance', 'CEiiA indicators'] },
     { name: 'M&A Due Diligence',        category: 'management', consolidated: 40, total: 42, years: 6,
       evidence: ['Lanco Solar (1 M&A)', 'Martifer PV + wind acquisitions'] },
+    { name: 'Shared Services',          category: 'management', consolidated: 55, total: 72, years: 4,
+      evidence: ['AdP VALOR — innovation & shared services arm of Águas de Portugal Group', 'Orchestrates selection, execution control, payments & reporting across all group operating companies'] },
+    { name: 'ESG & Sustainability Governance', category: 'management', consolidated: 55, total: 68, years: 12,
+      evidence: ['20+ yrs environmental engineering foundation', 'WWF One Planet Living (Sonae Sierra)', 'Corporate sustainability governance & reporting'] },
+    { name: 'Reporting & Analysis',     category: 'management', consolidated: 55, total: 66, years: 8,
+      evidence: ['AdP innovation portfolio reporting (selection → execution → payments → reporting)', 'KPI dashboards & governance indicators'] },
 
     // ===== ENGINEER  (id: stem, bottom-right) — 6 =====
     { name: 'Environmental Engineering', category: 'stem', consolidated: 60, total: 80, years: 20,
@@ -132,7 +138,7 @@ const skillsData = {
     { name: 'ERP integration (SAP)',    category: 'digital', consolidated: 0,  total: 30, years: 8,
       evidence: ['AdP VALOR ERP + collab stack', 'Sonae Sierra processes'] },
 
-    // ===== CONNECTOR  (id: soft, top-left) — 8 =====
+    // ===== CONNECTOR  (id: soft, top-left) — 9 =====
     { name: 'Teaching / Knowledge Transfer', category: 'soft', consolidated: 60, total: 90, years: 3,
       evidence: ['Invited Professor — International Innovation Management, ISCTE Business School'] },
     { name: 'Multilingual (PT native · EN C2 · IT C2 · FR A1)', category: 'soft', consolidated: 90, total: 90, years: 20,
@@ -148,7 +154,9 @@ const skillsData = {
     { name: 'Design Thinking',          category: 'soft', consolidated: 60, total: 60, years: 8,
       evidence: ['Innovation methodology toolkit'] },
     { name: 'Sector Adaptability',      category: 'soft', consolidated: 35, total: 45, years: 20,
-      evidence: ['Energy, environment, automotive, water, sports tech', 'Research → consulting → corporate → startup'] }
+      evidence: ['Energy, environment, automotive, water, sports tech', 'Research → consulting → corporate → startup'] },
+    { name: 'Cross-functional Team Leadership', category: 'soft', consolidated: 60, total: 72, years: 12,
+      evidence: ['Innovation teams embedded at each AdP operating company', 'Cross-border PT/IT/UK teams (Lanco, Martifer, Sonae)'] }
   ]
 };
 
