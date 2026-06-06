@@ -29,10 +29,13 @@
   header.classList.add('site-header');
   header.innerHTML = `
     <div class="container">
-      <a href="index.html" class="site-brand">
-        <h1>Tiago Ferrão</h1>
-        <span class="subtitle">Innovation Leader · Hybrid Manager</span>
-      </a>
+      <div class="site-brand-wrap">
+        <a href="index.html" class="site-brand">
+          <h1>Tiago Ferrão</h1>
+          <span class="subtitle">Innovation Leader · Hybrid Manager</span>
+        </a>
+        <a href="cv.html" class="brand-cv">→ view cv</a>
+      </div>
       <button class="nav-toggle" aria-label="Toggle navigation">
         <!-- Icon: ui-nav-toggle (img/icons/ui-nav-toggle.svg) -->
         <svg viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>

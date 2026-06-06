@@ -69,6 +69,29 @@
   text-transform: uppercase;
 }
 
+.site-brand-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-cv {
+  align-self: flex-start;
+  margin-top: 2px;
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.brand-cv:hover,
+.brand-cv:focus-visible {
+  color: var(--accent-primary);
+  border-bottom-color: var(--accent-primary);
+}
+
 /* --- Navigation --- */
 .site-nav ul {
   display: flex;
