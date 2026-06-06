@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>energyOFF · Identificador de Lâmpadas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* The Green Screen — ferrao.me design system */
+    --deep:#001a20;        /* primary background */
+    --crt:#002a33;         /* secondary background */
+    --glass:rgba(0,50,60,.6);
+    --phos:#7DE38D;        /* phosphor bright — active */
+    --phos-soft:#288f5b;   /* phosphor soft — settled */
+    --teal:#4ecdc4;        /* teal glow */
+    --t-active:#e0f0e8;    /* active text */
+    --t-rest:#8fb8a0;      /* resting text */
+    --t-ghost:#5a8a70;     /* ghost text */
+    --display:'Space Grotesk',sans-serif;
+    --mono:'Inconsolata',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{min-height:100%}
+  body{margin:0;font-family:var(--mono);color:var(--t-active);-webkit-font-smoothing:antialiased;
+    background:radial-gradient(120% 100% at 50% -10%, var(--crt) 0%, var(--deep) 60%);
+    background-attachment:fixed;}
+  /* scanline overlay — subtle */
+  body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opacity:.35;
+    background:repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0, rgba(0,0,0,0) 2px, rgba(0,20,15,.25) 3px, rgba(0,0,0,0) 4px);}
+  .wrap{max-width:600px;margin:0 auto;padding:24px 18px 60px;position:relative;z-index:1}
+  /* terminal prompt header */
+  .prompt{font-family:var(--mono);font-size:13px;color:var(--t-ghost);margin-bottom:6px}
+  .prompt b{color:var(--phos);font-weight:700}
+  header{display:flex;align-items:baseline;gap:10px;margin-bottom:4px}
+  .logo{font-family:var(--display);font-weight:700;font-size:24px;letter-spacing:-.5px;
+    color:var(--phos);text-shadow:0 0 14px rgba(125,227,141,.45)}
+  .logo .off{color:var(--t-active)}
+  .tagline{font-family:var(--display);color:var(--t-rest);font-size:13px;font-weight:500;
+    text-transform:uppercase;letter-spacing:1px;margin:2px 0 18px}
+  /* progress as a loading bar of blocks */
+  .progress{font-family:var(--mono);color:var(--phos-soft);font-size:14px;letter-spacing:2px;margin-bottom:18px;
+    text-shadow:0 0 8px rgba(40,143,91,.4)}
+  .progress b{color:var(--phos);text-shadow:0 0 10px rgba(125,227,141,.5)}
+  /* card / glass surface */
+  .card{position:relative;background:var(--glass);border:1px solid rgba(125,227,141,.22);
+    border-radius:10px;padding:26px 22px 22px;animation:boot .3s ease;
+    box-shadow:0 0 0 1px rgba(0,0,0,.2), 0 24px 60px rgba(0,0,0,.45), inset 0 0 60px rgba(0,40,40,.3);}
+  @keyframes boot{from{opacity:0;transform:translateY(8px);filter:brightness(1.6)}to{opacity:1;transform:none;filter:none}}
+  .step-tag{font-family:var(--mono);font-size:13px;color:var(--t-ghost);margin-bottom:14px}
+  .step-tag::before{content:"~/";color:var(--phos-soft)}
+  /* identification line — like a printed echo */
+  .ident{font-family:var(--mono);color:var(--phos);font-weight:700;font-size:15px;margin:0 0 16px;
+    text-shadow:0 0 10px rgba(125,227,141,.4)}
+  .ident::before{content:"› ";color:var(--teal)}
+  /* question */
+  h1.q{font-family:var(--display);font-weight:600;color:var(--t-active);font-size:23px;line-height:1.3;margin:6px 0 2px}
+  .cursor{display:inline-block;width:11px;height:1.05em;background:var(--phos);margin-left:4px;
+    vertical-align:-2px;box-shadow:0 0 10px rgba(125,227,141,.7);animation:blink 1.05s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+  .hint{font-family:var(--mono);color:var(--t-rest);font-size:14px;margin:10px 0 20px;line-height:1.55}
+  .hint::before{content:"# ";color:var(--t-ghost)}
+  .spacer{height:10px}
+  /* options */
+  .opts{display:grid;gap:10px}
+  .opt{display:flex;align-items:center;gap:13px;width:100%;text-align:left;cursor:pointer;font-family:var(--mono);
+    background:rgba(0,40,48,.5);border:1px solid rgba(125,227,141,.25);border-radius:8px;padding:14px 15px;
+    font-size:16px;font-weight:700;color:var(--t-active);transition:.16s}
+  .opt:hover{border-color:var(--phos);background:rgba(40,143,91,.22);box-shadow:0 0 18px rgba(125,227,141,.18);
+    color:var(--phos);text-shadow:0 0 8px rgba(125,227,141,.4)}
+  .opt .ico{width:30px;flex:none;display:inline-flex;align-items:center;justify-content:center;color:var(--phos)}
+  .opt .ico svg{filter:drop-shadow(0 0 6px rgba(125,227,141,.45))}
+  .opt:hover .ico svg{filter:drop-shadow(0 0 11px rgba(125,227,141,.75))}
+  .opt small{display:block;font-weight:400;color:var(--t-rest);font-size:13px;margin-top:3px}
+  .opt:hover small{color:var(--t-rest)}
+  .opt .key{margin-left:auto;color:var(--t-ghost);font-size:13px;flex:none}
+  .opt:hover .key{color:var(--phos)}
+  /* yes / no */
+  .yn{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .yn .opt{justify-content:center;font-size:17px;font-weight:700;letter-spacing:1px}
+  .yn .opt::before{content:"[ "}.yn .opt::after{content:" ]"}
+  .yn .sim:hover{border-color:var(--phos);color:var(--phos)}
+  .yn .nao:hover{border-color:var(--teal);color:var(--teal);background:rgba(78,205,196,.12);box-shadow:0 0 18px rgba(78,205,196,.15)}
+  /* nav */
+  .nav{display:flex;justify-content:space-between;align-items:center;margin-top:22px}
+  .back{border:none;background:none;font-family:var(--mono);color:var(--t-ghost);font-size:14px;cursor:pointer;padding:8px 0}
+  .back:hover{color:var(--phos)}
+  .crumbs{font-family:var(--mono);font-size:12px;color:var(--t-ghost)}
+  /* result */
+  .badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:12px;font-weight:700;
+    letter-spacing:.5px;padding:5px 11px;border-radius:6px;margin-bottom:14px;border:1px solid}
+  .badge.current{color:var(--phos);border-color:rgba(125,227,141,.5);background:rgba(40,143,91,.15)}
+  .badge.legacy{color:var(--t-rest);border-color:rgba(143,184,160,.4);background:rgba(143,184,160,.07)}
+  .big{line-height:0;margin:2px 0 14px;color:var(--phos)}
+  .big svg{filter:drop-shadow(0 0 10px rgba(125,227,141,.45))}
+  .result h2{font-family:var(--display);font-weight:700;font-size:27px;margin:0 0 10px;color:var(--phos);
+    text-shadow:0 0 16px rgba(125,227,141,.4)}
+  .result h2::before{content:"› ";color:var(--teal)}
+  /* o resultado é o output ativo do terminal — brilha sempre em fósforo,
+     a distinção legacy fica no distintivo + aviso */
+  .tech{font-family:var(--mono);color:var(--t-rest);font-size:14.5px;margin:0 0 16px;line-height:1.6}
+  .spec{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+  .chip{font-family:var(--mono);background:rgba(0,40,48,.6);color:var(--phos);border:1px solid rgba(125,227,141,.4);
+    border-radius:7px;padding:8px 13px;font-size:14px;font-weight:700}
+  .chip b{color:var(--t-active)}
+  .advisory{font-family:var(--mono);border-left:2px solid;border-radius:6px;padding:12px 15px;font-size:13.5px;
+    line-height:1.6;margin-bottom:8px}
+  .advisory.leg{border-color:var(--phos-soft);background:rgba(0,40,48,.45);color:var(--t-rest)}
+  .advisory.ok{border-color:var(--phos);background:rgba(40,143,91,.12);color:var(--t-rest)}
+  .swap{color:var(--phos);font-weight:700}
+  .restart{margin-top:22px;width:100%;border:1px solid var(--phos);background:rgba(40,143,91,.18);color:var(--phos);
+    font-family:var(--mono);font-size:16px;font-weight:700;padding:14px;border-radius:8px;cursor:pointer;transition:.16s;
+    text-shadow:0 0 8px rgba(125,227,141,.4)}
+  .restart:hover{background:var(--phos);color:var(--deep);text-shadow:none;box-shadow:0 0 24px rgba(125,227,141,.4)}
+  footer{text-align:center;font-family:var(--mono);color:var(--t-ghost);font-size:12px;margin-top:24px;line-height:1.7}
+  footer a{color:var(--phos-soft);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="prompt">tiago@<b>ferrao.me</b>:~/energia$ identificar-lampada --start</div>
+  <header>
+    <div class="logo">energy<span class="off">OFF</span></div>
+  </header>
+  <div class="tagline">Como identificar a tecnologia de iluminação</div>
+  <div class="progress" id="bar"></div>
+  <div id="stage"></div>
+  <footer>Réplica fiel do guia energyOFF (2018) · tema <a href="https://ferrao.me/greenscreen.html">The Green Screen</a><br>valores de potência conforme o documento original</footer>
+</div>
+
+<script>
+/* ÍCONES — SVG de linha, herdam currentColor (brilho de fósforo) */
+const ICONS = {
+  tube:'<rect x="2.5" y="9.5" width="19" height="5" rx="2.5"/><path d="M6 9.5v5M18 9.5v5"/>',
+  baselamp:'<path d="M12 2.5a5.5 5.5 0 0 0-3.6 9.7V14h7.2v-1.8A5.5 5.5 0 0 0 12 2.5Z"/><rect x="8.6" y="14" width="6.8" height="4" rx="0.6"/><path d="M10.5 20.5h3"/>',
+  bulb:'<path d="M12 2.5a6 6 0 0 0-3.8 10.6c.7.6 1.3 1.5 1.3 2.4h5c0-.9.6-1.8 1.3-2.4A6 6 0 0 0 12 2.5Z"/><path d="M9.7 18h4.6M10.7 20.5h2.6"/>',
+  spot:'<path d="M6.5 5.5h11l-1.4 7.5a3 3 0 0 1-3 2.5h-2.2a3 3 0 0 1-3-2.5L6.5 5.5Z"/><path d="M7 5.5l-.4-2M17 5.5l.4-2"/><path d="M10 18.5v1.8M14 18.5v1.8M12 19v2.2"/>',
+  thick:'<rect x="2.5" y="7.5" width="19" height="9" rx="4.5"/><path d="M6.5 7.5v9M17.5 7.5v9"/>',
+  thin:'<rect x="2.5" y="10.5" width="19" height="3" rx="1.5"/><path d="M6.5 10.5v3M17.5 10.5v3"/>',
+  ruler:'<rect x="2.5" y="8" width="19" height="8" rx="1"/><path d="M6.5 8v3.5M10.5 8v3.5M14.5 8v3.5M18.5 8v3.5"/>',
+  led:'<rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1.1" fill="currentColor"/><circle cx="15" cy="9" r="1.1" fill="currentColor"/><circle cx="12" cy="12" r="1.1" fill="currentColor"/><circle cx="9" cy="15" r="1.1" fill="currentColor"/><circle cx="15" cy="15" r="1.1" fill="currentColor"/>',
+  spiral:'<path d="M12 3.2c-2.6 0-4.6 1.5-4.6 3.4S9.4 10 12 10s4.6 1.1 4.6 3-2 3.4-4.6 3.4"/><path d="M9.5 18.2h5M9.8 20.6h4.4"/>',
+  halogen:'<rect x="8.4" y="3.5" width="7.2" height="11.5" rx="3.6"/><path d="M10.5 7.5l3 2.2-3 2.2"/><path d="M10 17.5h4M11 20h2"/>',
+  question:'<circle cx="12" cy="12" r="9"/><path d="M9.3 9.4a2.8 2.8 0 0 1 5.4 1c0 1.9-2.7 2.1-2.7 4"/><circle cx="12" cy="17.6" r="0.7" fill="currentColor"/>',
+  warn:'<path d="M12 3.5 22 19.5H2L12 3.5Z"/><path d="M12 9.5v4"/><circle cx="12" cy="16.6" r="0.7" fill="currentColor"/>',
+  check:'<path d="M4 12.5l5 5 11-12"/>',
+};
+function icon(name,size){ size=size||24; return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]||ICONS.question}</svg>`; }
+
+/* ÁRVORE — réplica fiel do guia energyOFF 2018 */
+const TREE = {
+  start:{ tag:"identificar", q:"A que grupo pertence a sua lâmpada?",
+    hint:"Observe a forma e a ligação entre o vidro e o casquilho.",
+    opts:[
+      {ico:"tube", label:"Tubo único e regular", sub:"Tubo direito ou circular", to:"t_flicker"},
+      {ico:"baselamp", label:"Tubo ou bolbo COM uma base", sub:"Há uma base entre o vidro e o casquilho", to:"base_points"},
+      {ico:"bulb", label:"Bolbo SEM base", sub:"Casquilho em contacto com o vidro", to:"bulb_encap"},
+      {ico:"spot", label:"Foco / refletor", sub:"Lâmpada direcional", to:"spot_encap"},
+    ]},
+  t_flicker:{ tag:"tubo", q:"“Pisca” quando se liga?", yn:true, sim:"t8_len_a", nao:"t_thick" },
+  t_thick:{ tag:"tubo", q:"A lâmpada é grossa ou fina?",
+    opts:[
+      {ico:"thick", label:"Grossa", sub:"≈ 26 mm · casquilho G13", to:"t_360"},
+      {ico:"thin", label:"Fina", sub:"≈ 16 mm · casquilho G5", to:"t5_len"},
+    ]},
+  t_360:{ tag:"tubo/grosso", q:"Emite luz em todas as direcções em torno do seu eixo?", yn:true, sim:"t8_len_b", nao:"ledtube_len" },
+  t8_len_a:{ tag:"tubo/t8", ident:"É uma T8", q:"Comprimento do tubo?",
+    opts:[{ico:"ruler",label:"0,6 m",to:"r_t8_18"},{ico:"ruler",label:"1,2 m",to:"r_t8_36"},{ico:"ruler",label:"1,5 m",to:"r_t8_58"}]},
+  t8_len_b:{ tag:"tubo/t8", ident:"É uma T8 com balastro eletrónico", q:"Comprimento do tubo?",
+    opts:[{ico:"ruler",label:"0,6 m",to:"r_t8_18"},{ico:"ruler",label:"1,2 m",to:"r_t8_36"},{ico:"ruler",label:"1,5 m",to:"r_t8_58"}]},
+  t5_len:{ tag:"tubo/t5", ident:"É uma T5", q:"Comprimento do tubo?",
+    opts:[{ico:"ruler",label:"0,6 m",to:"r_t5_14"},{ico:"ruler",label:"1,2 m",to:"r_t5_28"},{ico:"ruler",label:"1,5 m",to:"r_t5_35"}]},
+  ledtube_len:{ tag:"tubo/led", ident:"É uma LED", q:"Comprimento do tubo?",
+    opts:[{ico:"ruler",label:"0,6 m",to:"r_ledt_14"},{ico:"ruler",label:"1,2 m",to:"r_ledt_18"},{ico:"ruler",label:"1,5 m",to:"r_ledt_24"}]},
+  base_points:{ tag:"base", q:"Consegue ver muitos pontos brilhantes na lâmpada?", yn:true, sim:"r_led_base", nao:"r_fc" },
+  bulb_encap:{ tag:"bolbo", q:"Filamento encapsulado?", hint:"Filamento curto, dentro de uma pequena cápsula de vidro.", yn:true, sim:"r_halogen", nao:"bulb_livre" },
+  bulb_livre:{ tag:"bolbo", q:"Filamento livre?", hint:"Filamento comprido e à vista, sem cápsula.", yn:true, sim:"r_incand", nao:"r_unknown" },
+  spot_encap:{ tag:"foco", q:"Filamento encapsulado e curto?", yn:true, sim:"r_halogen_foco", nao:"spot_points" },
+  spot_points:{ tag:"foco", q:"Pontos brilhantes e/ou grelha de ventilação?", yn:true, sim:"r_led_foco", nao:"r_unknown" },
+};
+const POT = "A potência está escrita na lâmpada.";
+const R = {
+  r_t8_18:{ico:"tube",name:"T8 · 0,6 m",tech:"Tubo fluorescente linear",status:"legacy",specs:[["Potência","18 W"],["Casquilho","G13"]],swap:"Tubo LED ~8–9 W"},
+  r_t8_36:{ico:"tube",name:"T8 · 1,2 m",tech:"Tubo fluorescente linear",status:"legacy",specs:[["Potência","36 W"],["Casquilho","G13"]],swap:"Tubo LED ~16–18 W"},
+  r_t8_58:{ico:"tube",name:"T8 · 1,5 m",tech:"Tubo fluorescente linear",status:"legacy",specs:[["Potência","58 W"],["Casquilho","G13"]],swap:"Tubo LED ~22–24 W"},
+  r_t5_14:{ico:"thin",name:"T5 · 0,6 m",tech:"Tubo fluorescente linear fino",status:"legacy",specs:[["Potência","14 W"],["Casquilho","G5"]],swap:"Tubo LED T5 ~7 W"},
+  r_t5_28:{ico:"thin",name:"T5 · 1,2 m",tech:"Tubo fluorescente linear fino",status:"legacy",specs:[["Potência","28 W"],["Casquilho","G5"]],swap:"Tubo LED T5 ~14 W"},
+  r_t5_35:{ico:"thin",name:"T5 · 1,5 m",tech:"Tubo fluorescente linear fino",status:"legacy",specs:[["Potência","35 W"],["Casquilho","G5"]],swap:"Tubo LED T5 ~18 W"},
+  r_ledt_14:{ico:"tube",name:"Tubo LED · 0,6 m",tech:"LED linear",status:"current",specs:[["Potência","14 W"]]},
+  r_ledt_18:{ico:"tube",name:"Tubo LED · 1,2 m",tech:"LED linear",status:"current",specs:[["Potência","18 W"]]},
+  r_ledt_24:{ico:"tube",name:"Tubo LED · 1,5 m",tech:"LED linear",status:"current",specs:[["Potência","24 W"]]},
+  r_led_base:{ico:"led",name:"LED",tech:"Confirme pelos vários pontos brilhantes ou pela grelha dissipadora de calor entre o casquilho e a lâmpada. "+POT,status:"current"},
+  r_fc:{ico:"spiral",name:"FC — Fluorescente Compacta",tech:"Confirme pela caixa/base entre o casquilho e a lâmpada (que alberga a eletrónica). "+POT,status:"legacy",swap:"Lâmpada LED equivalente — acende instantânea e sem mercúrio"},
+  r_halogen:{ico:"halogen",name:"Halógeneo",tech:POT,status:"legacy",swap:"Lâmpada LED equivalente (≈ 1/8 do consumo)"},
+  r_incand:{ico:"bulb",name:"Incandescente",tech:POT,status:"legacy",swap:"Lâmpada LED equivalente (≈ 1/9 do consumo)"},
+  r_halogen_foco:{ico:"spot",name:"Halógeneo",tech:"Foco halógeneo direcional. "+POT,status:"legacy",swap:"Foco LED GU10/MR16 ~4–6 W"},
+  r_led_foco:{ico:"spot",name:"LED",tech:"Foco LED direcional. "+POT,status:"current"},
+  r_unknown:{ico:"question",name:"Não identificado",tech:"Nenhuma das características corresponde. Tente com mais luz ambiente ou consulte a potência impressa na lâmpada.",status:"unknown"},
+};
+
+/* MOTOR */
+let history=["start"];
+const $stage=document.getElementById('stage'), $bar=document.getElementById('bar');
+function setProgress(){
+  const cur=history[history.length-1];
+  const total=6, filled=R[cur]?total:Math.min(history.length,total-1);
+  $bar.innerHTML=`[ <b>${'█'.repeat(filled)}</b>${'░'.repeat(total-filled)} ]`;
+}
+function go(id){history.push(id);render();}
+function back(){if(history.length>1){history.pop();render();}}
+function restart(){history=["start"];render();}
+
+function render(){
+  const id=history[history.length-1];
+  setProgress();
+  if(R[id]) return renderResult(R[id]);
+  const n=TREE[id];
+  let optsHTML = n.yn
+    ? `<div class="yn"><button class="opt sim" data-to="${n.sim}">SIM</button><button class="opt nao" data-to="${n.nao}">NÃO</button></div>`
+    : `<div class="opts">${n.opts.map(o=>`<button class="opt" data-to="${o.to}"><span class="ico">${icon(o.ico)}</span><span>${o.label}${o.sub?`<small>${o.sub}</small>`:''}</span></button>`).join('')}</div>`;
+  $stage.innerHTML=`
+    <div class="card">
+      <div class="step-tag">${n.tag}</div>
+      ${n.ident?`<div class="ident">${n.ident}</div>`:''}
+      <h1 class="q">${n.q}<span class="cursor"></span></h1>
+      ${n.hint?`<p class="hint">${n.hint}</p>`:`<div class="spacer"></div>`}
+      ${optsHTML}
+      <div class="nav">
+        ${history.length>1?`<button class="back" id="bk">‹ voltar</button>`:`<span></span>`}
+        <span class="crumbs">passo ${history.length}</span>
+      </div>
+    </div>`;
+  $stage.querySelectorAll('.opt').forEach(b=>b.onclick=()=>go(b.dataset.to));
+  const bk=document.getElementById('bk'); if(bk) bk.onclick=back;
+}
+function renderResult(r){
+  const isLegacy=r.status==='legacy', isOk=r.status==='current';
+  const badge=isLegacy?`<span class="badge legacy">${icon('warn',13)} DESCONTINUADA NA UE</span>`:isOk?`<span class="badge current">${icon('check',13)} TECNOLOGIA ATUAL</span>`:'';
+  const advisory=isLegacy
+    ?`<div class="advisory leg">Esta tecnologia já <b>não é vendida na UE</b> (eliminada progressivamente até 2023).${r.swap?`<br><span class="swap">↳ substituir por: ${r.swap}</span>`:''}</div>`
+    :isOk?`<div class="advisory ok">Tecnologia mais eficiente disponível atualmente.</div>`:'';
+  $stage.innerHTML=`
+    <div class="card result ${isLegacy?'leg':''}">
+      ${badge}
+      <div class="big">${icon(r.ico,46)}</div>
+      <h2>${r.name}</h2>
+      <p class="tech">${r.tech}</p>
+      ${(r.specs&&r.specs.length)?`<div class="spec">${r.specs.map(s=>`<span class="chip">${s[0]}: <b>${s[1]}</b></span>`).join('')}</div>`:''}
+      ${advisory}
+      <div class="nav"><button class="back" id="bk">‹ voltar</button></div>
+      <button class="restart" id="rs">› identificar outra lâmpada</button>
+    </div>`;
+  document.getElementById('bk').onclick=back;
+  document.getElementById('rs').onclick=restart;
+}
+render();
+</script>
+</body>
+</html>
