@@ -47,12 +47,17 @@ body.landing::after {
   color: var(--text-secondary);
 }
 .lp-home:hover { color: var(--accent-primary); text-shadow: 0 0 8px rgba(var(--accent-primary-rgb), .4); }
+/* match the header nav CLI style (lowercase mono, · separators, phosphor hover) */
+.lp-meta { display: flex; align-items: baseline; }
 .lp-meta a {
-  color: var(--text-muted);
-  font-size: 13px;
-  margin-left: var(--space-md);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  text-transform: lowercase;
+  letter-spacing: 0.04em;
+  transition: color var(--transition-fast);
 }
-.lp-meta a:hover { color: var(--accent-primary); text-shadow: 0 0 8px rgba(var(--accent-primary-rgb), .4); }
+.lp-meta a:not(:last-child)::after { content: "·"; color: var(--text-muted); margin: 0 var(--space-sm); }
+.lp-meta a:hover { color: var(--accent-primary); text-shadow: 0 0 8px rgba(var(--accent-primary-rgb), 0.4); }
 
 /* --- Hero: nameplate only --- */
 .lp-hero h1 {
@@ -174,6 +179,29 @@ body.landing::after {
   transition: all var(--transition-fast);
 }
 .lp-chip:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
+
+/* --- Footer terminal strip (site-wide; expands on focus / on contacts) --- */
+.site-term-footer { margin-top: var(--space-2xl); }
+/* footer terminal spans the page's content width (matches .container) */
+.stf-inner { width: min(100% - (2 * var(--gutter)), var(--shell-max)); margin: 0 auto; padding: 0 0 var(--space-2xl); }
+/* copyright integrated into the terminal's top bar (right side) */
+.lp-term-copy { margin-left: auto; color: var(--text-muted); font-size: var(--text-xs); letter-spacing: 0.02em; }
+
+/* section nav under the footer terminal — left-aligned; mobile only (header carries it on desktop) */
+.stf-browse { justify-content: flex-start; margin: var(--space-md) 0 0; }
+.lp-browse a.lp-here { color: var(--accent-primary); text-shadow: 0 0 8px rgba(var(--accent-primary-rgb), 0.35); }
+@media (min-width: 901px) { .stf-browse { display: none; } }
+
+/* footer terminal keeps the same windowed contour as the landing terminal
+   (border + glow + ~/ bar) for coherence; just collapsed to the prompt by default */
+.lp-term.st { cursor: text; }
+.lp-term.st .lp-out,
+.lp-term.st .lp-chips {
+  max-height: 0; overflow: hidden; opacity: 0; margin: 0;
+  transition: max-height 0.4s ease, opacity 0.3s ease, margin 0.4s ease;
+}
+.lp-term.st.st-expanded .lp-out { max-height: 60vh; overflow-y: auto; opacity: 1; margin-bottom: var(--space-sm); }
+.lp-term.st.st-expanded .lp-chips { max-height: 48px; opacity: 1; margin-top: var(--space-sm); }
 
 /* --- Mobile: stack cards and browse row --- */
 @media (max-width: 560px) {

@@ -20,6 +20,8 @@
   if (!out || !inp || !term) return;
 
   let booting = true; // suppress scroll-into-view while seeding on load
+  const isStrip = term.classList.contains('st'); // slim footer strip vs full terminal
+  function expand() { if (isStrip) term.classList.add('st-expanded'); }
 
   function esc(s) { return s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
   function print(html) {
@@ -93,6 +95,7 @@
   function run(raw) {
     const text = raw.trim();
     if (!text) return;
+    expand();
     echo(text);
     const cmd = text.toLowerCase();
     if (COMMANDS[cmd]) COMMANDS[cmd]();
@@ -102,14 +105,28 @@
 
   inp.addEventListener('keydown', e => { if (e.key === 'Enter') { run(inp.value); inp.value = ''; } });
   term.addEventListener('click', () => inp.focus());
+  if (isStrip) inp.addEventListener('focus', expand);
   document.querySelectorAll('.lp-chip').forEach(c => c.addEventListener('click', () => run(c.textContent)));
 
-  // --- Seed on load: per-page data-init, else a boot hint ---
+  // --- Seed on load ---
   const init = term.getAttribute('data-init');
   if (init) {
-    init.split(';').forEach(c => { if (c.trim()) run(c.trim()); });
+    if (isStrip) {
+      // let the collapsed strip render first, then animate open + seed output
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        expand();
+        init.split(';').forEach(c => { if (c.trim()) run(c.trim()); });
+        booting = false;
+      }));
+    } else {
+      init.split(';').forEach(c => { if (c.trim()) run(c.trim()); });
+      booting = false;
+    }
   } else {
-    print(`<span class="lp-ghost">session started · type </span><span class="lp-teal">help</span><span class="lp-ghost"> for commands, or ask a question about me.</span>`);
+    // full terminal (homepage) gets a boot hint; the slim strip stays quiet until focused
+    if (!isStrip) {
+      print(`<span class="lp-ghost">session started · type </span><span class="lp-teal">help</span><span class="lp-ghost"> for commands, or ask a question about me.</span>`);
+    }
+    booting = false;
   }
-  booting = false;
 })();

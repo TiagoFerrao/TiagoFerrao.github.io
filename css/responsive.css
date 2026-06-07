@@ -104,6 +104,8 @@
     text-align: center;
   }
 
+  .site-nav li:not(:last-child)::after { content: none; }
+
   /* Sections dropdown expands inline inside the mobile nav panel */
   .has-dropdown {
     width: 100%;

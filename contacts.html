@@ -31,10 +31,9 @@
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/responsive.css">
-  <link rel="stylesheet" href="css/landing.css">
 </head>
 
-<body>
+<body class="contacts-page">
   <!-- ============================================
        HEADER — injected by js/header.js
        ============================================ -->
@@ -49,36 +48,15 @@
       <!-- Page Header -->
       <section class="page-header fade-in">
         <h2>Get in Touch</h2>
-        <p>Glad to hear from professionals, researchers, students, and organisations working in innovation, data, and AI — whether for a conversation, a project, or a speaking engagement.</p>
-      </section>
-
-      <!-- Contact — the site terminal, pre-seeded with `cat contact.txt`; prompt stays live -->
-      <section class="lp-term-wrap fade-in">
-        <div class="lp-term" id="lp-term" data-init="cat contact.txt" aria-label="Interactive terminal">
-          <div class="lp-term-bar">
-            <span class="lp-dots" aria-hidden="true"><i></i><i></i><i></i></span>
-            <span class="lp-term-path">~/ — ferrao.me</span>
-          </div>
-          <div class="lp-term-body">
-            <div class="lp-out" id="lp-out" aria-live="polite"></div>
-            <div class="lp-line">
-              <span class="lp-ps1">tiago@ferrao.me:~$</span>
-              <input class="lp-inp" id="lp-inp" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Terminal input" placeholder="type a command, or ask me anything…">
-            </div>
-            <div class="lp-chips">try:
-              <button class="lp-chip">ls</button>
-              <button class="lp-chip">cat cv</button>
-              <button class="lp-chip">about</button>
-            </div>
-          </div>
-        </div>
+        <p>Glad to hear from professionals, researchers, students, and organisations working in innovation, data, and AI — whether for a conversation, a project, or a speaking engagement. The terminal below is live — reach me there, or just ask it anything about me.</p>
       </section>
 
     </div>
   </main>
 
   <!-- ============================================
-       FOOTER — injected by js/footer.js
+       FOOTER — terminal strip (injected by js/footer.js);
+       on this page it auto-expands and runs `cat contact.txt`
        ============================================ -->
   <footer id="site-footer"></footer>
 
@@ -94,6 +72,5 @@
   <script src="js/theme-toggle.js"></script>
   <script src="js/footer.js"></script>
   <script src="js/main.js"></script>
-  <script src="js/terminal.js"></script>
 </body>
 </html>
