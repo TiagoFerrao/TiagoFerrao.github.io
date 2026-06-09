@@ -96,7 +96,7 @@ const skillsData = {
     { name: 'Reporting & Analysis',     category: 'management', consolidated: 55, total: 66, years: 8,
       evidence: ['AdP innovation portfolio reporting (selection → execution → payments → reporting)', 'KPI dashboards & governance indicators'] },
 
-    // ===== ENGINEER  (id: stem, bottom-right) — 6 =====
+    // ===== ENGINEER  (id: stem, bottom-right) — 7 =====
     { name: 'Environmental Engineering', category: 'stem', consolidated: 60, total: 80, years: 20,
       evidence: ['Graduate degree — University of Aveiro (1995-2002)', 'Air pollution specialisation', 'Sonae Sierra EMS work'] },
     { name: 'Research Methodology',     category: 'stem', consolidated: 50, total: 70, years: 6,
@@ -109,6 +109,8 @@ const skillsData = {
       evidence: ['Dataquest — Data Scientist in Python path (2022–2025)', 'Lisbon Data Science Academy — Batch #5', 'PhD NOVA IMS'] },
     { name: 'Scientific Writing',       category: 'stem', consolidated: 40, total: 50, years: 8,
       evidence: ['Co-authored Cosmi et al. 2014 (WIT Transactions)', 'Master\'s dissertation', 'PhD research papers in progress'] },
+    { name: 'Statistical Analysis & Predictive Modeling', category: 'stem', consolidated: 10, total: 20, years: 2,
+      evidence: ['Lisbon Data Science Academy — Batch #5', 'Dataquest — statistics & predictive modelling coursework', 'PhD NOVA IMS (Data-Driven Innovation)'] },
 
     // ===== BUILDER  (id: digital, bottom-left) — 13 =====
     { name: 'Innovation tooling (Notion/Asana/Miro)', category: 'digital', consolidated: 75, total: 90, years: 5,

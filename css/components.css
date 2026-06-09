@@ -383,6 +383,16 @@
   line-height: 1.8;
 }
 
+/* CV executive summary: justified, slightly smaller than other intros */
+#cv-summary {
+  text-align: justify;
+}
+
+#cv-summary p {
+  font-size: var(--text-base);
+  text-align: justify;
+}
+
 /* --- Duotone icon (generic — used inside .content-card and similar) --- */
 .duotone-icon {
   display: block;

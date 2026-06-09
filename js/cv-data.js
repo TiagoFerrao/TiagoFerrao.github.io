@@ -39,6 +39,8 @@ const cvData = {
     "Innovation Operating Models, Processes, Policies & Governance for Multi-Entity Groups",
     "Lean Innovation Processes & Data-Driven Process Design",
     "AI, GenAI & Intelligent Automation Deployment (Python, MCP, agentic workflows)",
+    "Data Engineering & ETL Pipelines (Python, pandas; multi-source consolidation, entity resolution)",
+    "Data Productisation — Turning Analysis into Reusable Tools (dashboards, plugins, frameworks)",
     "Modern Stack Integration: ERP, Collaboration & Innovation Tools",
     "Business Case Construction & Financial Modelling — Multi-Scale (M&A to Pilot) with Assumption Validation",
     "M&A Due Diligence — Legal, Financial & Technical (high-value transactions)",
