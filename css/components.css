@@ -383,8 +383,9 @@
   line-height: 1.8;
 }
 
-/* CV executive summary: justified, slightly smaller than other intros */
+/* CV executive summary: full content width, justified, slightly smaller */
 #cv-summary {
+  max-width: none;
   text-align: justify;
 }
 
