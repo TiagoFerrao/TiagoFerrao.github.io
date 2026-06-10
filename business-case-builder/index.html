@@ -144,7 +144,46 @@
   .chk input{accent-color:var(--accent);}
 
   .note{font-size:11.5px;color:var(--text-mut);margin-top:8px;}
-  @media(max-width:820px){.kpis{grid-template-columns:repeat(2,1fr)}.grid2,.grid3{grid-template-columns:1fr}}
+
+  /* saved-cases bar */
+  .casesbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 18px;padding:10px 12px;
+    background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;}
+  .casesbar .cb-label{font-size:10px;letter-spacing:.7px;text-transform:uppercase;color:var(--text-dim);}
+  .casesbar select{width:auto;min-width:170px;padding:6px 10px;font-size:13px;}
+  .casesbar select.ex{min-width:150px;color:var(--text-dim);}
+  .casesbar .cb-sep{flex:1;}
+  .casesbar .btn{padding:6px 10px;}
+
+  @media(max-width:820px){.kpis{grid-template-columns:repeat(2,1fr)}.grid2,.grid3{grid-template-columns:1fr}
+    .casesbar .cb-sep{display:none}}
+
+  /* ===== Assumptions desktop wing (dock + folder marker) ===== */
+  .adock{position:fixed;top:0;right:0;height:100vh;width:360px;z-index:45;display:none;
+    transform:translateX(0);transition:transform .28s ease;}
+  .adock.collapsed{transform:translateX(360px);}
+  .adock-inner{flex:1;background:var(--bg-surface-2);border-left:1px solid var(--border-strong);
+    box-shadow:-14px 0 44px rgba(0,0,0,.45);display:flex;flex-direction:column;min-width:0;}
+  .adock-inner header{padding:15px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+  .adock-inner header .t{font-family:var(--disp);font-weight:700;font-size:16px;}
+  .adock-inner .body{flex:1;overflow-y:auto;padding:14px 16px;}
+  .adock-inner .intro{font-size:12px;color:var(--text-dim);margin-bottom:12px;}
+  /* folder-marker tab on the left edge of the dock — always visible */
+  .adock .marker{position:absolute;left:-36px;top:104px;width:36px;
+    background:var(--accent);color:var(--bg-primary);border:none;border-radius:10px 0 0 10px;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;gap:9px;padding:13px 0 15px;
+    box-shadow:-7px 5px 20px rgba(0,0,0,.42);}
+  .adock .marker:hover{filter:brightness(1.07);}
+  .adock .marker .mk-ic{font-size:15px;}
+  .adock .marker .mk-tx{writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);
+    font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:1.6px;text-transform:uppercase;}
+  .adock .marker .mk-n{background:var(--bg-primary);color:var(--accent);border-radius:20px;font-size:11px;font-weight:700;padding:1px 7px;}
+  .adock .marker .mk-ar{font-size:14px;font-weight:700;}
+
+  @media(min-width:980px){
+    .adock{display:flex;}            /* the wing is desktop-only */
+    .fab{display:none;}              /* desktop uses the wing instead of the FAB */
+    body.dock-open .wrap{margin-right:404px;}  /* reserve space so the open wing never covers content */
+  }
 </style>
 </head>
 <body>
@@ -238,6 +277,109 @@ const SEED = {
   }
 };
 
+/* ============ real case: ETAR sludge → compost (Plano Financeiro v6.3, Scenario 1) ============ */
+/* Maps the operating P&L into the tool's structure: 17,000 t/yr × €80 gate fee = €1.36M revenue,
+   €27.51/t variable → €892k gross margin, €218.9k fixed (FSE+personnel) → EBITDA ≈ €673k/yr.
+   The tool stops at EBITDA, so it does NOT reproduce the plan's CAPEX (€4.16M), D&A, NPV (€1.24M @10%) or IRR (7%). */
+const WWTP_SEED = {
+  meta:{ name:"ETAR sludge → compost (C1)", tagline:"Local valorisation of WWTP (ETAR) sludge into Class I/IIA matured organic compost.", startYear:2026, years:7 },
+  fundamentals:{
+    problemWhat:"Environmentally and economically sustainable management of WWTP (ETAR) sludge, including its disposal and valorisation.",
+    problemWhy:"It carries high operating costs, strict legal requirements and growing difficulty in final disposal.",
+    problemWho:"WWTP operators / water & sanitation utilities.",
+    solution:"Valorisation of ETAR sludge by composting it with forestry and agricultural biomass into a matured Class I/IIA organic soil improver.",
+    unfairAdvantage:"Decentralised, proximity-to-ETAR model that cuts logistics cost versus centralised treatment.",
+    segments:[{name:"WWTP operators (ETAR)", early:"ETARs with high sludge output and disposal difficulty"},{name:"Agricultural sector", early:"Professional bulk users"}],
+    channels:"Contracts with WWTP operators for local reception and valorisation of sludge.",
+    revenueStreams:[{name:"Reception / gate fee", desc:"Contract with ETARs — revenue per tonne received", seg:"WWTP operators"},{name:"Compost sale", desc:"Sale of final product — revenue per tonne sold", seg:"Agricultural sector"}]
+  },
+  assumptions:[
+    {id:1,text:"Gate fee for sludge reception ≈ €80 per tonne processed",cat:"Market",amount:"80 €/t",validated:true,comments:"Drives €1.36M revenue on 17,000 t"},
+    {id:2,text:"Equivalent compost price ≈ €28/t (compost sale = €0 in this scenario)",cat:"Market",amount:"28 €/t",validated:false,comments:"C1 assumes product not sold"},
+    {id:3,text:"Sludge→product conversion 0.66 t/t; mass reduction ≈ 50%",cat:"Costs",amount:"0.66 t/t",validated:true,comments:""},
+    {id:4,text:"Transport 30 km ETAR→plant, 40 km plant→user at €2/km",cat:"Costs",amount:"€2/km",validated:false,comments:"High uncertainty / high impact"},
+    {id:5,text:"3 lots/year of ~3,000 t each",cat:"Costs",amount:"3×3000 t",validated:false,comments:""}
+  ],
+  stakeholders:[
+    {name:"WWTP operator (ETAR)", desc:"Buyer of the reception service; needs compliant, lower-cost sludge offtake"},
+    {name:"Regulator (APA / DGAV)", desc:"Sets compost classification & legal framework (DL30/22, Port. 185/22)"},
+    {name:"Farmers / agronomists", desc:"End users of the organic soil improver"}
+  ],
+  needs:[
+    {name:"Compliant offtake", desc:"Legal, traceable sludge valorisation", stk:"WWTP operator (ETAR)", priority:9},
+    {name:"Lower cost vs alternatives", desc:"Cheaper than incineration / landfill", stk:"WWTP operator (ETAR)", priority:8},
+    {name:"Quality compost", desc:"Class I/IIA, matured, screened", stk:"Farmers / agronomists", priority:6}
+  ],
+  competitors:{
+    rows:["Main statement","Price point","Compliance","Proximity / logistics","Product quality"],
+    cols:["Our solution","Incineration","Landfill"],
+    data:{
+      "Main statement":["Local composting & valorisation","Thermal destruction","Disposal"],
+      "Price point":["€80/t gate fee","high","gate fee + tax"],
+      "Compliance":["9","8","4"],
+      "Proximity / logistics":["9","3","5"],
+      "Product quality":["8","1","1"]
+    }
+  },
+  opportunity:{
+    pricePerUnit:80,
+    segments:[
+      {name:"Sludge received (t/yr)", tam:[17000,17000,17000,17000,17000,17000,17000], reach:[100,100,100,100,100,100,100]}
+    ]
+  },
+  concept:{
+    description:"Windrow composting with mechanical turning. Input: urban ETAR sludge + forestry/pruning biomass (50/50 v/v). ~90–120 day cycle, 3 lots/yr. The per-tonne variable costs below sum to the production cost per tonne.",
+    components:[
+      {name:"Raw material (structurant)", cost:3.79, module:"Service"},
+      {name:"Direct labour", cost:3.80, module:"Service"},
+      {name:"Fuel", cost:5.00, module:"Service"},
+      {name:"Consumables & maintenance", cost:3.00, module:"Service"},
+      {name:"Energy & water", cost:2.00, module:"Service"},
+      {name:"Monitoring & analysis", cost:1.06, module:"Service"},
+      {name:"Logistics — sludge in", cost:5.20, module:"Service"},
+      {name:"Logistics — product out", cost:3.66, module:"Service"}
+    ]
+  },
+  specs:[
+    {name:"Compost classification", component:"Service", target:"Class I / min IIA (DL30/22)", need:"Compliant offtake"},
+    {name:"Maturation", component:"Service", target:"Matured, screened", need:"Quality compost"},
+    {name:"Mass reduction", component:"Service", target:"≈ 50%", need:"Lower cost vs alternatives"}
+  ],
+  finance:{
+    productionCostPerUnit:27.51,
+    fse:{
+      "Office rent":[24000,24000,24000,24000,24000,24000,24000],
+      "Communications":[8000,8000,8000,8000,8000,8000,8000],
+      "Travel":[0,0,0,0,0,0,0],
+      "Merch transportation":[0,0,0,0,0,0,0],
+      "Insurances":[20000,20000,20000,20000,20000,20000,20000],
+      "Marketing":[10000,10000,10000,10000,10000,10000,10000],
+      "Legal/Consulting":[30000,30000,30000,30000,30000,30000,30000],
+      "Others":[26890,26890,26890,26890,26890,26890,26890]
+    },
+    headcount:[2,2,2,2,2,2,2], costHeadcount:[50000,50000,50000,50000,50000,50000,50000],
+    outsourcing:[0,0,0,0,0,0,0], costOutsourcing:[0,0,0,0,0,0,0]
+  }
+};
+
+/* a clean empty case for "+ new" */
+const BLANK = {
+  meta:{ name:"Untitled case", tagline:"", startYear:(new Date()).getFullYear(), years:5 },
+  fundamentals:{ problemWhat:"",problemWhy:"",problemWho:"",solution:"",unfairAdvantage:"",segments:[{name:"",early:""}],channels:"",revenueStreams:[{name:"",desc:"",seg:""}] },
+  assumptions:[],
+  stakeholders:[{name:"",desc:""}],
+  needs:[{name:"",desc:"",stk:"",priority:5}],
+  competitors:{ rows:["Main statement","Price point"], cols:["Our solution","Alternative #1"], data:{} },
+  opportunity:{ pricePerUnit:0, segments:[{name:"Segment 1", tam:[0,0,0,0,0], reach:[0,0,0,0,0]}] },
+  concept:{ description:"", components:[{name:"",cost:0,module:"Hardware"}] },
+  specs:[{name:"",component:"Hardware",target:"",need:""}],
+  finance:{ productionCostPerUnit:0,
+    fse:{"Office rent":[0,0,0,0,0],"Communications":[0,0,0,0,0],"Travel":[0,0,0,0,0],"Merch transportation":[0,0,0,0,0],"Insurances":[0,0,0,0,0],"Marketing":[0,0,0,0,0],"Legal/Consulting":[0,0,0,0,0],"Others":[0,0,0,0,0]},
+    headcount:[0,0,0,0,0],costHeadcount:[0,0,0,0,0],outsourcing:[0,0,0,0,0],costOutsourcing:[0,0,0,0,0] }
+};
+
+const EXAMPLES = { aerosense:{label:"AeroSense (demo)", seed:SEED}, wwtp:{label:"WWTP sludge → compost", seed:WWTP_SEED} };
+
 const clone=o=>JSON.parse(JSON.stringify(o));
 const pad=(a,n,fill=0)=>{a=Array.isArray(a)?a.slice(0,n):[];while(a.length<n)a.push(a.length?a[a.length-1]:fill);return a;};
 const eur=(n)=>{if(!isFinite(n))return"—";const a=Math.abs(n);const s=n<0?"-":"";
@@ -321,11 +463,63 @@ function YearRow({label,arr,n,onChange,money,pct,calc}){
   </tr>);
 }
 
+/* shared assumptions list — used by both the desktop wing and the mobile drawer */
+function AssumList({items,add,set,del}){
+  return (<>
+    {items.map(a=>(
+      <div className="acard" key={a.id}>
+        <div className="top">
+          <span className={"badge "+a.cat.toLowerCase()}>{a.cat}</span>
+          <button className="xbtn" style={{marginLeft:"auto"}} onClick={()=>del(a.id)}>×</button>
+        </div>
+        <textarea value={a.text} placeholder="State the assumption…" onChange={e=>set(a.id,"text",e.target.value)}/>
+        <div className="meta">
+          <select value={a.cat} onChange={e=>set(a.id,"cat",e.target.value)}>
+            <option>Market</option><option>Costs</option><option>Competitors</option><option>Other</option></select>
+          <input className="txt" placeholder="value used (e.g. 12%, €420)" value={a.amount} onChange={e=>set(a.id,"amount",e.target.value)}/>
+          <label className="chk"><input type="checkbox" checked={a.validated} onChange={e=>set(a.id,"validated",e.target.checked)}/>validated</label>
+        </div>
+        <input className="txt" style={{marginTop:8}} placeholder="comments / source" value={a.comments} onChange={e=>set(a.id,"comments",e.target.value)}/>
+      </div>
+    ))}
+    {items.length===0 && <div className="intro" style={{opacity:.7}}>No assumptions yet — add the first one below.</div>}
+    <button className="btn" onClick={add}>+ add assumption</button>
+  </>);
+}
+
+const LIB_KEY = "business-case-builder-lib-v1";
+const newId = ()=> Date.now()*1000 + Math.floor(Math.random()*1000);
+
 function App(){
-  const [model,setModel]=useState(()=>{try{const s=localStorage.getItem(LS_KEY);if(s)return JSON.parse(s);}catch(e){}return clone(SEED);});
+  // ---- case library: { activeId, cases:[{id, model}] } ----
+  const [lib,setLib]=useState(()=>{
+    try{
+      const raw=localStorage.getItem(LIB_KEY); if(raw){const L=JSON.parse(raw); if(L&&L.cases&&L.cases.length) return L;}
+      const old=localStorage.getItem(LS_KEY); // migrate a single saved model from the previous version
+      if(old){const m=JSON.parse(old); const id=newId(); return {activeId:id, cases:[{id, model:m}]};}
+    }catch(e){}
+    const id=newId(); return {activeId:id, cases:[{id, model:clone(SEED)}]};
+  });
   const [step,setStep]=useState(0);
-  const [drawer,setDrawer]=useState(false);
-  useEffect(()=>{try{localStorage.setItem(LS_KEY,JSON.stringify(model));}catch(e){}},[model]);
+  const [drawer,setDrawer]=useState(false);          // mobile overlay
+  const [dockCollapsed,setDockCollapsed]=useState(false);  // desktop wing
+  useEffect(()=>{try{localStorage.setItem(LIB_KEY,JSON.stringify(lib));}catch(e){}},[lib]);
+  useEffect(()=>{try{document.body.classList.toggle("dock-open",!dockCollapsed);}catch(e){}},[dockCollapsed]);
+
+  const activeId = lib.cases.some(c=>c.id===lib.activeId) ? lib.activeId : lib.cases[0].id;
+  const model = lib.cases.find(c=>c.id===activeId).model;
+  const setModel=(updater)=>setLib(L=>{
+    const aid=L.cases.some(c=>c.id===L.activeId)?L.activeId:L.cases[0].id;
+    return {...L, cases:L.cases.map(c=> c.id===aid ? {...c, model:(typeof updater==="function"?updater(c.model):updater)} : c)};
+  });
+
+  // ---- case library actions ----
+  const caseName=(m)=> (m&&m.meta&&m.meta.name) ? m.meta.name : "Untitled case";
+  const addCase=(seed,activate)=>{const id=newId(); setLib(L=>({activeId:activate?id:L.activeId, cases:[...L.cases,{id, model:clone(seed||BLANK)}]})); if(activate)setStep(0);};
+  const duplicateCase=()=>{const id=newId(); setLib(L=>{const src=L.cases.find(c=>c.id===activeId)||L.cases[0]; const m=clone(src.model); m.meta.name=caseName(src.model)+" (copy)"; return {activeId:id, cases:[...L.cases,{id, model:m}]};}); setStep(0);};
+  const deleteCase=()=>{ if(lib.cases.length<=1){alert("Keep at least one case.");return;} if(!confirm("Delete \""+caseName(model)+"\"? This can't be undone."))return; setLib(L=>{const cases=L.cases.filter(c=>c.id!==activeId); return {activeId:cases[0].id, cases};}); setStep(0);};
+  const switchCase=(id)=>{setLib(L=>({...L,activeId:id})); setStep(0);};
+  const loadExample=(key)=>{ const ex=EXAMPLES[key]; if(ex) addCase(ex.seed,true); };
 
   const upd=(path,v)=>setModel(m=>{const c=clone(m);let o=c;const ks=path.split(".");for(let i=0;i<ks.length-1;i++)o=o[ks[i]];o[ks[ks.length-1]]=v;return c;});
   const r=useMemo(()=>compute(model),[model]);
@@ -348,10 +542,9 @@ function App(){
   const delAssum=(id)=>setModel(m=>({...m,assumptions:m.assumptions.filter(a=>a.id!==id)}));
 
   /* --- io --- */
-  const reset=()=>{if(confirm("Reset everything to the example case?"))setModel(clone(SEED));};
   const exportJSON=()=>{const b=new Blob([JSON.stringify(model,null,2)],{type:"application/json"});const a=document.createElement("a");
     a.href=URL.createObjectURL(b);a.download=(model.meta.name||"case").replace(/\s+/g,"_")+".case.json";a.click();};
-  const importJSON=(e)=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{setModel(JSON.parse(rd.result));}catch(x){alert("Invalid file");}};rd.readAsText(f);e.target.value="";};
+  const importJSON=(e)=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{addCase(JSON.parse(rd.result),true);}catch(x){alert("Invalid file");}};rd.readAsText(f);e.target.value="";};
 
   /* --- segment / list mutators --- */
   const setSeg=(i,k,v)=>setModel(m=>{const c=clone(m);c.opportunity.segments[i][k]=v;return c;});
@@ -371,7 +564,22 @@ function App(){
       <div className="spacer"></div>
       <label className="btn" style={{cursor:"pointer"}}>import<input type="file" accept="application/json" onChange={importJSON} style={{display:"none"}}/></label>
       <button className="btn" onClick={exportJSON}>export</button>
-      <button className="btn" onClick={reset}>reset</button>
+    </div>
+
+    <div className="casesbar">
+      <span className="cb-label">saved cases</span>
+      <select value={activeId} onChange={e=>switchCase(+e.target.value)} title="Switch between saved cases">
+        {lib.cases.map(c=><option key={c.id} value={c.id}>{caseName(c.model)}</option>)}
+      </select>
+      <button className="btn" onClick={()=>addCase(BLANK,true)} title="Start a new blank case">+ new</button>
+      <button className="btn" onClick={duplicateCase} title="Duplicate the current case">duplicate</button>
+      <button className="btn" onClick={deleteCase} title="Delete the current case">delete</button>
+      <span className="cb-sep"></span>
+      <select className="ex" value="" onChange={e=>{if(e.target.value){loadExample(e.target.value);e.target.value="";}}} title="Load a worked example as a new case">
+        <option value="">load example…</option>
+        <option value="aerosense">AeroSense (demo)</option>
+        <option value="wwtp">WWTP sludge → compost</option>
+      </select>
     </div>
 
     <div className="idea">
@@ -619,7 +827,26 @@ function App(){
       <button className="btn primary" onClick={()=>setStep(s=>Math.min(STEPS.length-1,s+1))} disabled={step===STEPS.length-1}>{step===STEPS.length-2?"see results ›":"next ›"}</button>
     </div>
 
-    {/* ---------------- FLOATING ASSUMPTIONS ---------------- */}
+    {/* ===== ASSUMPTIONS — desktop wing (folder marker) + mobile drawer ===== */}
+    {/* Desktop: a persistent right-hand dock that slides away to a marker tab */}
+    <aside className={"adock"+(dockCollapsed?" collapsed":"")}>
+      <button className="marker" onClick={()=>setDockCollapsed(v=>!v)} title={dockCollapsed?"Open assumptions":"Slide assumptions away"}>
+        <span className="mk-ar">{dockCollapsed?"‹":"›"}</span>
+        <span className="mk-ic">⚑</span>
+        <span className="mk-tx">assumptions</span>
+        <span className="mk-n">{model.assumptions.length}</span>
+      </button>
+      <div className="adock-inner">
+        <header><span className="t">⚑ Assumptions</span>
+          <span className="note" style={{margin:0}}>{model.assumptions.filter(a=>a.validated).length}/{model.assumptions.length} validated</span></header>
+        <div className="body">
+          <div className="intro">Every number in this case rests on assumptions. Capture them as you go — categorise, note the value you used, and tick when validated. This wing stays open across every step; slide it away with the tab.</div>
+          <AssumList items={model.assumptions} add={addAssum} set={setAssum} del={delAssum}/>
+        </div>
+      </div>
+    </aside>
+
+    {/* Mobile: floating button + overlay drawer */}
     <button className="fab" onClick={()=>setDrawer(true)}>⚑ assumptions <span className="cnt">{model.assumptions.length}</span></button>
     {drawer && <>
       <div className="drawer-bg" onClick={()=>setDrawer(false)}></div>
@@ -628,24 +855,8 @@ function App(){
           <span className="note" style={{margin:0}}>{model.assumptions.filter(a=>a.validated).length}/{model.assumptions.length} validated</span>
           <button className="x" onClick={()=>setDrawer(false)}>×</button></header>
         <div className="body">
-          <div className="intro">Every number in this case rests on assumptions. Capture them here as you go — categorise, note the value you used, and mark whether you've validated it. This panel stays with you across all steps.</div>
-          {model.assumptions.map(a=>(
-            <div className="acard" key={a.id}>
-              <div className="top">
-                <span className={"badge "+a.cat.toLowerCase()}>{a.cat}</span>
-                <button className="xbtn" style={{marginLeft:"auto"}} onClick={()=>delAssum(a.id)}>×</button>
-              </div>
-              <textarea value={a.text} placeholder="State the assumption…" onChange={e=>setAssum(a.id,"text",e.target.value)}/>
-              <div className="meta">
-                <select value={a.cat} onChange={e=>setAssum(a.id,"cat",e.target.value)}>
-                  <option>Market</option><option>Costs</option><option>Competitors</option><option>Other</option></select>
-                <input className="txt" placeholder="value used (e.g. 12%, €420)" value={a.amount} onChange={e=>setAssum(a.id,"amount",e.target.value)}/>
-                <label className="chk"><input type="checkbox" checked={a.validated} onChange={e=>setAssum(a.id,"validated",e.target.checked)}/>validated</label>
-              </div>
-              <input className="txt" style={{marginTop:8}} placeholder="comments / source" value={a.comments} onChange={e=>setAssum(a.id,"comments",e.target.value)}/>
-            </div>
-          ))}
-          <button className="btn" onClick={addAssum}>+ add assumption</button>
+          <div className="intro">Every number in this case rests on assumptions. Capture them here as you go — categorise, note the value you used, and mark whether you've validated it.</div>
+          <AssumList items={model.assumptions} add={addAssum} set={setAssum} del={delAssum}/>
         </div>
       </div>
     </>}
