@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="en" data-theme="teal">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Platform Model Builder — interactive business model + financial estimate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-primary:#001a20; --bg-secondary:#002a33;
+    --bg-surface:rgba(0,50,60,.55); --bg-surface-2:rgba(0,42,51,.85);
+    --accent:#7DE38D; --accent-rgb:125,227,141; --accent-2:#288f5b;
+    --text:#e0f0e8; --text-dim:#8fb8a0; --text-mut:#5a8a70;
+    --border:rgba(125,227,141,.18); --border-strong:rgba(125,227,141,.4);
+    --danger:#ff6b6b; --warn:#ffd166; --info:#4ecdc4;
+    --mono:'Inconsolata',ui-monospace,monospace; --disp:'Space Grotesk',sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:
+     radial-gradient(1200px 600px at 80% -10%, rgba(125,227,141,.06), transparent 60%),
+     var(--bg-primary); color:var(--text); font-family:var(--mono); font-size:15px; line-height:1.5;}
+  a{color:var(--accent);}
+  .wrap{max-width:1180px;margin:0 auto;padding:22px 20px 70px;}
+
+  /* top bar */
+  .topbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    border-bottom:1px solid var(--border);padding-bottom:14px;margin-bottom:18px;}
+  .brand{font-family:var(--disp);font-weight:700;font-size:19px;letter-spacing:.3px;color:var(--text);}
+  .brand .pp{color:var(--accent);text-shadow:0 0 10px rgba(var(--accent-rgb),.4);}
+  .brand small{display:block;font-family:var(--mono);font-weight:400;font-size:12px;color:var(--text-dim);letter-spacing:0;}
+  .topbar .spacer{flex:1}
+  .btn{font-family:var(--mono);font-size:12.5px;color:var(--text-dim);background:transparent;
+    border:1px solid var(--border);border-radius:7px;padding:7px 11px;cursor:pointer;transition:.15s;}
+  .btn:hover{color:var(--accent);border-color:var(--border-strong);box-shadow:0 0 10px rgba(var(--accent-rgb),.12);}
+  .btn.primary{color:var(--bg-primary);background:var(--accent);border-color:var(--accent);font-weight:700;}
+  .btn.primary:hover{filter:brightness(1.08);}
+
+  /* tabs */
+  .tabs{display:flex;gap:6px;margin-bottom:20px;}
+  .tab{font-family:var(--mono);font-size:13.5px;color:var(--text-dim);background:transparent;border:none;
+    padding:8px 14px;cursor:pointer;border-bottom:2px solid transparent;letter-spacing:.3px;}
+  .tab:hover{color:var(--text);}
+  .tab.on{color:var(--accent);border-bottom-color:var(--accent);text-shadow:0 0 8px rgba(var(--accent-rgb),.35);}
+
+  /* idea header */
+  .idea{margin-bottom:18px;}
+  .idea input.name{font-family:var(--disp);font-weight:700;font-size:26px;color:var(--text);background:transparent;
+    border:none;border-bottom:1px dashed transparent;width:100%;padding:2px 0;}
+  .idea input.name:hover,.idea input.name:focus{border-bottom-color:var(--border);outline:none;}
+  .idea input.tag{font-family:var(--mono);font-size:14px;color:var(--text-dim);background:transparent;border:none;width:100%;padding:3px 0;}
+  .idea input.tag:hover,.idea input.tag:focus{outline:none;color:var(--text);}
+
+  /* canvas grid — mirrors Figure 28 (Business Platform Canvas) layout */
+  .canvas{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;
+    grid-template-areas:
+      "feat    value   problem users"
+      "diff    net     net     sellers"
+      "rep     net     net     sellers"
+      "metrics metrics capture capture";}
+  .a-feat{grid-area:feat}.a-value{grid-area:value}.a-problem{grid-area:problem}.a-users{grid-area:users}
+  .a-diff{grid-area:diff}.a-net{grid-area:net}.a-sellers{grid-area:sellers}.a-rep{grid-area:rep}
+  .a-metrics{grid-area:metrics}.a-capture{grid-area:capture}
+  .cell{background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;padding:12px 13px;
+    display:flex;flex-direction:column;min-height:128px;transition:.15s;}
+  .cell:hover{border-color:var(--border-strong);box-shadow:inset 0 0 30px rgba(0,60,60,.35),0 0 14px rgba(var(--accent-rgb),.08);}
+  /* the two market sides get a tinted edge, like actors in the diagram */
+  .cell.side-buy{border-left:2px solid var(--info);} .cell.side-sell{border-left:2px solid var(--warn);}
+  .cell.core{border-color:var(--border-strong);background:rgba(0,55,66,.65);}
+  .cell h3{margin:0 0 7px;font-family:var(--mono);font-weight:700;font-size:11px;letter-spacing:1.1px;
+    text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+  .cell h3 .ic{font-size:13px;opacity:.9;}
+  .cell .hint{flex-basis:100%;font-size:10px;color:var(--text-mut);text-transform:none;letter-spacing:0;font-weight:400;margin-top:1px;}
+  .cell textarea{flex:1;width:100%;resize:vertical;background:transparent;border:none;color:var(--text);
+    font-family:var(--mono);font-size:12.5px;line-height:1.5;min-height:74px;}
+  .cell textarea:focus{outline:none;}
+  .cell textarea::placeholder{color:var(--text-mut);}
+
+  /* section heads */
+  .shead{font-family:var(--disp);font-weight:600;font-size:15px;color:var(--text);margin:26px 0 10px;
+    display:flex;align-items:center;gap:9px;}
+  .shead .bar{width:4px;height:16px;background:var(--accent);border-radius:2px;box-shadow:0 0 8px rgba(var(--accent-rgb),.5);}
+  .shead small{font-weight:400;font-family:var(--mono);font-size:12px;color:var(--text-dim);}
+
+  /* segments table */
+  .tbl{width:100%;border-collapse:collapse;font-size:13px;}
+  .tbl th{font-weight:700;font-size:10.5px;letter-spacing:.6px;text-transform:uppercase;color:var(--text-dim);
+    text-align:right;padding:7px 8px;border-bottom:1px solid var(--border);}
+  .tbl th.l,.tbl td.l{text-align:left;}
+  .tbl td{padding:5px 8px;border-bottom:1px solid rgba(125,227,141,.07);text-align:right;}
+  .tbl input{background:transparent;border:1px solid transparent;border-radius:5px;color:var(--text);
+    font-family:var(--mono);font-size:13px;text-align:right;width:100%;padding:4px 6px;}
+  .tbl input.l{text-align:left;}
+  .tbl input:hover{border-color:var(--border);}
+  .tbl input:focus{outline:none;border-color:var(--border-strong);background:rgba(0,0,0,.2);}
+  .tbl td.calc{color:var(--accent);font-weight:600;}
+  .pill{font-size:10px;padding:2px 7px;border-radius:20px;border:1px solid var(--border);cursor:pointer;color:var(--text-dim);}
+  .pill.buyer{color:var(--info);border-color:rgba(78,205,196,.4);}
+  .pill.seller{color:var(--warn);border-color:rgba(255,209,102,.4);}
+  .xbtn{background:transparent;border:none;color:var(--text-mut);cursor:pointer;font-size:15px;}
+  .xbtn:hover{color:var(--danger);}
+  .toggle{cursor:pointer;font-size:14px;}
+
+  /* financial layout */
+  .fin{display:grid;grid-template-columns:300px 1fr;gap:22px;align-items:start;}
+  .panel{background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;padding:16px;}
+  .field{margin-bottom:15px;}
+  .field label{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;color:var(--text-dim);margin-bottom:5px;}
+  .field label b{color:var(--accent);font-size:13px;font-weight:700;}
+  .field input[type=range]{width:100%;accent-color:var(--accent);}
+  .field input[type=number]{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:6px;
+    color:var(--text);font-family:var(--mono);padding:7px 9px;font-size:14px;}
+  .field input[type=number]:focus{outline:none;border-color:var(--border-strong);}
+  .seg-toggle{display:flex;flex-direction:column;gap:6px;font-size:12.5px;}
+  .seg-toggle label{display:flex;align-items:center;gap:8px;color:var(--text-dim);cursor:pointer;}
+  .seg-toggle input{accent-color:var(--accent);}
+
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
+  .kpi{background:var(--bg-surface);border:1px solid var(--border);border-radius:11px;padding:13px 14px;}
+  .kpi .lbl{font-size:10.5px;letter-spacing:.8px;text-transform:uppercase;color:var(--text-dim);}
+  .kpi .val{font-family:var(--disp);font-weight:700;font-size:21px;color:var(--accent);margin-top:5px;
+    text-shadow:0 0 12px rgba(var(--accent-rgb),.25);line-height:1.1;}
+  .kpi .val.neg{color:var(--danger);text-shadow:none;}
+  .kpi .sub{font-size:11px;color:var(--text-mut);margin-top:3px;}
+
+  .chartbox{background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;padding:16px 16px 8px;margin-bottom:18px;}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:11.5px;color:var(--text-dim);margin-bottom:4px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .legend i{width:11px;height:11px;border-radius:2px;display:inline-block;}
+
+  .contrib{display:flex;flex-direction:column;gap:9px;}
+  .crow{display:grid;grid-template-columns:150px 1fr 92px;align-items:center;gap:10px;font-size:12.5px;}
+  .crow .nm{color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .crow .track{height:13px;background:rgba(0,0,0,.25);border-radius:6px;overflow:hidden;}
+  .crow .fill{height:100%;background:linear-gradient(90deg,var(--accent-2),var(--accent));border-radius:6px;}
+  .crow .amt{text-align:right;color:var(--accent);font-weight:600;}
+
+  details.months{margin-top:14px;}
+  details.months summary{cursor:pointer;color:var(--text-dim);font-size:12.5px;}
+  .mtbl{width:100%;border-collapse:collapse;font-size:11.5px;margin-top:8px;}
+  .mtbl th,.mtbl td{padding:4px 7px;text-align:right;border-bottom:1px solid rgba(125,227,141,.07);}
+  .mtbl th{color:var(--text-dim);text-transform:uppercase;font-size:9.5px;letter-spacing:.5px;}
+  .mtbl td.pos{color:var(--accent);} .mtbl td.neg{color:var(--danger);}
+
+  .note{font-size:11.5px;color:var(--text-mut);margin-top:18px;border-top:1px dashed var(--border);padding-top:12px;}
+  .seedbadge{font-size:11px;color:var(--text-mut);}
+  .seedbadge b{color:var(--accent-2);}
+
+  /* help tooltips */
+  .help{margin-left:auto;flex:none;width:16px;height:16px;border:1px solid var(--border);border-radius:50%;
+    font-size:10px;color:var(--text-dim);display:inline-flex;align-items:center;justify-content:center;
+    cursor:help;position:relative;font-weight:700;}
+  .help:hover{color:var(--bg-primary);background:var(--accent);border-color:var(--accent);}
+  .help .tip{visibility:hidden;opacity:0;transition:opacity .12s;position:absolute;z-index:30;top:135%;right:-6px;
+    width:250px;background:var(--bg-secondary);border:1px solid var(--border-strong);border-radius:9px;padding:10px 12px;
+    font-size:11.5px;line-height:1.55;color:var(--text-dim);text-transform:none;letter-spacing:0;font-weight:400;
+    box-shadow:0 10px 30px rgba(0,0,0,.55);text-align:left;}
+  .help:hover .tip{visibility:visible;opacity:1;}
+  .help .tip::before{content:"";position:absolute;bottom:100%;right:9px;border:6px solid transparent;border-bottom-color:var(--border-strong);}
+  .help .tip .eg{display:block;margin-top:7px;padding-top:7px;border-top:1px dashed var(--border);color:var(--text-mut);}
+  .help .tip .eg b{color:var(--accent-2);font-weight:700;}
+
+  @media(max-width:880px){.canvas{display:flex;flex-direction:column}
+    .fin{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}
+    .help .tip{right:auto;left:-6px;width:220px}
+    .help .tip::before{right:auto;left:9px}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+const {useState,useEffect,useMemo} = React;
+const LS_KEY = "platform-model-v2";
+
+/* ---------- SportSpots seed (Business Platform Canvas, Figure 28 — 2018 ISCTE thesis) ---------- */
+const SEED = {
+  meta:{
+    name:"SportSpots",
+    tagline:"A platform marketplace connecting corporate employees with sports trainers & facilities."
+  },
+  canvas:{
+    feat:"Invite users to join an activity in a location for an optional, pre-established price. Affiliate with a specific entity — users can belong to teams, corporations or locations. Create and participate in events.",
+    value:"Find sport experiences. Pay-per-use training sessions. Form groups and schedule activities within teams. Broadcast available sports activities in a given location. Gather points (for a user or a team) and exchange them for rewards or charity donations.",
+    problem:"Users have no time to explore local offers. Trainers struggle to broadcast their offer. Facilities are not fully occupied. Corporations bear the cost of lost time and unhealthy workers.",
+    users:"Active workers and physically active citizens who prefer to use the platform. Large corporations with stressful workspaces — reachable through HR, which already organises activities.",
+    diff:"Amateur + professional interactions in one marketplace. Gamification with challenges for corporations and end users. Creating an identity for teams, corporations and locations.",
+    net:"Invitations pull in external users. Competition among users. More activity available as the base grows — favouriting spots & trainers turns navigation into a discovery game that intensifies with scale.",
+    sellers:"Physical trainers, teachers and other sports professionals. Sport facilities and sport-location managers — wanting steady clients and higher occupancy.",
+    rep:"Accumulating points that can be traded for rewards or transferred to charity. Sport activity as an experience tied to discovering new locations.",
+    metrics:"User registrations. Activities created. Activities joined. Teams created. Activities per sport type. Usage frequency. Rewards created. Rewards redeemed.",
+    capture:"Corporate subscriptions (€1 / employee / month). Fee on paid activities."
+  },
+  segments:[
+    {id:1,name:"Corporate (Lisbon)", side:"buyer",  units:1000,    usersPerUnit:500, price:1.00, freq:1, on:true},
+    {id:2,name:"Single individuals", side:"buyer",  units:1000000, usersPerUnit:1,   price:0.25, freq:2, on:true},
+    {id:3,name:"Facilities (gyms)",  side:"seller", units:1000,    usersPerUnit:500, price:1.00, freq:2, on:true},
+    {id:4,name:"Trainers",           side:"seller", units:5000,    usersPerUnit:25,  price:1.00, freq:1, on:true},
+  ],
+  finance:{
+    horizon:36, initialCash:250000, fixedMonthly:25000, variablePct:12,
+    startAdoption:0.2, monthlyGrowth:18, maxAdoption:6
+  }
+};
+
+const clone = o => JSON.parse(JSON.stringify(o));
+const eur = (n)=> {
+  if(!isFinite(n)) return "—";
+  const a=Math.abs(n);
+  const f = a>=1e6 ? (n/1e6).toFixed(a>=1e7?0:1)+"M"
+          : a>=1e3 ? (n/1e3).toFixed(a>=1e5?0:0)+"k"
+          : Math.round(n).toString();
+  return "€"+f;
+};
+const eurFull = (n)=> isFinite(n) ? new Intl.NumberFormat('en-IE',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n) : "—";
+const num = (n)=> isFinite(n)? new Intl.NumberFormat('en-IE').format(Math.round(n)) : "—";
+
+/* ---------- financial engine ---------- */
+function compute(model){
+  const segs = model.segments.filter(s=>s.on);
+  const segCalc = segs.map(s=>{
+    const reach = (+s.units||0)*(+s.usersPerUnit||0);
+    const potential = reach*(+s.price||0)*(+s.freq||0); // monthly @100% adoption
+    return {...s, reach, potential};
+  });
+  const potentialTotal = segCalc.reduce((a,s)=>a+s.potential,0);
+  const f = model.finance;
+  const months=[]; let cum = +f.initialCash||0; let breakeven=null, cashOut=null, low=Infinity, lowM=0;
+  for(let m=1;m<=f.horizon;m++){
+    let ad = (+f.startAdoption) * Math.pow(1+(+f.monthlyGrowth)/100, m-1);
+    ad = Math.min(ad, +f.maxAdoption);
+    const revenue = potentialTotal * ad/100;
+    const variable = revenue * (+f.variablePct)/100;
+    const cost = (+f.fixedMonthly||0) + variable;
+    const profit = revenue - cost;
+    cum += profit;
+    if(breakeven===null && profit>=0) breakeven=m;
+    if(cum<low){low=cum;lowM=m;}
+    if(cashOut===null && cum<0) cashOut=m;
+    months.push({m,ad,revenue,cost,variable,profit,cum});
+  }
+  const targetMRR = potentialTotal*(+f.maxAdoption)/100; // monthly at ceiling
+  return {segCalc,potentialTotal,months,targetMRR,annual:targetMRR*12,breakeven,cashOut,low,lowM};
+}
+
+/* ---------- tiny SVG chart ---------- */
+function Chart({months}){
+  const W=720,H=260,pad={l:52,r:14,t:14,b:26};
+  const iw=W-pad.l-pad.r, ih=H-pad.t-pad.b;
+  const xs=months.map(d=>d.m);
+  const allVals = months.flatMap(d=>[d.revenue,d.cost,d.cum,0]);
+  const max=Math.max(...allVals), min=Math.min(...allVals,0);
+  const X = m => pad.l + (months.length<=1?0:(m-xs[0])/(xs[xs.length-1]-xs[0])*iw);
+  const Y = v => pad.t + ih - (v-min)/((max-min)||1)*ih;
+  const line = (key)=> months.map((d,i)=>(i?"L":"M")+X(d.m).toFixed(1)+" "+Y(d[key]).toFixed(1)).join(" ");
+  const area = (key)=>{
+    const top = months.map((d,i)=>(i?"L":"M")+X(d.m).toFixed(1)+" "+Y(d[key]).toFixed(1)).join(" ");
+    return top+" L"+X(xs[xs.length-1]).toFixed(1)+" "+Y(min)+" L"+X(xs[0]).toFixed(1)+" "+Y(min)+" Z";
+  };
+  // y ticks
+  const ticks=[]; const steps=4;
+  for(let i=0;i<=steps;i++){const v=min+(max-min)*i/steps; ticks.push(v);}
+  const zeroY=Y(0);
+  return (
+   <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{maxWidth:W}}>
+    {ticks.map((v,i)=>(
+      <g key={i}>
+        <line x1={pad.l} x2={W-pad.r} y1={Y(v)} y2={Y(v)} stroke="rgba(125,227,141,.10)"/>
+        <text x={pad.l-8} y={Y(v)+3} textAnchor="end" fontSize="10" fill="#5a8a70" fontFamily="Inconsolata">{eur(v)}</text>
+      </g>
+    ))}
+    {min<0 && <line x1={pad.l} x2={W-pad.r} y1={zeroY} y2={zeroY} stroke="rgba(255,107,107,.4)" strokeDasharray="3 3"/>}
+    <path d={area("revenue")} fill="rgba(125,227,141,.14)"/>
+    <path d={line("revenue")} fill="none" stroke="#7DE38D" strokeWidth="2"/>
+    <path d={line("cost")} fill="none" stroke="#ffd166" strokeWidth="1.6" strokeDasharray="5 3"/>
+    <path d={line("cum")} fill="none" stroke="#4ecdc4" strokeWidth="1.8"/>
+    {/* x labels */}
+    {months.filter((d,i)=>i%Math.ceil(months.length/6)===0||i===months.length-1).map(d=>(
+      <text key={d.m} x={X(d.m)} y={H-8} textAnchor="middle" fontSize="10" fill="#5a8a70" fontFamily="Inconsolata">M{d.m}</text>
+    ))}
+   </svg>
+  );
+}
+
+function Cell({cls,icon,title,hint,value,onChange,ph,tip,eg}){
+  return (
+    <div className={"cell "+cls}>
+      <h3><span className="ic">{icon}</span>{title}
+        {tip&&<span className="help" tabIndex="0">?
+          <span className="tip">{tip}{eg&&<span className="eg"><b>SportSpots —</b> {eg}</span>}</span>
+        </span>}
+        {hint&&<span className="hint">{hint}</span>}
+      </h3>
+      <textarea value={value} placeholder={ph} onChange={e=>onChange(e.target.value)} />
+    </div>
+  );
+}
+
+function App(){
+  // ?example=sportspots (or ?demo) force-loads the seeded SportSpots model and
+  // does NOT persist — so opening the example never clobbers your own saved work.
+  const exampleMode = (()=>{try{const p=new URLSearchParams(location.search);return p.get("example")==="sportspots"||p.has("demo");}catch(e){return false;}})();
+  const [model,setModel]=useState(()=>{
+    if(exampleMode) return clone(SEED);
+    try{const s=localStorage.getItem(LS_KEY); if(s) return JSON.parse(s);}catch(e){}
+    return clone(SEED);
+  });
+  const [tab,setTab]=useState("canvas");
+  useEffect(()=>{ if(exampleMode) return; try{localStorage.setItem(LS_KEY,JSON.stringify(model));}catch(e){} },[model]);
+
+  const setMeta=(k,v)=>setModel(m=>({...m,meta:{...m.meta,[k]:v}}));
+  const setCanvas=(k,v)=>setModel(m=>({...m,canvas:{...m.canvas,[k]:v}}));
+  const setFin=(k,v)=>setModel(m=>({...m,finance:{...m.finance,[k]:v}}));
+  const setSeg=(id,k,v)=>setModel(m=>({...m,segments:m.segments.map(s=>s.id===id?{...s,[k]:v}:s)}));
+  const addSeg=()=>setModel(m=>({...m,segments:[...m.segments,{id:Date.now(),name:"New segment",side:"buyer",units:100,usersPerUnit:1,price:1,freq:1,on:true}]}));
+  const delSeg=(id)=>setModel(m=>({...m,segments:m.segments.filter(s=>s.id!==id)}));
+
+  const r = useMemo(()=>compute(model),[model]);
+  const maxPot = Math.max(...r.segCalc.map(s=>s.potential),1);
+
+  const reset=()=>{ if(confirm("Reset everything to the SportSpots example?")) setModel(clone(SEED)); };
+  const exportJSON=()=>{
+    const blob=new Blob([JSON.stringify(model,null,2)],{type:"application/json"});
+    const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+    a.download=(model.meta.name||"model").replace(/\s+/g,"_")+".model.json"; a.click();
+  };
+  const importJSON=(e)=>{
+    const f=e.target.files[0]; if(!f) return;
+    const rd=new FileReader(); rd.onload=()=>{ try{setModel(JSON.parse(rd.result));}catch(err){alert("Invalid model file");} }; rd.readAsText(f);
+    e.target.value="";
+  };
+
+  return (
+   <div className="wrap">
+    <div className="topbar">
+      <div className="brand"><span className="pp">~/</span> platform model builder
+        <small>interactive business model + first financial estimate</small></div>
+      <div className="spacer"></div>
+      <label className="btn" style={{cursor:"pointer"}}>import
+        <input type="file" accept="application/json" onChange={importJSON} style={{display:"none"}}/></label>
+      <button className="btn" onClick={exportJSON}>export</button>
+      <button className="btn" onClick={reset}>reset</button>
+    </div>
+
+    <div className="idea">
+      <input className="name" value={model.meta.name} onChange={e=>setMeta("name",e.target.value)} placeholder="Venture name"/>
+      <input className="tag" value={model.meta.tagline} onChange={e=>setMeta("tagline",e.target.value)} placeholder="One-line description of the idea"/>
+    </div>
+
+    <div className="tabs">
+      <button className={"tab"+(tab==="canvas"?" on":"")} onClick={()=>setTab("canvas")}>① platform canvas</button>
+      <button className={"tab"+(tab==="fin"?" on":"")} onClick={()=>setTab("fin")}>② financial estimate</button>
+    </div>
+
+    {tab==="canvas" && <>
+      <div className="canvas">
+        <Cell cls="a-feat core" icon="⚷" title="Product Key Features"
+          value={model.canvas.feat} onChange={v=>setCanvas("feat",v)} ph="What can users actually do in the product?"
+          tip="The concrete features that deliver the value — the things users actually do in the product. List the few that matter, not every screen."
+          eg="join an activity for a set price, affiliate with a team or corporation, create and join events."/>
+        <Cell cls="a-value core" icon="◈" title="Value Proposition"
+          value={model.canvas.value} onChange={v=>setCanvas("value",v)} ph="What core promise do you make to each side?"
+          tip="The core promise: what job the product does for each side and why they'd choose you over the alternative."
+          eg="find sport experiences, pay-per-use sessions, schedule team activities, earn points redeemable for rewards or charity."/>
+        <Cell cls="a-problem" icon="⚑" title="Problem Statement"
+          value={model.canvas.problem} onChange={v=>setCanvas("problem",v)} ph="What pain do you remove, per segment?"
+          tip="The pain you remove, stated from the customer's point of view — ideally one line per segment. This anchors everything else."
+          eg="users lack time to find local offers; trainers can't broadcast; gyms sit under-occupied; firms lose time to unhealthy staff."/>
+        <Cell cls="a-users side-buy" icon="◧" title="Users / Buyers" hint="demand side"
+          value={model.canvas.users} onChange={v=>setCanvas("users",v)} ph="Who consumes the value? How do you reach them?"
+          tip="The demand side of the platform — who consumes the value, what they're like, and how you reach them."
+          eg="active employees of large, high-stress corporations, reachable through HR."/>
+        <Cell cls="a-diff" icon="◆" title="Differentiator Key"
+          value={model.canvas.diff} onChange={v=>setCanvas("diff",v)} ph="Why do you win vs. the alternatives?"
+          tip="Why you win versus existing alternatives — the edge that's hard for others to copy."
+          eg="blends amateur + professional users; gamified team and corporate identity."/>
+        <Cell cls="a-net core" icon="⇄" title="Network Effects" hint="the flywheel"
+          value={model.canvas.net} onChange={v=>setCanvas("net",v)} ph="Why does it get better as more users join?"
+          tip="Why the platform becomes more valuable as more people join — the flywheel that makes a marketplace defensible."
+          eg="invites pull in external users; competition and more activity available as the base grows."/>
+        <Cell cls="a-sellers side-sell" icon="◨" title="Producers / Sellers" hint="supply side"
+          value={model.canvas.sellers} onChange={v=>setCanvas("sellers",v)} ph="Who provides the value? What do they want?"
+          tip="The supply side — who provides the value, and what they want from you (it's rarely the same as what buyers want)."
+          eg="trainers, teachers and venue managers seeking steady clients and higher occupancy."/>
+        <Cell cls="a-rep" icon="↻" title="Repeatability Strategy"
+          value={model.canvas.rep} onChange={v=>setCanvas("rep",v)} ph="Why do users come back after the first match?"
+          tip="Why users return after the first buyer–seller match — what drives retention instead of one-and-done usage."
+          eg="points tradable for rewards or charity; activity tied to discovering new locations."/>
+        <Cell cls="a-metrics" icon="▤" title="Key Metrics"
+          value={model.canvas.metrics} onChange={v=>setCanvas("metrics",v)} ph="Which few numbers prove the model works?"
+          tip="The handful of numbers that tell you the model is working — pick leading indicators of adoption and engagement, not vanity counts."
+          eg="registrations, activities created and joined, teams created, usage frequency, rewards redeemed."/>
+        <Cell cls="a-capture core" icon="⊞" title="Value Capture" hint="feeds the financial tab →"
+          value={model.canvas.capture} onChange={v=>setCanvas("capture",v)} ph="How does the core interaction make money?"
+          tip="How the platform turns the core interaction into revenue. This is what you model in the revenue segments below and the financial tab."
+          eg="corporate subscriptions (€1 / employee / month) plus a fee on paid activities."/>
+      </div>
+
+      <div className="shead"><span className="bar"></span>Revenue segments <small>— the bridge from canvas to numbers (reach × price × frequency)</small></div>
+      <table className="tbl">
+        <thead><tr>
+          <th className="l">Segment</th><th className="l">Side</th>
+          <th>Units</th><th>Users / unit</th><th>Reach</th>
+          <th>€ / sale</th><th>× / month</th><th>Monthly @100%</th><th></th>
+        </tr></thead>
+        <tbody>
+        {model.segments.map(s=>{
+          const reach=(+s.units||0)*(+s.usersPerUnit||0);
+          const pot=reach*(+s.price||0)*(+s.freq||0);
+          return (
+          <tr key={s.id} style={{opacity:s.on?1:.4}}>
+            <td className="l"><input className="l" value={s.name} onChange={e=>setSeg(s.id,"name",e.target.value)}/></td>
+            <td className="l"><span className={"pill "+s.side} onClick={()=>setSeg(s.id,"side",s.side==="buyer"?"seller":"buyer")}>{s.side}</span></td>
+            <td><input type="number" value={s.units} onChange={e=>setSeg(s.id,"units",+e.target.value)}/></td>
+            <td><input type="number" value={s.usersPerUnit} onChange={e=>setSeg(s.id,"usersPerUnit",+e.target.value)}/></td>
+            <td>{num(reach)}</td>
+            <td><input type="number" step="0.05" value={s.price} onChange={e=>setSeg(s.id,"price",+e.target.value)}/></td>
+            <td><input type="number" step="0.5" value={s.freq} onChange={e=>setSeg(s.id,"freq",+e.target.value)}/></td>
+            <td className="calc">{eur(pot)}</td>
+            <td>
+              <span className="toggle" title="enable / disable" onClick={()=>setSeg(s.id,"on",!s.on)}>{s.on?"◉":"◯"}</span>
+              <button className="xbtn" onClick={()=>delSeg(s.id)} title="remove">×</button>
+            </td>
+          </tr>);
+        })}
+        </tbody>
+      </table>
+      <button className="btn" style={{marginTop:10}} onClick={addSeg}>+ add segment</button>
+      <div className="seedbadge" style={{marginTop:14}}>Total market potential @100% adoption: <b>{eurFull(r.potentialTotal)}/mo</b> · {eurFull(r.potentialTotal*12)}/yr</div>
+    </>}
+
+    {tab==="fin" && <div className="fin">
+      <div className="panel">
+        <div style={{fontFamily:"var(--disp)",fontWeight:600,marginBottom:14}}>Assumptions</div>
+
+        <div className="field"><label>Horizon <b>{model.finance.horizon} mo</b></label>
+          <input type="range" min="12" max="36" step="6" value={model.finance.horizon} onChange={e=>setFin("horizon",+e.target.value)}/></div>
+
+        <div className="field"><label>Initial cash</label>
+          <input type="number" step="10000" value={model.finance.initialCash} onChange={e=>setFin("initialCash",+e.target.value)}/></div>
+
+        <div className="field"><label>Fixed cost / month <span style={{color:"var(--text-mut)"}}>team + infra</span></label>
+          <input type="number" step="1000" value={model.finance.fixedMonthly} onChange={e=>setFin("fixedMonthly",+e.target.value)}/></div>
+
+        <div className="field"><label>Variable cost <b>{model.finance.variablePct}%</b> <span style={{color:"var(--text-mut)"}}>of revenue</span></label>
+          <input type="range" min="0" max="40" value={model.finance.variablePct} onChange={e=>setFin("variablePct",+e.target.value)}/></div>
+
+        <div style={{borderTop:"1px dashed var(--border)",margin:"6px 0 14px"}}></div>
+
+        <div className="field"><label>Start adoption <b>{model.finance.startAdoption}%</b></label>
+          <input type="range" min="0.05" max="3" step="0.05" value={model.finance.startAdoption} onChange={e=>setFin("startAdoption",+e.target.value)}/></div>
+
+        <div className="field"><label>Monthly growth <b>{model.finance.monthlyGrowth}%</b></label>
+          <input type="range" min="0" max="40" value={model.finance.monthlyGrowth} onChange={e=>setFin("monthlyGrowth",+e.target.value)}/></div>
+
+        <div className="field"><label>Adoption ceiling <b>{model.finance.maxAdoption}%</b></label>
+          <input type="range" min="1" max="30" value={model.finance.maxAdoption} onChange={e=>setFin("maxAdoption",+e.target.value)}/></div>
+
+        <div style={{fontSize:11,color:"var(--text-mut)",lineHeight:1.5}}>
+          Adoption = % of total reach that becomes paying activity, grown each month and capped at the ceiling.
+        </div>
+      </div>
+
+      <div>
+        <div className="kpis">
+          <div className="kpi"><div className="lbl">Target MRR</div>
+            <div className="val">{eur(r.targetMRR)}</div><div className="sub">at {model.finance.maxAdoption}% ceiling</div></div>
+          <div className="kpi"><div className="lbl">Annual run-rate</div>
+            <div className="val">{eur(r.annual)}</div><div className="sub">at ceiling × 12</div></div>
+          <div className="kpi"><div className="lbl">Breakeven</div>
+            <div className={"val"+(r.breakeven?"":" neg")}>{r.breakeven?("M"+r.breakeven):"none"}</div>
+            <div className="sub">{r.breakeven?"first profitable month":"not within horizon"}</div></div>
+          <div className="kpi"><div className="lbl">{r.cashOut?"Runway":"Cash low point"}</div>
+            <div className={"val"+(r.cashOut?" neg":"")}>{r.cashOut?("M"+r.cashOut):eur(r.low)}</div>
+            <div className="sub">{r.cashOut?"cash hits zero":("min cash, month "+r.lowM)}</div></div>
+        </div>
+
+        <div className="chartbox">
+          <div className="legend">
+            <span><i style={{background:"#7DE38D"}}></i>monthly revenue</span>
+            <span><i style={{background:"#ffd166"}}></i>monthly cost</span>
+            <span><i style={{background:"#4ecdc4"}}></i>cumulative cash</span>
+          </div>
+          <Chart months={r.months}/>
+        </div>
+
+        <div className="shead"><span className="bar"></span>Segment contribution <small>— monthly revenue potential @100%</small></div>
+        <div className="contrib">
+          {r.segCalc.length===0 && <div style={{color:"var(--text-mut)",fontSize:13}}>No active segments — enable some on the canvas tab.</div>}
+          {r.segCalc.map(s=>(
+            <div className="crow" key={s.id}>
+              <div className="nm">{s.name}</div>
+              <div className="track"><div className="fill" style={{width:(s.potential/maxPot*100)+"%"}}></div></div>
+              <div className="amt">{eur(s.potential)}</div>
+            </div>
+          ))}
+        </div>
+
+        <details className="months">
+          <summary>show month-by-month table</summary>
+          <table className="mtbl">
+            <thead><tr><th>Month</th><th>Adoption</th><th>Revenue</th><th>Cost</th><th>Profit</th><th>Cum. cash</th></tr></thead>
+            <tbody>{r.months.map(d=>(
+              <tr key={d.m}><td>M{d.m}</td><td>{d.ad.toFixed(2)}%</td><td>{eurFull(d.revenue)}</td>
+                <td>{eurFull(d.cost)}</td><td className={d.profit>=0?"pos":"neg"}>{eurFull(d.profit)}</td>
+                <td className={d.cum>=0?"pos":"neg"}>{eurFull(d.cum)}</td></tr>
+            ))}</tbody>
+          </table>
+        </details>
+      </div>
+    </div>}
+
+    <div className="note">
+      MVP — seeded with the <b style={{color:"var(--accent-2)"}}>SportSpots</b> Business Platform Canvas from the 2018 ISCTE thesis.
+      Everything is editable and auto-saved in your browser. The financial estimate is a simplified directional model
+      (adoption-driven, not a full P&amp;L) meant for early-stage sense-checking. Export your model as JSON to share or version it.
+    </div>
+   </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>

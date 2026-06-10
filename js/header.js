@@ -33,7 +33,7 @@
     ['education.html', 'education'],
     ['skills.html', 'skills'],
     ['energy.html', 'energy'],
-    ['#', 'innovation', true],
+    ['innovation.html', 'innovation'],
     ['greenscreen.html', 'greenscreen'],
   ];
   const sectionLinks = sections.map(s => {

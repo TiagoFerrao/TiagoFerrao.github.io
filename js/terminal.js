@@ -54,7 +54,7 @@
       print(
         `<span class="lp-sys">deeper sections:</span> ` +
         `<a href="digital.html">digital</a>  <a href="energy.html">energy</a>  ` +
-        `<span class="lp-ghost">innovation (soon)</span>  <a href="greenscreen.html">greenscreen</a>\n` +
+        `<a href="innovation.html">innovation</a>  <a href="greenscreen.html">greenscreen</a>\n` +
         `<span class="lp-ghost">(business · education · skills are the cards on the homepage)</span>`);
     },
     contact() {

@@ -32,7 +32,7 @@
     ['education.html', 'Education'],
     ['skills.html', 'Skills'],
     ['energy.html', 'Energy'],
-    ['#', 'Innovation', true],
+    ['innovation.html', 'Innovation'],
     ['greenscreen.html', 'Green Screen'],
   ];
   const browse = sections.map(function (s) {
