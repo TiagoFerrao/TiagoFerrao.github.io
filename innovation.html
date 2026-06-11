@@ -56,21 +56,6 @@
   .site-back:hover { color: var(--mint); }
 
   /* ============================================================
-     HEADER
-     ============================================================ */
-  .page-head { text-align: center; margin: 30px 0 48px; padding: 0 24px; }
-  .page-head .eyebrow {
-    font-family: var(--mono);
-    font-size: 0.75rem;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--mint);
-    margin-bottom: 10px;
-  }
-  .page-head h1 { font-size: 1.7rem; font-weight: 650; letter-spacing: 0.01em; }
-  .page-head p { color: var(--muted); font-size: 0.95rem; margin-top: 10px; }
-
-  /* ============================================================
      DIAGRAM BAND — landscape, horizontal scroll on narrow screens
      ============================================================ */
   .funnel-section {
@@ -98,6 +83,24 @@
     margin-top: 8px;
   }
   @media (max-width: 1520px) { .scroll-hint { display: block; } }
+
+  /* ============================================================
+     PHASE BAR — the 5-phase backbone (Phase 0–4)
+     ============================================================ */
+  .phase-bar { display: flex; gap: 8px; margin-bottom: 26px; flex-wrap: nowrap; }
+  .phase {
+    border: 1px solid var(--mint-dim); border-radius: 10px; padding: 8px 14px;
+    min-width: 132px; cursor: pointer; background: rgba(255, 255, 255, 0.02);
+    transition: border-color 0.2s ease, background 0.2s ease, opacity 0.2s ease;
+  }
+  .phase:hover { border-color: var(--mint); }
+  .phase .pn { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mint); }
+  .phase .pt { font-size: 0.8rem; color: var(--text); margin-top: 2px; line-height: 1.25; }
+  .phase .pd { font-family: var(--mono); font-size: 0.58rem; color: var(--muted); margin-top: 3px; }
+  .phase.ctx { opacity: 0.5; border-style: dashed; }
+  .phase.ctx:hover { opacity: 0.85; }
+  .phase.active { background: var(--mint); border-color: var(--mint); opacity: 1; }
+  .phase.active .pn, .phase.active .pt, .phase.active .pd { color: var(--bg); }
 
   /* ============================================================
      ASSUMPTIONS TRACK — the traveling companion
@@ -344,15 +347,33 @@
   <!-- shared header (brand + CLI section nav) — injected by js/header.js -->
   <header id="site-header"></header>
 
-<header class="page-head">
-  <div class="eyebrow">// innovation</div>
-  <h1>From idea to pitch — one process</h1>
-  <p>Click any stage to explore it. The assumptions table follows you: it is always present, always updated.</p>
-</header>
+<!-- Hero — shared page-header pattern (icon + h2 + lead), matching Business / Education -->
+<div class="container">
+  <section class="page-header fade-in">
+    <!-- Icon: lightbulb -->
+    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:64px;height:64px;margin:0 auto var(--space-lg);color:var(--accent-primary);" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 18h6"/>
+      <path d="M10 22h4"/>
+      <path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V18h6v-1.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z"/>
+      <path d="M9.5 9.5 12 12l2.5-2.5" opacity="0.5"/>
+    </svg>
+    <h2>From idea to pitch — one process</h2>
+    <p>Click any stage to explore it. The assumptions table follows you: it is always present, always updated.</p>
+  </section>
+</div>
 
 <!-- ============ DIAGRAM ============ -->
 <section class="funnel-section">
   <div class="funnel-canvas" id="canvas">
+
+    <!-- PHASE BAR — macro backbone; Phase 1 & 2 are detailed below, 0/3/4 are context -->
+    <div class="phase-bar">
+      <div class="phase ctx" data-stage="phase-0" tabindex="0" role="button"><div class="pn">Phase 0</div><div class="pt">Ideation</div></div>
+      <div class="phase" data-stage="phase-1" tabindex="0" role="button"><div class="pn">Phase 1</div><div class="pt">Problem Validation</div><div class="pd">~2 weeks</div></div>
+      <div class="phase" data-stage="phase-2" tabindex="0" role="button"><div class="pn">Phase 2</div><div class="pt">Project Setup</div><div class="pd">~6 weeks</div></div>
+      <div class="phase ctx" data-stage="phase-3" tabindex="0" role="button"><div class="pn">Phase 3</div><div class="pt">Prototype &amp; Research</div><div class="pd">~3 months</div></div>
+      <div class="phase ctx" data-stage="phase-4" tabindex="0" role="button"><div class="pn">Phase 4</div><div class="pt">MVP</div><div class="pd">~3 months</div></div>
+    </div>
 
     <div class="assumptions-track">
       <div class="dash-line"></div>
@@ -482,6 +503,36 @@
   };
 
   var STAGES = {
+    'phase-0': {
+      num: '0 — Ideation',
+      title: 'Phase 0 — Ideation',
+      body: '<p>Where raw ideas and opportunities are surfaced, captured and triaged — before any formal validation. The promising ones graduate into Problem Validation. This map focuses on what happens <em>after</em> that.</p>',
+      tools: []
+    },
+    'phase-1': {
+      num: '1 — Problem Validation',
+      title: 'Phase 1 — Problem Validation',
+      body: '<p>Prove the problem before designing anything. Work backwards from a press release, map every <em>possible</em> user pain, then validate which are real, frequent and currently unsolved.</p><p>This is where the assumptions table is born — every pain enters as a hypothesis. <em>≈ 2 weeks.</em></p>',
+      tools: ['press-release-canvas', 'assumptions-tracker', 'value-proposition']
+    },
+    'phase-2': {
+      num: '2 — Project Setup',
+      title: 'Phase 2 — Project Setup',
+      body: '<p>Turn a validated problem into a defensible, costed proposal — in three steps:</p><ul><li><strong>2.1 Concept</strong> — design the solution + House of Quality</li><li><strong>2.2 360 Business Case</strong> — opportunity size, cost breakdown, financial plan</li><li><strong>2.3 Planning &amp; Pitch</strong> — validation plan and the board pitch</li></ul><p><em>≈ 6 weeks.</em></p>',
+      tools: ['hoq-builder', 'business-model-canvas', 'platform-model-builder', 'cost-revenue-model', 'bc-template']
+    },
+    'phase-3': {
+      num: '3 — Prototype & Research',
+      title: 'Phase 3 — Prototype & Research',
+      body: '<p>If the pitch is approved, build a prototype and run the experiments from the validation plan to retire the riskiest assumptions before committing further. <em>≈ 3 months.</em></p>',
+      tools: []
+    },
+    'phase-4': {
+      num: '4 — MVP',
+      title: 'Phase 4 — MVP',
+      body: '<p>Ship the minimum viable product to real users and learn from real usage — the smallest thing that still kills the core pain while remaining a good deal for us. <em>≈ 3 months.</em></p>',
+      tools: []
+    },
     'assumptions': {
       num: '∞', title: 'Assumptions Table — the constant companion',
       body: '<p>Every stage of the process generates assumptions: about the user, the technology, the costs, the market. The assumptions table is where they all live — explicitly written down, classified by risk, and updated as evidence arrives.</p><p>That is why it travels with you across the diagram: it is never "done". It is the connective tissue between discovery and validation, and the direct input to the validation plan.</p>',
@@ -584,7 +635,7 @@
     var s = STAGES[id];
     card.classList.add('swapping');
     setTimeout(function () {
-      document.getElementById('d-eyebrow').textContent = '// stage ' + s.num;
+      document.getElementById('d-eyebrow').textContent = (id.indexOf('phase-') === 0 ? '// phase ' : '// stage ') + s.num;
       document.getElementById('d-title').innerHTML = s.title;
       document.getElementById('d-body').innerHTML = s.body;
       var toolsWrap = document.getElementById('d-tools');
@@ -621,6 +672,10 @@
     if (id === 'assumptions') {
       node.classList.add('active');
       activeEl = null;
+    } else if (id.indexOf('phase-') === 0) {
+      activeEl = el;
+      el.classList.add('active');
+      /* phase chips are the macro backbone — they don't move the assumptions node */
     } else {
       activeEl = el;
       el.classList.add('active');
