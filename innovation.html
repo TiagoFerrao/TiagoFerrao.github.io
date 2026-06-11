@@ -46,10 +46,9 @@
     font-family: var(--sans);
     background: var(--bg);
     color: var(--text);
-    padding: 0 0 64px;
   }
 
-  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+  /* .container, main and .page-header spacing come from the shared site CSS (canonical) */
 
   /* back-to-site link (matches the site's lowercase-mono nav language) */
   .site-back { display: inline-block; font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.12em; color: var(--muted); text-decoration: none; }
@@ -347,6 +346,7 @@
   <!-- shared header (brand + CLI section nav) — injected by js/header.js -->
   <header id="site-header"></header>
 
+<main>
 <!-- Hero — shared page-header pattern (icon + h2 + lead), matching Business / Education -->
 <div class="container">
   <section class="page-header fade-in">
@@ -481,6 +481,7 @@
   <p class="tb-sub">Working tools designed for each step of the process. <!-- EDIT: rename, describe and link these cards as the tools go live. --></p>
   <div class="tool-grid" id="tool-grid"></div>
 </section>
+</main>
 
 <!-- shared footer (terminal strip + copyright + mobile section nav) — injected by js/footer.js -->
 <footer id="site-footer"></footer>

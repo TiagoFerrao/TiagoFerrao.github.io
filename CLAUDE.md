@@ -30,6 +30,23 @@ The site is built around a **reusable terminal component**:
   everything to `--content-max: 760px` was rejected ("looked terrible") — do NOT reintroduce.
 - Nav language site-wide: lowercase mono, `·` separators, phosphor hover, current/active in phosphor.
 
+### Canonical content-page structure (every section page MUST follow this)
+All content/section pages (digital, business, education, skills, energy, innovation, …) share one skeleton —
+do NOT reinvent it per page, and do NOT override the spacing tokens inline:
+- `<header id="site-header"></header>` + `js/header.js` (brand + CLI section nav) and
+  `<footer id="site-footer"></footer>` + `js/footer.js` (terminal strip); load the shared
+  `css/variables|base|layout|components|responsive.css` (with `?v=N`).
+- Content lives in `<main>` → `<div class="container">` → `<section class="page-header fade-in">`
+  (centered FA icon 64px + `<h2>` title + lead `<p>`), then the page body.
+- Spacing is canonical, from `css/layout.css`: `main { padding: var(--space-3xl) 0 }`,
+  `.page-header { margin-bottom: var(--space-3xl) }`, icon `margin: 0 auto var(--space-lg)`,
+  `h2 { margin-bottom: var(--space-sm) }`, lead `max-width:600px;margin:0 auto`.
+  `.container` = `min(100% - 2*--gutter, --shell-max)`. **Never** hard-code a page `.container`
+  width or `body`/hero padding — it breaks the cross-page negative-space rhythm.
+- The page title is the `<h2>` inside `.page-header`; the only `<h1>` is the brand (from header.js).
+- A page may add its own bespoke body below the `page-header` (e.g. innovation's interactive diagram),
+  but the header/footer chrome + the `main>container>page-header` hero must stay canonical.
+
 ### Innovation section (shipped June 2026)
 - `innovation.html` — standard content page (header.js/footer.js). Hosts interactive innovation-management
   tools as cards. Nav activated everywhere (header.js, footer.js, index.html browse row, terminal.js `ls`)
