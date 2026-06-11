@@ -1,305 +1,405 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Value Proposition Designer — ferrao.me</title>
 <meta name="theme-color" content="#001a20">
-<meta name="description" content="Value Proposition Designer — map customer jobs, pains and gains against your offer until they fit.">
+<meta name="description" content="Map customer jobs, pains and gains, then design products that fit — and see why they're valuable.">
 <link rel="icon" href="../img/bee.png">
 <link rel="apple-touch-icon" href="../img/bee.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inconsolata:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #001a20;
-    --panel: #042730;
-    --panel-2: #06303a;
-    --text: #e8f4ef;
-    --muted: #8fb3a8;
-    --mint: #7DE38D;
-    --mint-dim: rgba(125,227,141,.35);
-    --mint-faint: rgba(125,227,141,.10);
-    --radius: 12px;
-    --sans: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
-    --mono: "Inconsolata", ui-monospace, "SF Mono", Menlo, monospace;
+  :root{
+    --bg:#001a20; --bg-2:#002a33; --panel:rgba(0,50,60,.55); --panel-2:rgba(0,42,51,.92);
+    --accent:#7DE38D; --accent-rgb:125,227,141; --accent-2:#288f5b;
+    --text:#e0f0e8; --dim:#8fb8a0; --mut:#5a8a70;
+    --border:rgba(125,227,141,.18); --border-strong:rgba(125,227,141,.4);
+    --amber:#ffd166; --info:#4ecdc4; --red:#e07a6b;
+    --mono:'Inconsolata',ui-monospace,monospace; --disp:'Space Grotesk',system-ui,sans-serif; --radius:12px;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: var(--sans); background: var(--bg); color: var(--text); padding: 48px 0 80px; }
-  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  button{font-family:inherit;-webkit-appearance:none;appearance:none;}
+  body{font-family:var(--disp);background:radial-gradient(1100px 560px at 82% -10%,rgba(125,227,141,.06),transparent 60%),var(--bg);color:var(--text);font-size:15px;line-height:1.5;}
+  a{color:var(--accent);}
+  .wrap{max-width:1120px;margin:0 auto;padding:20px 20px 70px;}
+  .site-back{display:inline-block;font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;color:var(--dim);text-decoration:none;margin-bottom:14px;}
+  .site-back:hover{color:var(--accent);}
+  .topbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--border);padding-bottom:13px;margin-bottom:14px;}
+  .brand{font-family:var(--disp);font-weight:700;font-size:18px;}
+  .brand .pp{color:var(--accent);text-shadow:0 0 10px rgba(var(--accent-rgb),.4);}
+  .brand small{display:block;font-family:var(--mono);font-weight:400;font-size:12px;color:var(--dim);}
+  .topbar .sp{flex:1}
+  .btn{font-family:var(--mono);font-size:12.5px;color:var(--dim);background:transparent;border:1px solid var(--border);border-radius:7px;padding:7px 11px;cursor:pointer;transition:.15s;text-decoration:none;display:inline-block;}
+  .btn:hover{color:var(--accent);border-color:var(--border-strong);}
+  .btn.primary{color:var(--bg);background:var(--accent);border-color:var(--accent);font-weight:700;}
+  .btn.primary:hover{filter:brightness(1.08);}
 
-  .page-head { margin-bottom: 26px; }
-  .eyebrow { font-family: var(--mono); font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; color: var(--mint); margin-bottom: 8px; }
-  h1 { font-size: 1.55rem; font-weight: 650; }
-  .page-head p { color: var(--muted); font-size: .92rem; margin-top: 8px; max-width: 760px; line-height: 1.6; }
-  .site-back { display: inline-block; font-family: var(--mono); font-size: .72rem; letter-spacing: .12em; color: var(--muted); text-decoration: none; margin-bottom: 14px; }
-  .site-back:hover { color: var(--mint); }
+  /* segment */
+  .seg{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;}
+  .seg .l{font-family:var(--mono);font-size:10.5px;letter-spacing:.6px;text-transform:uppercase;color:var(--accent);margin-bottom:5px;}
+  .seg input,.seg textarea{width:100%;background:rgba(0,0,0,.2);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:var(--disp);font-size:14px;padding:8px 10px;}
+  .seg input.name{font-size:17px;font-weight:600;font-family:var(--disp);}
+  .seg textarea{resize:vertical;min-height:42px;margin-top:8px;font-size:13px;}
+  .seg input:focus,.seg textarea:focus{outline:none;border-color:var(--border-strong);}
+  .seg .hint{font-size:11px;color:var(--mut);margin-top:6px;}
 
-  /* ===== fit meter + toolbar ===== */
-  .topbar { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-bottom: 22px; }
-  .fit { flex: 1; min-width: 240px; background: var(--panel); border-radius: var(--radius); padding: 12px 18px; }
-  .fit .f-label { font-family: var(--mono); font-size: .62rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; }
-  .fit-bar { height: 8px; background: var(--panel-2); border-radius: 999px; overflow: hidden; }
-  .fit-bar div { height: 100%; width: 0; background: var(--mint); border-radius: 999px; transition: width .5s ease; }
-  button { font-family: var(--mono); font-size: .76rem; color: var(--mint); background: transparent; border: 1px solid var(--mint-dim); border-radius: 999px; padding: 7px 18px; cursor: pointer; transition: background .2s ease; }
-  button:hover { background: var(--mint-faint); }
+  /* order banner */
+  .order{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-family:var(--mono);font-size:11.5px;color:var(--dim);margin-bottom:16px;}
+  .order .step{background:transparent;border:1px solid var(--border);border-radius:20px;padding:4px 11px;cursor:pointer;color:var(--dim);font-family:var(--mono);font-size:11.5px;transition:color .15s,border-color .15s,background .15s;}
+  .order .step.cust{border-color:rgba(78,205,196,.4);color:#7fcabf;} .order .step.val{border-color:rgba(125,227,141,.35);color:#8fce9c;}
+  .order .step:hover{color:var(--text);border-color:var(--accent);}
+  .order .step.on{background:rgba(var(--accent-rgb),.16);color:var(--accent);border-color:var(--accent);font-weight:600;box-shadow:0 0 10px rgba(var(--accent-rgb),.12);}
+  .order .arr{color:var(--mut);}
+  .order .lab{color:var(--mut);text-transform:uppercase;letter-spacing:.1em;font-size:10px;margin-right:2px;}
 
-  /* ===== diagram ===== */
-  .canvas-wrap { background: var(--panel); border-radius: var(--radius); padding: 18px 10px 6px; overflow-x: auto; }
-  svg.vpc { display: block; width: 100%; max-width: 960px; margin: 0 auto; min-width: 700px; }
-  .zone { fill: var(--panel-2); stroke: var(--mint-dim); stroke-width: 1.5; cursor: pointer; transition: fill .25s ease, stroke .25s ease; }
-  .zone:hover { fill: rgba(125,227,141,.14); }
-  .zone.selected { fill: rgba(125,227,141,.22); stroke: var(--mint); stroke-width: 2.5; }
-  .zone.pair { fill: rgba(125,227,141,.10); stroke: var(--mint); stroke-dasharray: 5 4; stroke-width: 2; }
-  .z-label { font-family: var(--mono); font-size: 12.5px; fill: var(--text); pointer-events: none; text-anchor: middle; }
-  .z-count { font-family: var(--mono); font-size: 11px; fill: var(--mint); pointer-events: none; text-anchor: middle; }
-  .z-title { font-family: var(--mono); font-size: 11px; letter-spacing: .18em; fill: var(--muted); text-anchor: middle; }
-  .link-line { stroke: var(--mint-dim); stroke-width: 1.5; stroke-dasharray: 4 5; opacity: 0; transition: opacity .3s ease; }
-  .link-line.show { opacity: 1; }
+  .fitbar{flex:1;min-width:160px;}
+  .fitbar .ft{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);margin-bottom:4px;}
+  .fitbar .bar{height:7px;background:rgba(0,0,0,.25);border-radius:5px;overflow:hidden;}
+  .fitbar .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent-2),var(--accent));transition:width .4s;}
 
-  /* ===== explainer + editor ===== */
-  .below { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 22px; align-items: start; }
-  @media (max-width: 860px) { .below { grid-template-columns: 1fr; } }
-  .explain, .editor { background: var(--panel); border-radius: var(--radius); padding: 20px 24px; }
-  .explain { border-left: 3px solid var(--mint); border-radius: 0 var(--radius) var(--radius) 0; }
-  .explain .e-eyebrow { font-family: var(--mono); font-size: .64rem; letter-spacing: .16em; text-transform: uppercase; color: var(--mint); margin-bottom: 6px; }
-  .explain h2 { font-size: 1.05rem; margin-bottom: 8px; }
-  .explain p { font-size: .87rem; line-height: 1.6; color: var(--text); }
-  .explain .fit-q { margin-top: 12px; padding: 10px 14px; background: var(--mint-faint); border-radius: 8px; font-size: .8rem; line-height: 1.5; color: var(--mint); font-family: var(--mono); }
+  /* diagram */
+  .canvas{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:10px 8px;overflow-x:auto;margin-bottom:16px;}
+  svg.vpc{display:block;width:100%;max-width:980px;min-width:660px;margin:0 auto;}
+  .zone{cursor:pointer;transition:fill .25s,stroke .25s;}
+  .zone .zbg{fill:var(--panel-2);stroke:var(--border-strong);stroke-width:1.5;transition:fill .25s,stroke .25s;}
+  .zone:hover .zbg{fill:rgba(125,227,141,.12);}
+  .zone.on .zbg{fill:rgba(125,227,141,.22);stroke:var(--accent);stroke-width:2.5;}
+  .zone.pair .zbg{fill:rgba(125,227,141,.10);stroke:var(--accent);stroke-dasharray:5 4;stroke-width:2;}
+  .zlab{font-family:var(--mono);fill:var(--text);text-anchor:middle;pointer-events:none;}
+  .zcount{font-family:var(--mono);font-size:11px;fill:var(--accent);text-anchor:middle;pointer-events:none;}
+  .ztitle{font-family:var(--mono);font-size:11px;letter-spacing:.18em;fill:var(--dim);text-anchor:middle;}
+  .wheel{transition:transform .55s cubic-bezier(.4,0,.2,1);transform-box:view-box;transform-origin:240px 240px;}
+  .lblg{transition:transform .55s cubic-bezier(.4,0,.2,1);transform-box:view-box;}
+  .conn{stroke:var(--accent);stroke-width:1.5;stroke-dasharray:4 5;opacity:0;transition:opacity .3s;}
+  .conn.show{opacity:.7;}
 
-  .editor .ed-title { font-family: var(--mono); font-size: .64rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
-  .item-list { list-style: none; margin-bottom: 12px; }
-  .item-list li { display: flex; align-items: center; gap: 8px; font-size: .86rem; padding: 6px 10px; border-radius: 8px; background: var(--panel-2); margin-bottom: 6px; }
-  .item-list li span { flex: 1; }
-  .item-list .del { border: none; padding: 0 6px; color: var(--muted); font-size: .9rem; }
-  .item-list .del:hover { color: #e07a6b; background: none; }
-  .add-row { display: flex; gap: 8px; }
-  .add-row input { flex: 1; background: var(--panel-2); border: 1px solid transparent; border-radius: 8px; color: var(--text); font-size: .86rem; padding: 9px 12px; }
-  .add-row input:focus { outline: none; border-color: var(--mint-dim); }
-  .editor .empty { font-size: .8rem; color: var(--muted); padding: 6px 0 12px; }
+  /* editor + explain */
+  .below{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;margin-bottom:18px;}
+  @media(max-width:860px){.below{grid-template-columns:1fr;}}
+  .explain,.editor{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;}
+  .explain{border-left:3px solid var(--accent);border-radius:0 var(--radius) var(--radius) 0;}
+  .explain .ey{font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:6px;}
+  .explain h2{font-size:1.05rem;margin-bottom:4px;}
+  .explain .seq{font-family:var(--mono);font-size:11px;color:var(--mut);margin-bottom:8px;}
+  .explain p{font-size:.87rem;line-height:1.6;color:var(--text);}
+  .explain .fitq{margin-top:12px;padding:9px 12px;background:rgba(125,227,141,.1);border-radius:8px;font-size:.8rem;line-height:1.5;color:var(--accent);font-family:var(--mono);}
+  .editor .et{font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin-bottom:12px;}
+  .it{display:flex;align-items:flex-start;gap:7px;margin-bottom:7px;}
+  .it .star{background:transparent;border:none;cursor:pointer;font-size:15px;color:var(--mut);line-height:1.4;}
+  .it .star.on{color:var(--amber);}
+  .it input.t{flex:1;background:rgba(0,0,0,.2);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:var(--disp);font-size:13.5px;padding:7px 9px;}
+  .it input.t:focus{outline:none;border-color:var(--border-strong);}
+  .it .del{background:transparent;border:none;color:var(--mut);cursor:pointer;font-size:15px;}
+  .it .del:hover{color:var(--red);}
+  .links{margin:2px 0 8px 24px;display:flex;flex-wrap:wrap;gap:5px;}
+  .links .lk{font-size:11px;font-family:var(--mono);border:1px solid var(--border);border-radius:20px;padding:2px 9px;cursor:pointer;color:var(--mut);}
+  .links .lk.on{background:rgba(125,227,141,.18);border-color:var(--accent);color:var(--accent);}
+  .links .none{font-size:11px;color:var(--mut);font-style:italic;}
+  .addrow{display:flex;gap:8px;margin-top:6px;}
+  .addrow input{flex:1;background:rgba(0,0,0,.22);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.86rem;padding:9px 11px;font-family:var(--disp);}
+  .addrow input:focus{outline:none;border-color:var(--border-strong);}
+  .empty{font-size:.8rem;color:var(--mut);font-style:italic;padding:4px 0 10px;}
 
-  @media print {
-    :root { --bg:#fff; --panel:#fff; --panel-2:#f3f3f3; --text:#111; --muted:#555; --mint:#0F3D22; --mint-dim:#999; --mint-faint:#f5f5f5; }
-    body { padding: 0; }
-    .topbar button, .add-row, .item-list .del { display: none !important; }
-    .canvas-wrap, .explain, .editor { border: 1px solid #ccc; }
-    .below { grid-template-columns: 1fr 1fr; }
+  /* deliverable */
+  .vp{background:var(--panel-2);border:1px solid var(--border-strong);border-radius:var(--radius);padding:20px 22px;}
+  .vp h3{font-family:var(--disp);font-size:1.15rem;margin-bottom:4px;}
+  .vphead{display:flex;align-items:center;gap:11px;cursor:pointer;user-select:none;}
+  .vphead h3{margin-bottom:0;}
+  .vchev{font-family:var(--mono);color:var(--accent);transition:transform .2s;display:inline-block;font-size:.9rem;}
+  .vp.open .vchev{transform:rotate(90deg);}
+  .vpstatus{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);white-space:nowrap;}
+  .vptoggle{margin-left:auto;flex-shrink:0;}
+  .vpbody{margin-top:16px;}
+  .vp .vsub{font-size:12px;color:var(--dim);margin-bottom:14px;}
+  .vp .stmt{font-size:1rem;line-height:1.7;color:var(--text);background:rgba(0,0,0,.16);border-left:2px solid var(--accent);padding:12px 14px;border-radius:0 8px 8px 0;margin-bottom:16px;}
+  .vp .stmt b{color:var(--accent);}
+  .vcols{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px;}
+  @media(max-width:760px){.vcols{grid-template-columns:1fr;}}
+  .vcol h4{font-family:var(--mono);font-size:10.5px;letter-spacing:.6px;text-transform:uppercase;color:var(--accent);margin-bottom:7px;}
+  .vcol ul{list-style:none;}
+  .vcol li{font-size:13px;color:var(--text);padding:3px 0;border-bottom:1px solid rgba(125,227,141,.06);}
+  .vcol li.gap{color:var(--mut);}
+  .vcol .none{font-size:12px;color:var(--mut);font-style:italic;}
+  .gaps{font-size:12.5px;color:var(--dim);background:rgba(224,122,107,.08);border:1px solid rgba(224,122,107,.25);border-radius:8px;padding:10px 12px;}
+  .gaps b{color:var(--red);}
+  .gaps .g{display:inline-block;margin:2px 6px 2px 0;}
+  .doctools{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+  .note{font-size:11.5px;color:var(--mut);margin-top:10px;}
+
+  @page{ size:A4 portrait; margin:14mm; }
+  @media print{
+    body *{visibility:hidden;}
+    #vp, #vp *{visibility:visible;}
+    #vp{position:absolute;left:0;top:0;width:100%;background:#fff;border:none;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    #vp h3,#vp .vcol li{color:#111;} #vp .vsub,#vp .vcol li.gap{color:#555;}
+    #vp h4,#vp .stmt b,#vp .vcol{color:#1c6b41;} #vp .stmt{color:#111;border-left-color:#1c6b41;background:#f4f8f5;}
+    .doctools,.note{display:none;}
   }
 </style>
 </head>
 <body>
-<div class="container">
+<div id="root"></div>
 
-  <header class="page-head">
-    <a class="site-back" href="../innovation.html">← innovation</a>
-    <div class="eyebrow">// toolbox / value-proposition</div>
-    <h1>Value Proposition Designer</h1>
-    <p>Two sides that must fit: what you offer (left) and who you serve (right). Click any section to understand it and fill it in — the diagram highlights its matching counterpart, because every element on your side only matters if it answers something on theirs.</p>
-  </header>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+const {useState,useEffect} = React;
+const LS_KEY = "valueprop-v2";
+const clone = o => JSON.parse(JSON.stringify(o));
+const uid = ()=> Date.now()*1000 + Math.floor(Math.random()*1000);
 
-  <div class="topbar">
-    <div class="fit">
-      <div class="f-label">Canvas completeness — <span id="fit-pct">0%</span></div>
-      <div class="fit-bar"><div id="fit-fill"></div></div>
+/* zone metadata — customer profile first (jobs→pains→gains), then value map */
+const ZONES = {
+  jobs:   { side:"profile", seq:1, title:"Customer Jobs", pair:"products",  bis:0,
+    body:"The tasks your customer is trying to get done — functional (treat the water, file the report), social (look competent), emotional (feel in control). Written from their point of view. Star the ones that matter most." },
+  pains:  { side:"profile", seq:2, title:"Pains", pair:"relievers", bis:120,
+    body:"What annoys, blocks or risks the customer before, during and after the job: obstacles, costs, frustrations, fears. Star the extreme pains — that's where value propositions are born." },
+  gains:  { side:"profile", seq:3, title:"Gains", pair:"creators",  bis:240,
+    body:"The outcomes and benefits the customer wants — required, expected, desired, or a surprise delight. Be concrete (“save 2 hours a shift”, not “be efficient”). Star the ones they care about most." },
+  products:  { side:"value", seq:4, title:"Products & Services", pair:"jobs",
+    body:"What you offer — physical, digital, service or financial. The least meaningful on its own: a product only creates value relative to a job. For each, tick the customer jobs it helps get done." },
+  relievers: { side:"value", seq:5, title:"Pain Relievers", pair:"pains",
+    body:"How your offer kills, reduces or removes the pains. Relieve a few pains extremely well rather than many superficially. For each reliever, tick the pain(s) it neutralises." },
+  creators:  { side:"value", seq:6, title:"Gain Creators", pair:"gains",
+    body:"How your offer produces the gains the customer wants. Don't try to create every gain — focus where you can make a real difference. For each creator, tick the gain(s) it produces." }
+};
+const ORDER = ["jobs","pains","gains","products","relievers","creators"];
+const LABELS = { jobs:"Jobs", pains:"Pains", gains:"Gains", products:"Products", relievers:"Pain Relievers", creators:"Gain Creators" };
+
+/* ---------- SportSpots seed ---------- */
+const J=(t,imp)=>({id:uid(),t,imp:!!imp});
+const SEED = (()=>{
+  const jobs=[J("Stay active around a busy work schedule",1),J("Find a trainer or venue without hassle",1),J("Look after team wellbeing (as an employer)",0),J("Socialise / have fun with colleagues",0)];
+  const pains=[J("Booking & paying is fragmented and slow",1),J("Hard to find sessions nearby at the right time",1),J("Give up when organising it is too much effort",1),J("Gyms & trainers have empty, unsold slots",0)];
+  const gains=[J("Book a session in under a minute",1),J("Sessions near me, when I'm free",1),J("Company covers part of the cost",0),J("Feel part of a team / stay motivated",0)];
+  const products=[{id:uid(),t:"SportSpots mobile app",links:[jobs[0].id,jobs[1].id]},{id:uid(),t:"Corporate HR dashboard",links:[jobs[2].id]}];
+  const relievers=[{id:uid(),t:"One-minute booking & payment",links:[pains[0].id,pains[2].id]},{id:uid(),t:"Map + time filters",links:[pains[1].id]}];
+  const creators=[{id:uid(),t:"Geolocated session feed",links:[gains[1].id]},{id:uid(),t:"Corporate allowance & gamification",links:[gains[2].id,gains[3].id]}];
+  return { seg:{name:"Corporate employees", desc:"Office workers at mid-to-large companies who want to stay active but struggle to fit it around work."}, jobs, pains, gains, products, relievers, creators };
+})();
+const BLANK = { seg:{name:"",desc:""}, jobs:[], pains:[], gains:[], products:[], relievers:[], creators:[] };
+
+/* geometry */
+const CX=240, CY=240, R=180;
+function pt(cx,cy,r,deg){const a=deg*Math.PI/180;return [cx+r*Math.cos(a), cy+r*Math.sin(a)];}
+function wedge(bis){const a0=bis-60,a1=bis+60;const[p0x,p0y]=pt(CX,CY,R,a0);const[p1x,p1y]=pt(CX,CY,R,a1);
+  return `M ${CX} ${CY} L ${p0x.toFixed(1)} ${p0y.toFixed(1)} A ${R} ${R} 0 0 1 ${p1x.toFixed(1)} ${p1y.toFixed(1)} Z`;}
+/* value map rects (right) */
+const VMAP = {
+  products:  {x:740,y:70,w:170,h:340},
+  creators:  {x:545,y:70,w:188,h:166},
+  relievers: {x:545,y:244,w:188,h:166}
+};
+
+function App(){
+  const [m,setM]=useState(()=>{try{const s=localStorage.getItem(LS_KEY);if(s)return JSON.parse(s);}catch(e){}return clone(SEED);});
+  const [sel,setSel]=useState("jobs");
+  const [vpOpen,setVpOpen]=useState(false);
+  useEffect(()=>{try{localStorage.setItem(LS_KEY,JSON.stringify(m));}catch(e){}},[m]);
+
+  const Z = ZONES[sel];
+  const profileOf = (z)=> ZONES[z].side==="profile" ? z : ZONES[z].pair; // the profile zone of the active pair
+  const activeProfile = profileOf(sel);
+  const rot = -ZONES[activeProfile].bis; // rotate so active pair's profile slice faces right
+
+  const setSeg=(k,v)=>setM(x=>({...x,seg:{...x.seg,[k]:v}}));
+  const setItem=(z,id,v)=>setM(x=>({...x,[z]:x[z].map(it=>it.id===id?{...it,t:v}:it)}));
+  const addItem=(z,v)=>setM(x=>{const it=ZONES[z].side==="profile"?{id:uid(),t:v,imp:false}:{id:uid(),t:v,links:[]};return {...x,[z]:[...x[z],it]};});
+  const delItem=(z,id)=>setM(x=>{const c={...x,[z]:x[z].filter(it=>it.id!==id)};
+    if(ZONES[z].side==="profile"){const vz=ZONES[z].pair;c[vz]=c[vz].map(it=>({...it,links:(it.links||[]).filter(l=>l!==id)}));}
+    return c;});
+  const toggleStar=(z,id)=>setM(x=>({...x,[z]:x[z].map(it=>it.id===id?{...it,imp:!it.imp}:it)}));
+  const toggleLink=(z,id,targetId)=>setM(x=>({...x,[z]:x[z].map(it=>{
+    if(it.id!==id)return it;const ls=it.links||[];return {...it,links:ls.includes(targetId)?ls.filter(l=>l!==targetId):[...ls,targetId]};})}));
+
+  const example=()=>{if(confirm("Load the SportSpots example?"))setM(clone(SEED));};
+  const blank=()=>{if(confirm("Clear everything?"))setM(clone(BLANK));};
+
+  /* ---- fit & gaps ---- */
+  function addressed(profZone, id){const vz=ZONES[profZone].pair;return m[vz].some(it=>(it.links||[]).includes(id));}
+  const importantProfile = ["jobs","pains","gains"].flatMap(z=>m[z].filter(it=>it.imp).map(it=>({z,it})));
+  const addressedImportant = importantProfile.filter(({z,it})=>addressed(z,it.id));
+  const fitPct = importantProfile.length ? Math.round(100*addressedImportant.length/importantProfile.length) : 0;
+  const gaps = importantProfile.filter(({z,it})=>!addressed(z,it.id)).map(({z,it})=>({z,t:it.t}));
+
+  /* ---- value statement (the output) ---- */
+  const jobsDone   = m.jobs.filter(j=>m.products.some(p=>(p.links||[]).includes(j.id)));
+  const painsKilled= m.pains.filter(p=>m.relievers.some(r=>(r.links||[]).includes(p.id)));
+  const gainsMade  = m.gains.filter(g=>m.creators.some(c=>(c.links||[]).includes(g.id)));
+  const prodNames  = m.products.map(p=>p.t).filter(Boolean);
+  const seg = m.seg.name || "your customer";
+  const list = (arr,key)=> arr.map(x=>x[key]||x.t).filter(Boolean);
+
+  function stmt(){
+    if(!prodNames.length) return null;
+    const join=a=>a.length>1?a.slice(0,-1).join(", ")+" and "+a[a.length-1]:a[0];
+    let s = prodNames.length>1? join(prodNames):prodNames[0];
+    const parts=[];
+    if(jobsDone.length) parts.push("help them "+join(jobsDone.map(j=>j.t.toLowerCase())));
+    if(painsKilled.length) parts.push("relieve "+join(painsKilled.map(p=>p.t.toLowerCase())));
+    if(gainsMade.length) parts.push("and create "+join(gainsMade.map(g=>g.t.toLowerCase())));
+    return {head:s, seg, parts};
+  }
+  const S = stmt();
+
+  /* ---- export ---- */
+  const asText=()=>{
+    const L=[]; L.push("VALUE PROPOSITION — "+(m.seg.name||"")); if(m.seg.desc)L.push(m.seg.desc); L.push("");
+    if(S){L.push("For "+S.seg+", "+S.head+" "+S.parts.join(", ")+".");L.push("");}
+    L.push("Products & services:"); m.products.forEach(p=>L.push("  • "+p.t));
+    L.push("","Jobs performed:"); jobsDone.forEach(j=>L.push("  • "+j.t));
+    L.push("","Pains relieved:"); painsKilled.forEach(p=>L.push("  • "+p.t));
+    L.push("","Gains created:"); gainsMade.forEach(g=>L.push("  • "+g.t));
+    if(gaps.length){L.push("","Still to address (important, unmet):");gaps.forEach(g=>L.push("  • ["+LABELS[g.z]+"] "+g.t));}
+    return L.join("\n");
+  };
+  const copy=()=>{navigator.clipboard.writeText(asText()).then(()=>{},()=>{});};
+  const exportJSON=()=>{const b=new Blob([JSON.stringify(m,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=(m.seg.name||"value-proposition").replace(/\s+/g,"_")+".vp.json";a.click();};
+
+  /* ---- diagram pieces ---- */
+  const isOn=z=>z===sel, isPair=z=>z===ZONES[sel].pair;
+  function zoneClass(z){return "zone"+(isOn(z)?" on":(isPair(z)?" pair":""));}
+
+  return (
+   <div className="wrap">
+    <a className="site-back" href="../innovation.html">← innovation</a>
+    <div className="topbar">
+      <div className="brand"><span className="pp">~/</span> value proposition
+        <small>fit your offer to the customer — then see why it's valuable</small></div>
+      <div className="sp"></div>
+      <button className="btn" onClick={example}>example</button>
+      <button className="btn" onClick={blank}>blank</button>
     </div>
-    <button id="export-pdf">export PDF</button>
-    <button id="clear-all">clear all</button>
-  </div>
 
-  <div class="canvas-wrap">
-    <svg class="vpc" viewBox="0 0 960 480" xmlns="http://www.w3.org/2000/svg">
-      <text class="z-title" x="220" y="30">VALUE MAP</text>
-      <text class="z-title" x="760" y="30">CUSTOMER PROFILE</text>
-
-      <!-- connection lines (pair links) -->
-      <line id="link-gain" class="link-line" x1="330" y1="140" x2="640" y2="140"/>
-      <line id="link-pain" class="link-line" x1="330" y1="340" x2="640" y2="340"/>
-      <line id="link-job"  class="link-line" x1="330" y1="240" x2="640" y2="240"/>
-
-      <!-- VALUE MAP (square, 3 zones) -->
-      <g id="g-products">
-        <path class="zone" data-z="products" d="M60 50 L230 50 L230 430 L60 430 Z"/>
-        <text class="z-label" x="145" y="225">Products</text>
-        <text class="z-label" x="145" y="243">&amp; Services</text>
-        <text class="z-count" x="145" y="265" data-count="products">0 items</text>
-      </g>
-      <g id="g-gain-creators">
-        <path class="zone" data-z="gain-creators" d="M236 50 L420 50 L420 234 L236 234 Z"/>
-        <text class="z-label" x="328" y="130">Gain</text>
-        <text class="z-label" x="328" y="148">Creators</text>
-        <text class="z-count" x="328" y="170" data-count="gain-creators">0 items</text>
-      </g>
-      <g id="g-pain-relievers">
-        <path class="zone" data-z="pain-relievers" d="M236 246 L420 246 L420 430 L236 430 Z"/>
-        <text class="z-label" x="328" y="330">Pain</text>
-        <text class="z-label" x="328" y="348">Relievers</text>
-        <text class="z-count" x="328" y="370" data-count="pain-relievers">0 items</text>
-      </g>
-
-      <!-- arrow between -->
-      <path d="M470 240 H 510 M498 228 l14 12 -14 12" stroke="var(--mint)" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-
-      <!-- CUSTOMER PROFILE (circle, 3 sectors around center 760,240 r=190) -->
-      <g id="g-gains">
-        <path class="zone" data-z="gains" d="M760 240 L595.5 145 A190 190 0 0 1 924.5 145 Z"/>
-        <text class="z-label" x="760" y="105">Gains</text>
-        <text class="z-count" x="760" y="127" data-count="gains">0 items</text>
-      </g>
-      <g id="g-pains">
-        <path class="zone" data-z="pains" d="M760 240 L924.5 335 A190 190 0 0 1 595.5 335 Z"/>
-        <text class="z-label" x="760" y="385">Pains</text>
-        <text class="z-count" x="760" y="407" data-count="pains">0 items</text>
-      </g>
-      <g id="g-jobs">
-        <path class="zone" data-z="jobs" d="M760 240 L595.5 145 A190 190 0 0 0 595.5 335 Z"/>
-        <text class="z-label" x="648" y="232">Customer</text>
-        <text class="z-label" x="648" y="250">Jobs</text>
-        <text class="z-count" x="648" y="272" data-count="jobs">0 items</text>
-      </g>
-      <g id="g-jobs2">
-        <path class="zone" data-z="jobs" d="M760 240 L924.5 145 A190 190 0 0 1 924.5 335 Z"/>
-        <text class="z-label" x="872" y="232">Customer</text>
-        <text class="z-label" x="872" y="250">Jobs</text>
-      </g>
-    </svg>
-  </div>
-
-  <div class="below">
-    <div class="explain" id="explain">
-      <div class="e-eyebrow" id="e-eyebrow">// how it works</div>
-      <h2 id="e-title">Click a section to begin</h2>
-      <p id="e-body">Start on the right side: who is your customer and what are they trying to get done? Map their jobs, pains and gains first. Only then design the left side — your products, the pain relievers and the gain creators. Fit happens when the left side answers the right side, point by point.</p>
-      <div class="fit-q" id="e-fitq" hidden></div>
+    <div className="seg">
+      <div className="l">Customer segment</div>
+      <input className="name" value={m.seg.name} onChange={e=>setSeg("name",e.target.value)} placeholder="Who is this canvas for? (one specific segment)"/>
+      <textarea value={m.seg.desc} onChange={e=>setSeg("desc",e.target.value)} placeholder="Describe them in a sentence — context, role, situation. Keep the segment narrow; refine if it feels too broad."/>
+      <div className="hint">One canvas = one segment. The whole method only works when you have a specific customer in mind.</div>
     </div>
 
-    <div class="editor" id="editor" hidden>
-      <div class="ed-title" id="ed-title">items</div>
-      <ul class="item-list" id="item-list"></ul>
-      <div class="empty" id="ed-empty" hidden>No items yet — add the first one below.</div>
-      <div class="add-row">
-        <input type="text" id="ed-input" placeholder="add an item and press Enter">
-        <button id="ed-add">+ add</button>
+    <div className="order">
+      <span className="lab">start here ·</span>
+      {ORDER.map((z,i)=>(<React.Fragment key={z}>
+        {i>0 && <span className="arr">{i===3?"⇒":"→"}</span>}
+        <span className={"step "+(ZONES[z].side==="profile"?"cust":"val")+(sel===z?" on":"")} role="button" tabIndex={0} onClick={()=>setSel(z)} onKeyDown={e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();setSel(z);}}}>{ZONES[z].seq}. {LABELS[z]}</span>
+      </React.Fragment>))}
+      <div className="fitbar" style={{marginLeft:"auto"}}>
+        <div className="ft">fit — important needs addressed · {fitPct}%</div>
+        <div className="bar"><i style={{width:fitPct+"%"}}></i></div>
       </div>
     </div>
-  </div>
 
-</div>
+    {/* DIAGRAM */}
+    <div className="canvas">
+      <svg className="vpc" viewBox="0 0 980 480" xmlns="http://www.w3.org/2000/svg">
+        <text className="ztitle" x="240" y="22">CUSTOMER PROFILE</text>
+        <text className="ztitle" x="725" y="22">VALUE MAP</text>
 
-<script>
-(function () {
-  var KEY = 'ferrao-valueprop-v1';
-  var data = { 'products': [], 'gain-creators': [], 'pain-relievers': [], 'jobs': [], 'gains': [], 'pains': [] };
-  try { var d = JSON.parse(localStorage.getItem(KEY)); if (d) Object.keys(data).forEach(function (k) { if (Array.isArray(d[k])) data[k] = d[k]; }); } catch (e) {}
-  function save() { localStorage.setItem(KEY, JSON.stringify(data)); }
+        {/* connector for the active pair */}
+        {(()=>{const vz=ZONES[activeProfile].pair;const r=VMAP[vz];const ty=r.y+r.h/2;
+          return <line className={"conn show"} x1={CX+R-6} y1={CY} x2={r.x} y2={ty}/>;})()}
 
-  var META = {
-    'jobs': {
-      title: 'Customer Jobs', pair: 'products', link: 'link-job',
-      body: 'The tasks your customers are trying to get done — functional (treat the water, file the report), social (look competent to the board) and emotional (feel in control). Write them from the customer\u2019s point of view, not yours.',
-      fitq: 'FIT CHECK → Does each job map to at least one product or service on the left?'
-    },
-    'pains': {
-      title: 'Pains', pair: 'pain-relievers', link: 'link-pain',
-      body: 'What annoys, blocks or risks your customer before, during and after getting the job done: obstacles, costs, frustrations, fears of things going wrong. Rank them — extreme pains are where value propositions are born.',
-      fitq: 'FIT CHECK → Is every extreme pain addressed by a pain reliever on the left?'
-    },
-    'gains': {
-      title: 'Gains', pair: 'gain-creators', link: 'link-gain',
-      body: 'The outcomes and benefits your customer expects, desires, or would be surprised by: required gains (it must work), expected gains, desired gains, and unexpected gains that delight. Be concrete — \u201csave 2 hours per shift\u201d, not \u201cbe more efficient\u201d.',
-      fitq: 'FIT CHECK → Do your gain creators produce the gains customers actually care about most?'
-    },
-    'products': {
-      title: 'Products & Services', pair: 'jobs', link: 'link-job',
-      body: 'The list of what you offer — physical, digital, service or financial. This is the simplest section, and the least important on its own: products only create value relative to a customer job. List them, then immediately ask which jobs they serve.',
-      fitq: 'FIT CHECK → Does each product or service help the customer complete a job on the right?'
-    },
-    'gain-creators': {
-      title: 'Gain Creators', pair: 'gains', link: 'link-gain',
-      body: 'How your products and services create the gains on the right: how they produce the outcomes the customer expects or desires. Don\u2019t try to create every gain — focus on the ones customers care about most, where you can make a difference.',
-      fitq: 'FIT CHECK → Each gain creator should point at a specific gain. Orphan creators are decoration.'
-    },
-    'pain-relievers': {
-      title: 'Pain Relievers', pair: 'pains', link: 'link-pain',
-      body: 'How your products and services kill, reduce or eliminate the pains on the right. Great value propositions relieve few pains extremely well rather than many pains superficially.',
-      fitq: 'FIT CHECK → Each reliever should neutralise a named pain. If you can\u2019t name the pain, cut the reliever.'
-    }
-  };
+        {/* CUSTOMER PROFILE wheel (left) */}
+        <g className="wheel" style={{transform:`rotate(${rot}deg)`}}>
+          {["jobs","pains","gains"].map(z=>(
+            <g key={z} className={zoneClass(z)} onClick={()=>setSel(z)}>
+              <path className="zbg" d={wedge(ZONES[z].bis)}/>
+            </g>
+          ))}
+        </g>
+        {/* labels counter-rotated so they stay upright */}
+        {["jobs","pains","gains"].map(z=>{
+          const [lx,ly]=pt(CX,CY,108,ZONES[z].bis);
+          return (<g key={"l"+z} className="lblg" style={{transform:`rotate(${rot}deg)`,transformOrigin:`${CX}px ${CY}px`}} pointerEvents="none">
+            <g style={{transform:`rotate(${-rot}deg)`,transformOrigin:`${lx}px ${ly}px`,transformBox:"view-box"}}>
+              <text className="zlab" x={lx} y={ly-4} fontSize="14">{LABELS[z]}</text>
+              <text className="zcount" x={lx} y={ly+14}>{m[z].length} {m[z].length===1?"item":"items"}</text>
+            </g>
+          </g>);
+        })}
 
-  var current = null;
+        {/* VALUE MAP (right) */}
+        {["products","creators","relievers"].map(z=>{const r=VMAP[z];const cx=r.x+r.w/2;const cy=r.y+r.h/2;
+          return (<g key={z} className={zoneClass(z)} onClick={()=>setSel(z)}>
+            <rect className="zbg" x={r.x} y={r.y} width={r.w} height={r.h} rx="10"/>
+            <text className="zlab" x={cx} y={cy-4} fontSize="13">{LABELS[z]}</text>
+            <text className="zcount" x={cx} y={cy+14}>{m[z].length} {m[z].length===1?"item":"items"}</text>
+          </g>);})}
+      </svg>
+    </div>
 
-  function counts() {
-    document.querySelectorAll('[data-count]').forEach(function (t) {
-      var k = t.getAttribute('data-count');
-      t.textContent = data[k].length + (data[k].length === 1 ? ' item' : ' items');
-    });
-    var filled = Object.keys(data).filter(function (k) { return data[k].length > 0; }).length;
-    var pct = Math.round(100 * filled / 6);
-    document.getElementById('fit-fill').style.width = pct + '%';
-    document.getElementById('fit-pct').textContent = pct + '%';
-  }
+    {/* EXPLAIN + EDITOR */}
+    <div className="below">
+      <div className="explain">
+        <div className="ey">// {Z.side==="profile"?"customer profile":"value map"}</div>
+        <h2>{Z.title}</h2>
+        <div className="seq">step {Z.seq} of 6{Z.seq<6?" · next: "+LABELS[ORDER[Z.seq]]:" · then check fit →"}</div>
+        <p>{Z.body}</p>
+        <div className="fitq">{Z.side==="profile" ? "Star what matters most — fit is measured against the important ones." : "Tick which "+LABELS[ZONES[sel].pair].toLowerCase()+" each item addresses. Unticked items are decoration."}</div>
+      </div>
 
-  function select(z) {
-    current = z;
-    var m = META[z];
-    document.querySelectorAll('.zone').forEach(function (p) {
-      p.classList.remove('selected', 'pair');
-      var pz = p.getAttribute('data-z');
-      if (pz === z) p.classList.add('selected');
-      else if (pz === m.pair) p.classList.add('pair');
-    });
-    document.querySelectorAll('.link-line').forEach(function (l) { l.classList.toggle('show', l.id === m.link); });
+      <div className="editor">
+        <div className="et">{Z.title} — your items</div>
+        {m[sel].length===0 && <div className="empty">No items yet — add the first one below.</div>}
+        {m[sel].map(it=>(
+          <div key={it.id}>
+            <div className="it">
+              {Z.side==="profile" && <button className={"star"+(it.imp?" on":"")} onClick={()=>toggleStar(sel,it.id)} title="mark important">{it.imp?"★":"☆"}</button>}
+              <input className="t" value={it.t} onChange={e=>setItem(sel,it.id,e.target.value)} placeholder="…"/>
+              <button className="del" onClick={()=>delItem(sel,it.id)} title="remove">×</button>
+            </div>
+            {Z.side==="value" && (()=>{const tg=ZONES[sel].pair;return (
+              <div className="links">
+                {m[tg].length===0 ? <span className="none">add some {LABELS[tg].toLowerCase()} first →</span> :
+                  m[tg].map(t=>(<span key={t.id} className={"lk"+((it.links||[]).includes(t.id)?" on":"")} onClick={()=>toggleLink(sel,it.id,t.id)}>{t.imp?"★ ":""}{t.t||"…"}</span>))}
+              </div>);})()}
+          </div>
+        ))}
+        <div className="addrow">
+          <input id="addinp" placeholder={"add a "+Z.title.toLowerCase().replace(/s$/,"")+" and press Enter"} onKeyDown={e=>{if(e.key==="Enter"&&e.target.value.trim()){addItem(sel,e.target.value.trim());e.target.value="";}}}/>
+          <button className="btn" onClick={()=>{const el=document.getElementById("addinp");if(el.value.trim()){addItem(sel,el.value.trim());el.value="";}}}>+ add</button>
+        </div>
+      </div>
+    </div>
 
-    document.getElementById('e-eyebrow').textContent = '// ' + z.replace(/-/g, ' ');
-    document.getElementById('e-title').textContent = m.title;
-    document.getElementById('e-body').textContent = m.body;
-    var fq = document.getElementById('e-fitq');
-    fq.hidden = false; fq.textContent = m.fitq;
-
-    document.getElementById('editor').hidden = false;
-    document.getElementById('ed-title').textContent = m.title + ' — your items';
-    renderItems();
-    document.getElementById('ed-input').focus();
-  }
-
-  function renderItems() {
-    var ul = document.getElementById('item-list');
-    ul.innerHTML = '';
-    data[current].forEach(function (txt, i) {
-      var li = document.createElement('li');
-      var span = document.createElement('span'); span.textContent = txt;
-      var del = document.createElement('button'); del.className = 'del'; del.textContent = '\u2715';
-      del.addEventListener('click', function () { data[current].splice(i, 1); save(); renderItems(); counts(); });
-      li.appendChild(span); li.appendChild(del);
-      ul.appendChild(li);
-    });
-    document.getElementById('ed-empty').hidden = data[current].length > 0;
-  }
-
-  function addItem() {
-    var inp = document.getElementById('ed-input');
-    var v = inp.value.trim();
-    if (!v || !current) return;
-    data[current].push(v);
-    inp.value = '';
-    save(); renderItems(); counts();
-  }
-
-  document.querySelectorAll('.zone').forEach(function (p) {
-    p.addEventListener('click', function () { select(p.getAttribute('data-z')); });
-  });
-  document.getElementById('ed-add').addEventListener('click', addItem);
-  document.getElementById('ed-input').addEventListener('keydown', function (e) { if (e.key === 'Enter') addItem(); });
-  document.getElementById('export-pdf').addEventListener('click', function () { window.print(); });
-  document.getElementById('clear-all').addEventListener('click', function () {
-    if (confirm('Clear all sections? This cannot be undone.')) {
-      Object.keys(data).forEach(function (k) { data[k] = []; });
-      save(); counts(); if (current) renderItems();
-    }
-  });
-
-  counts();
-})();
+    {/* DELIVERABLE */}
+    <div className={"vp"+(vpOpen?" open":"")} id="vp">
+      <div className="vphead" onClick={()=>setVpOpen(o=>!o)}>
+        <span className="vchev">▸</span>
+        <h3>Your value proposition{m.seg.name?" — "+m.seg.name:""}</h3>
+        <span className="vpstatus">{S?("fit "+fitPct+"% · ready"):"not ready yet"}</span>
+        <button className="btn vptoggle" onClick={e=>{e.stopPropagation();setVpOpen(o=>!o);}}>{vpOpen?"hide":"open result"}</button>
+      </div>
+      {vpOpen && <div className="vpbody">
+      <div className="vsub">Where you arrive: the products & services, and <em>why</em> they're valuable — the jobs they do, the pains they relieve, the gains they create.</div>
+      {S ? <div className="stmt">For <b>{S.seg}</b>, <b>{S.head}</b> {S.parts.join(", ")}.</div>
+         : <div className="stmt" style={{color:"var(--mut)"}}>Add your products &amp; services and link them to jobs, pains and gains to generate the statement.</div>}
+      <div className="vcols">
+        <div className="vcol"><h4>▣ Products &amp; services</h4>
+          {prodNames.length? <ul>{m.products.map(p=>(<li key={p.id}>{p.t}</li>))}</ul> : <div className="none">none yet</div>}</div>
+        <div className="vcol"><h4>✓ Jobs performed</h4>
+          {jobsDone.length? <ul>{jobsDone.map(j=>(<li key={j.id}>{j.imp?"★ ":""}{j.t}</li>))}</ul> : <div className="none">link a product to a job</div>}</div>
+        <div className="vcol"><h4>✓ Pains relieved &amp; gains created</h4>
+          {(painsKilled.length||gainsMade.length)? <ul>{painsKilled.map(p=>(<li key={p.id}>{p.imp?"★ ":""}{p.t}</li>))}{gainsMade.map(g=>(<li key={g.id}>{g.imp?"★ ":""}{g.t}</li>))}</ul> : <div className="none">link relievers &amp; creators</div>}</div>
+      </div>
+      {gaps.length>0 && <div className="gaps"><b>Gaps</b> — important needs nothing addresses yet: {gaps.map((g,i)=>(<span key={i} className="g">[{LABELS[g.z]}] {g.t}{i<gaps.length-1?" ·":""}</span>))}. These are your next experiments.</div>}
+      <div className="doctools">
+        <button className="btn primary" onClick={copy}>⧉ copy</button>
+        <button className="btn primary" onClick={()=>window.print()}>print / PDF</button>
+        <button className="btn" onClick={exportJSON}>export JSON</button>
+      </div>
+      <div className="note">Auto-saved in your browser. Fit is measured against the ★ important jobs, pains and gains.</div>
+      </div>}
+    </div>
+   </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
 </script>
 </body>
 </html>

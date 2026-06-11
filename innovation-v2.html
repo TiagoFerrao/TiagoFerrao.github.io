@@ -69,6 +69,7 @@
     .mini .mnode { position: absolute; left: 0; top: 4px; width: 17px; height: 17px; border-radius: 50%;
       border: 1px solid var(--accent-secondary); background: var(--bg-primary); display: flex; align-items: center;
       justify-content: center; font-family: var(--font-body); font-size: .6rem; color: var(--accent-primary); }
+    .mini .mnode svg { width: 11px; height: 11px; }
     .mini .mt { font-weight: 600; color: var(--text-primary); font-size: .95rem; }
     .mini .md { color: var(--text-secondary); font-size: .88rem; line-height: 1.6; margin-top: 2px; max-width: 70ch; }
 
@@ -156,32 +157,32 @@
       'business-model-canvas':{ nm: 'business-model-canvas', ds: 'the nine building blocks',                    href: 'business-model-canvas/' },
       'platform-model-builder':{ nm: 'platform-model-builder', ds: 'two-sided model + quick estimate',          href: 'business-model-app/' },
       'business-case-builder':{ nm: 'business-case-builder', ds: 'TAM/SOM → multi-year P&L',                    href: 'business-case-builder/' },
-      'press-release':       { nm: 'press-release-canvas', ds: 'working-backwards template · soon',             href: '#', soon: true }
+      'press-release':       { nm: 'press-release', ds: 'Amazon working-backwards launch story',                href: 'tools/press-release.html' }
     };
 
     var PHASES = [
       {
         pn: 'Phase 0', lab: 'Idea', tag: 'Phase 0 · Ideation', title: 'Collect & structure ideas',
         ctx: 'Ideas are the fuel of innovation — worth little alone, valuable once captured and shaped. Ideation never stops; it runs in the background of everything else.',
-        io: ['a raw idea', 'a framed opportunity'],
+        io: ['a raw idea', 'a press release of the chosen idea'],
         steps: [
           { t: 'Collect', d: 'Anyone can submit ideas, continuously — no filter at the door.' },
           { t: 'Evaluate', d: 'Ideas are reviewed periodically against strategy and feasibility.' },
-          { t: 'Frame', d: 'The promising ones are shaped into a clear, specific opportunity worth validating.' }
+          { t: 'Frame', d: 'The promising ones are shaped into a clear, specific opportunity.' },
+          { t: 'Press release', d: 'Work backwards: write the press release announcing the finished product. It crystallises the chosen idea into a story worth validating — if it isn’t compelling, the idea isn’t ready.' }
         ],
-        tools: []
+        tools: ['press-release']
       },
       {
         pn: 'Phase 1', lab: 'Problem', tag: 'Phase 1 · Problem validation', title: 'Prove the problem is real',
         ctx: 'Most products fail because nobody wants them. So before designing anything, validate the pain — is it <strong>frequent, intense and unsolved today?</strong> Problem-first, not product-first; build painkillers, not vitamins.',
-        io: ['a framed opportunity', 'a prioritised list of validated pains'],
+        io: ['a press release', 'a prioritised list of validated pains'],
         steps: [
-          { t: 'Press release', d: 'Work backwards: write the press release announcing the finished product. If it isn’t compelling, the idea isn’t ready.' },
           { t: 'Possible user pains', d: 'Map every plausible pain the target users might have — broad and unfiltered, each captured as a hypothesis.' },
           { t: 'Validated user pains', d: 'Interviews and evidence separate the real painkillers from the nice-to-have vitamins.' }
         ],
         note: 'This is where the <b>assumptions table</b> is born — every pain enters as a hypothesis, classified by impact and uncertainty, and travels every phase after this.',
-        tools: ['assumptions-tracker', 'value-proposition', 'press-release']
+        tools: ['assumptions-tracker', 'value-proposition']
       },
       {
         pn: 'Phase 2.1', lab: 'Concept', tag: 'Phase 2.1 · Conceptualization', title: 'Design the solution',
@@ -258,7 +259,7 @@
         + '<p class="pp-ctx">' + p.ctx + '</p>'
         + '<div class="io"><span class="lbl">in</span><span class="in">' + p.io[0] + '</span><span class="arrow">→</span><span class="lbl">out</span><span class="out">' + p.io[1] + '</span></div>'
         + '<div class="miniflow">' + p.steps.map(function (s, k) {
-            return '<div class="mini"><span class="mnode">' + (k + 1) + '</span><div class="mt">' + s.t + '</div><div class="md">' + s.d + '</div></div>';
+            return '<div class="mini"><span class="mnode">' + (s.icon || (k + 1)) + '</span><div class="mt">' + s.t + '</div><div class="md">' + s.d + '</div></div>';
           }).join('') + '</div>';
       if (p.note) html += '<div class="anote">' + p.note + '</div>';
       if (p.tools && p.tools.length) html += '<div class="tools-lbl">tools for this phase</div><div class="tools">' + p.tools.map(toolCard).join('') + '</div>';
