@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Value Proposition Designer — ferrao.me</title>
+<meta name="theme-color" content="#001a20">
+<meta name="description" content="Value Proposition Designer — map customer jobs, pains and gains against your offer until they fit.">
+<link rel="icon" href="../img/bee.png">
+<link rel="apple-touch-icon" href="../img/bee.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #001a20;
+    --panel: #042730;
+    --panel-2: #06303a;
+    --text: #e8f4ef;
+    --muted: #8fb3a8;
+    --mint: #7DE38D;
+    --mint-dim: rgba(125,227,141,.35);
+    --mint-faint: rgba(125,227,141,.10);
+    --radius: 12px;
+    --sans: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "Inconsolata", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); padding: 48px 0 80px; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  .page-head { margin-bottom: 26px; }
+  .eyebrow { font-family: var(--mono); font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; color: var(--mint); margin-bottom: 8px; }
+  h1 { font-size: 1.55rem; font-weight: 650; }
+  .page-head p { color: var(--muted); font-size: .92rem; margin-top: 8px; max-width: 760px; line-height: 1.6; }
+  .site-back { display: inline-block; font-family: var(--mono); font-size: .72rem; letter-spacing: .12em; color: var(--muted); text-decoration: none; margin-bottom: 14px; }
+  .site-back:hover { color: var(--mint); }
+
+  /* ===== fit meter + toolbar ===== */
+  .topbar { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-bottom: 22px; }
+  .fit { flex: 1; min-width: 240px; background: var(--panel); border-radius: var(--radius); padding: 12px 18px; }
+  .fit .f-label { font-family: var(--mono); font-size: .62rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; }
+  .fit-bar { height: 8px; background: var(--panel-2); border-radius: 999px; overflow: hidden; }
+  .fit-bar div { height: 100%; width: 0; background: var(--mint); border-radius: 999px; transition: width .5s ease; }
+  button { font-family: var(--mono); font-size: .76rem; color: var(--mint); background: transparent; border: 1px solid var(--mint-dim); border-radius: 999px; padding: 7px 18px; cursor: pointer; transition: background .2s ease; }
+  button:hover { background: var(--mint-faint); }
+
+  /* ===== diagram ===== */
+  .canvas-wrap { background: var(--panel); border-radius: var(--radius); padding: 18px 10px 6px; overflow-x: auto; }
+  svg.vpc { display: block; width: 100%; max-width: 960px; margin: 0 auto; min-width: 700px; }
+  .zone { fill: var(--panel-2); stroke: var(--mint-dim); stroke-width: 1.5; cursor: pointer; transition: fill .25s ease, stroke .25s ease; }
+  .zone:hover { fill: rgba(125,227,141,.14); }
+  .zone.selected { fill: rgba(125,227,141,.22); stroke: var(--mint); stroke-width: 2.5; }
+  .zone.pair { fill: rgba(125,227,141,.10); stroke: var(--mint); stroke-dasharray: 5 4; stroke-width: 2; }
+  .z-label { font-family: var(--mono); font-size: 12.5px; fill: var(--text); pointer-events: none; text-anchor: middle; }
+  .z-count { font-family: var(--mono); font-size: 11px; fill: var(--mint); pointer-events: none; text-anchor: middle; }
+  .z-title { font-family: var(--mono); font-size: 11px; letter-spacing: .18em; fill: var(--muted); text-anchor: middle; }
+  .link-line { stroke: var(--mint-dim); stroke-width: 1.5; stroke-dasharray: 4 5; opacity: 0; transition: opacity .3s ease; }
+  .link-line.show { opacity: 1; }
+
+  /* ===== explainer + editor ===== */
+  .below { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 22px; align-items: start; }
+  @media (max-width: 860px) { .below { grid-template-columns: 1fr; } }
+  .explain, .editor { background: var(--panel); border-radius: var(--radius); padding: 20px 24px; }
+  .explain { border-left: 3px solid var(--mint); border-radius: 0 var(--radius) var(--radius) 0; }
+  .explain .e-eyebrow { font-family: var(--mono); font-size: .64rem; letter-spacing: .16em; text-transform: uppercase; color: var(--mint); margin-bottom: 6px; }
+  .explain h2 { font-size: 1.05rem; margin-bottom: 8px; }
+  .explain p { font-size: .87rem; line-height: 1.6; color: var(--text); }
+  .explain .fit-q { margin-top: 12px; padding: 10px 14px; background: var(--mint-faint); border-radius: 8px; font-size: .8rem; line-height: 1.5; color: var(--mint); font-family: var(--mono); }
+
+  .editor .ed-title { font-family: var(--mono); font-size: .64rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+  .item-list { list-style: none; margin-bottom: 12px; }
+  .item-list li { display: flex; align-items: center; gap: 8px; font-size: .86rem; padding: 6px 10px; border-radius: 8px; background: var(--panel-2); margin-bottom: 6px; }
+  .item-list li span { flex: 1; }
+  .item-list .del { border: none; padding: 0 6px; color: var(--muted); font-size: .9rem; }
+  .item-list .del:hover { color: #e07a6b; background: none; }
+  .add-row { display: flex; gap: 8px; }
+  .add-row input { flex: 1; background: var(--panel-2); border: 1px solid transparent; border-radius: 8px; color: var(--text); font-size: .86rem; padding: 9px 12px; }
+  .add-row input:focus { outline: none; border-color: var(--mint-dim); }
+  .editor .empty { font-size: .8rem; color: var(--muted); padding: 6px 0 12px; }
+
+  @media print {
+    :root { --bg:#fff; --panel:#fff; --panel-2:#f3f3f3; --text:#111; --muted:#555; --mint:#0F3D22; --mint-dim:#999; --mint-faint:#f5f5f5; }
+    body { padding: 0; }
+    .topbar button, .add-row, .item-list .del { display: none !important; }
+    .canvas-wrap, .explain, .editor { border: 1px solid #ccc; }
+    .below { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header class="page-head">
+    <a class="site-back" href="../innovation.html">← innovation</a>
+    <div class="eyebrow">// toolbox / value-proposition</div>
+    <h1>Value Proposition Designer</h1>
+    <p>Two sides that must fit: what you offer (left) and who you serve (right). Click any section to understand it and fill it in — the diagram highlights its matching counterpart, because every element on your side only matters if it answers something on theirs.</p>
+  </header>
+
+  <div class="topbar">
+    <div class="fit">
+      <div class="f-label">Canvas completeness — <span id="fit-pct">0%</span></div>
+      <div class="fit-bar"><div id="fit-fill"></div></div>
+    </div>
+    <button id="export-pdf">export PDF</button>
+    <button id="clear-all">clear all</button>
+  </div>
+
+  <div class="canvas-wrap">
+    <svg class="vpc" viewBox="0 0 960 480" xmlns="http://www.w3.org/2000/svg">
+      <text class="z-title" x="220" y="30">VALUE MAP</text>
+      <text class="z-title" x="760" y="30">CUSTOMER PROFILE</text>
+
+      <!-- connection lines (pair links) -->
+      <line id="link-gain" class="link-line" x1="330" y1="140" x2="640" y2="140"/>
+      <line id="link-pain" class="link-line" x1="330" y1="340" x2="640" y2="340"/>
+      <line id="link-job"  class="link-line" x1="330" y1="240" x2="640" y2="240"/>
+
+      <!-- VALUE MAP (square, 3 zones) -->
+      <g id="g-products">
+        <path class="zone" data-z="products" d="M60 50 L230 50 L230 430 L60 430 Z"/>
+        <text class="z-label" x="145" y="225">Products</text>
+        <text class="z-label" x="145" y="243">&amp; Services</text>
+        <text class="z-count" x="145" y="265" data-count="products">0 items</text>
+      </g>
+      <g id="g-gain-creators">
+        <path class="zone" data-z="gain-creators" d="M236 50 L420 50 L420 234 L236 234 Z"/>
+        <text class="z-label" x="328" y="130">Gain</text>
+        <text class="z-label" x="328" y="148">Creators</text>
+        <text class="z-count" x="328" y="170" data-count="gain-creators">0 items</text>
+      </g>
+      <g id="g-pain-relievers">
+        <path class="zone" data-z="pain-relievers" d="M236 246 L420 246 L420 430 L236 430 Z"/>
+        <text class="z-label" x="328" y="330">Pain</text>
+        <text class="z-label" x="328" y="348">Relievers</text>
+        <text class="z-count" x="328" y="370" data-count="pain-relievers">0 items</text>
+      </g>
+
+      <!-- arrow between -->
+      <path d="M470 240 H 510 M498 228 l14 12 -14 12" stroke="var(--mint)" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+
+      <!-- CUSTOMER PROFILE (circle, 3 sectors around center 760,240 r=190) -->
+      <g id="g-gains">
+        <path class="zone" data-z="gains" d="M760 240 L595.5 145 A190 190 0 0 1 924.5 145 Z"/>
+        <text class="z-label" x="760" y="105">Gains</text>
+        <text class="z-count" x="760" y="127" data-count="gains">0 items</text>
+      </g>
+      <g id="g-pains">
+        <path class="zone" data-z="pains" d="M760 240 L924.5 335 A190 190 0 0 1 595.5 335 Z"/>
+        <text class="z-label" x="760" y="385">Pains</text>
+        <text class="z-count" x="760" y="407" data-count="pains">0 items</text>
+      </g>
+      <g id="g-jobs">
+        <path class="zone" data-z="jobs" d="M760 240 L595.5 145 A190 190 0 0 0 595.5 335 Z"/>
+        <text class="z-label" x="648" y="232">Customer</text>
+        <text class="z-label" x="648" y="250">Jobs</text>
+        <text class="z-count" x="648" y="272" data-count="jobs">0 items</text>
+      </g>
+      <g id="g-jobs2">
+        <path class="zone" data-z="jobs" d="M760 240 L924.5 145 A190 190 0 0 1 924.5 335 Z"/>
+        <text class="z-label" x="872" y="232">Customer</text>
+        <text class="z-label" x="872" y="250">Jobs</text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="below">
+    <div class="explain" id="explain">
+      <div class="e-eyebrow" id="e-eyebrow">// how it works</div>
+      <h2 id="e-title">Click a section to begin</h2>
+      <p id="e-body">Start on the right side: who is your customer and what are they trying to get done? Map their jobs, pains and gains first. Only then design the left side — your products, the pain relievers and the gain creators. Fit happens when the left side answers the right side, point by point.</p>
+      <div class="fit-q" id="e-fitq" hidden></div>
+    </div>
+
+    <div class="editor" id="editor" hidden>
+      <div class="ed-title" id="ed-title">items</div>
+      <ul class="item-list" id="item-list"></ul>
+      <div class="empty" id="ed-empty" hidden>No items yet — add the first one below.</div>
+      <div class="add-row">
+        <input type="text" id="ed-input" placeholder="add an item and press Enter">
+        <button id="ed-add">+ add</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  var KEY = 'ferrao-valueprop-v1';
+  var data = { 'products': [], 'gain-creators': [], 'pain-relievers': [], 'jobs': [], 'gains': [], 'pains': [] };
+  try { var d = JSON.parse(localStorage.getItem(KEY)); if (d) Object.keys(data).forEach(function (k) { if (Array.isArray(d[k])) data[k] = d[k]; }); } catch (e) {}
+  function save() { localStorage.setItem(KEY, JSON.stringify(data)); }
+
+  var META = {
+    'jobs': {
+      title: 'Customer Jobs', pair: 'products', link: 'link-job',
+      body: 'The tasks your customers are trying to get done — functional (treat the water, file the report), social (look competent to the board) and emotional (feel in control). Write them from the customer\u2019s point of view, not yours.',
+      fitq: 'FIT CHECK → Does each job map to at least one product or service on the left?'
+    },
+    'pains': {
+      title: 'Pains', pair: 'pain-relievers', link: 'link-pain',
+      body: 'What annoys, blocks or risks your customer before, during and after getting the job done: obstacles, costs, frustrations, fears of things going wrong. Rank them — extreme pains are where value propositions are born.',
+      fitq: 'FIT CHECK → Is every extreme pain addressed by a pain reliever on the left?'
+    },
+    'gains': {
+      title: 'Gains', pair: 'gain-creators', link: 'link-gain',
+      body: 'The outcomes and benefits your customer expects, desires, or would be surprised by: required gains (it must work), expected gains, desired gains, and unexpected gains that delight. Be concrete — \u201csave 2 hours per shift\u201d, not \u201cbe more efficient\u201d.',
+      fitq: 'FIT CHECK → Do your gain creators produce the gains customers actually care about most?'
+    },
+    'products': {
+      title: 'Products & Services', pair: 'jobs', link: 'link-job',
+      body: 'The list of what you offer — physical, digital, service or financial. This is the simplest section, and the least important on its own: products only create value relative to a customer job. List them, then immediately ask which jobs they serve.',
+      fitq: 'FIT CHECK → Does each product or service help the customer complete a job on the right?'
+    },
+    'gain-creators': {
+      title: 'Gain Creators', pair: 'gains', link: 'link-gain',
+      body: 'How your products and services create the gains on the right: how they produce the outcomes the customer expects or desires. Don\u2019t try to create every gain — focus on the ones customers care about most, where you can make a difference.',
+      fitq: 'FIT CHECK → Each gain creator should point at a specific gain. Orphan creators are decoration.'
+    },
+    'pain-relievers': {
+      title: 'Pain Relievers', pair: 'pains', link: 'link-pain',
+      body: 'How your products and services kill, reduce or eliminate the pains on the right. Great value propositions relieve few pains extremely well rather than many pains superficially.',
+      fitq: 'FIT CHECK → Each reliever should neutralise a named pain. If you can\u2019t name the pain, cut the reliever.'
+    }
+  };
+
+  var current = null;
+
+  function counts() {
+    document.querySelectorAll('[data-count]').forEach(function (t) {
+      var k = t.getAttribute('data-count');
+      t.textContent = data[k].length + (data[k].length === 1 ? ' item' : ' items');
+    });
+    var filled = Object.keys(data).filter(function (k) { return data[k].length > 0; }).length;
+    var pct = Math.round(100 * filled / 6);
+    document.getElementById('fit-fill').style.width = pct + '%';
+    document.getElementById('fit-pct').textContent = pct + '%';
+  }
+
+  function select(z) {
+    current = z;
+    var m = META[z];
+    document.querySelectorAll('.zone').forEach(function (p) {
+      p.classList.remove('selected', 'pair');
+      var pz = p.getAttribute('data-z');
+      if (pz === z) p.classList.add('selected');
+      else if (pz === m.pair) p.classList.add('pair');
+    });
+    document.querySelectorAll('.link-line').forEach(function (l) { l.classList.toggle('show', l.id === m.link); });
+
+    document.getElementById('e-eyebrow').textContent = '// ' + z.replace(/-/g, ' ');
+    document.getElementById('e-title').textContent = m.title;
+    document.getElementById('e-body').textContent = m.body;
+    var fq = document.getElementById('e-fitq');
+    fq.hidden = false; fq.textContent = m.fitq;
+
+    document.getElementById('editor').hidden = false;
+    document.getElementById('ed-title').textContent = m.title + ' — your items';
+    renderItems();
+    document.getElementById('ed-input').focus();
+  }
+
+  function renderItems() {
+    var ul = document.getElementById('item-list');
+    ul.innerHTML = '';
+    data[current].forEach(function (txt, i) {
+      var li = document.createElement('li');
+      var span = document.createElement('span'); span.textContent = txt;
+      var del = document.createElement('button'); del.className = 'del'; del.textContent = '\u2715';
+      del.addEventListener('click', function () { data[current].splice(i, 1); save(); renderItems(); counts(); });
+      li.appendChild(span); li.appendChild(del);
+      ul.appendChild(li);
+    });
+    document.getElementById('ed-empty').hidden = data[current].length > 0;
+  }
+
+  function addItem() {
+    var inp = document.getElementById('ed-input');
+    var v = inp.value.trim();
+    if (!v || !current) return;
+    data[current].push(v);
+    inp.value = '';
+    save(); renderItems(); counts();
+  }
+
+  document.querySelectorAll('.zone').forEach(function (p) {
+    p.addEventListener('click', function () { select(p.getAttribute('data-z')); });
+  });
+  document.getElementById('ed-add').addEventListener('click', addItem);
+  document.getElementById('ed-input').addEventListener('keydown', function (e) { if (e.key === 'Enter') addItem(); });
+  document.getElementById('export-pdf').addEventListener('click', function () { window.print(); });
+  document.getElementById('clear-all').addEventListener('click', function () {
+    if (confirm('Clear all sections? This cannot be undone.')) {
+      Object.keys(data).forEach(function (k) { data[k] = []; });
+      save(); counts(); if (current) renderItems();
+    }
+  });
+
+  counts();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en" data-theme="teal">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Business Model Canvas — guided builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-primary:#001a20; --bg-secondary:#002a33;
+    --bg-surface:rgba(0,50,60,.55); --bg-surface-2:rgba(0,42,51,.92);
+    --accent:#7DE38D; --accent-rgb:125,227,141; --accent-2:#288f5b;
+    --text:#e0f0e8; --text-dim:#8fb8a0; --text-mut:#5a8a70;
+    --border:rgba(125,227,141,.18); --border-strong:rgba(125,227,141,.4);
+    --danger:#ff6b6b; --warn:#ffd166; --info:#4ecdc4; --violet:#c792ea;
+    --mono:'Inconsolata',ui-monospace,monospace; --disp:'Space Grotesk',sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:
+     radial-gradient(1200px 600px at 80% -10%, rgba(125,227,141,.06), transparent 60%),
+     var(--bg-primary); color:var(--text); font-family:var(--mono); font-size:15px; line-height:1.5;}
+  a{color:var(--accent);}
+  .wrap{max-width:1080px;margin:0 auto;padding:22px 20px 70px;}
+
+  .topbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--border);padding-bottom:14px;margin-bottom:16px;}
+  .brand{font-family:var(--disp);font-weight:700;font-size:19px;color:var(--text);}
+  .brand .pp{color:var(--accent);text-shadow:0 0 10px rgba(var(--accent-rgb),.4);}
+  .brand small{display:block;font-family:var(--mono);font-weight:400;font-size:12px;color:var(--text-dim);}
+  .topbar .spacer{flex:1}
+  .btn{font-family:var(--mono);font-size:12.5px;color:var(--text-dim);background:transparent;border:1px solid var(--border);
+    border-radius:7px;padding:7px 11px;cursor:pointer;transition:.15s;}
+  .btn:hover{color:var(--accent);border-color:var(--border-strong);box-shadow:0 0 10px rgba(var(--accent-rgb),.12);}
+  .btn.primary{color:var(--bg-primary);background:var(--accent);border-color:var(--accent);font-weight:700;}
+  .btn.primary:hover{filter:brightness(1.08);}
+  .btn:disabled{opacity:.4;cursor:not-allowed;}
+
+  .idea input.name{font-family:var(--disp);font-weight:700;font-size:24px;color:var(--text);background:transparent;border:none;border-bottom:1px dashed transparent;width:100%;padding:2px 0;}
+  .idea input.name:hover,.idea input.name:focus{border-bottom-color:var(--border);outline:none;}
+  .idea input.tag{font-family:var(--mono);font-size:13.5px;color:var(--text-dim);background:transparent;border:none;width:100%;padding:3px 0;}
+  .idea input.tag:focus{outline:none;color:var(--text);}
+
+  /* stepper: dots */
+  .dots{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:16px 0 6px;}
+  .dot{width:26px;height:26px;border-radius:50%;border:1px solid var(--border-strong);background:transparent;color:var(--text-dim);
+    font-size:11px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:.15s;}
+  .dot:hover{color:var(--text);border-color:var(--accent);}
+  .dot.on{background:var(--accent);color:var(--bg-primary);border-color:var(--accent);box-shadow:0 0 10px rgba(var(--accent-rgb),.3);}
+  .dot.done{color:var(--accent);border-color:var(--accent-2);}
+  .progress{height:3px;background:rgba(255,255,255,.06);border-radius:3px;margin-bottom:22px;overflow:hidden;}
+  .progress i{display:block;height:100%;background:var(--accent);box-shadow:0 0 8px rgba(var(--accent-rgb),.5);transition:width .3s;}
+
+  /* step layout: explanation + input */
+  .step{display:grid;grid-template-columns:340px 1fr;gap:20px;align-items:start;}
+  .explain{background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;padding:16px 17px;position:sticky;top:14px;}
+  .explain .tag{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--text-mut);}
+  .explain h2{font-family:var(--disp);font-weight:700;font-size:21px;margin:6px 0 10px;display:flex;align-items:center;gap:9px;}
+  .explain h2 .ic{font-size:23px;}
+  .explain h4{font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--accent);margin:14px 0 5px;}
+  .explain p{font-size:13px;color:var(--text-dim);margin:0 0 8px;}
+  .explain ul{margin:4px 0 0;padding-left:18px;}
+  .explain li{font-size:12.5px;color:var(--text-dim);margin-bottom:4px;}
+  .explain .eg{margin-top:13px;padding:9px 11px;border-left:2px solid var(--accent-2);background:rgba(0,0,0,.18);border-radius:0 7px 7px 0;font-size:12px;color:var(--text-mut);}
+  .explain .eg b{color:var(--accent-2);}
+
+  .panel{background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;padding:16px 17px;}
+  .panel .ph{font-size:12px;color:var(--text-mut);margin-bottom:12px;}
+  .items{display:flex;flex-direction:column;gap:8px;}
+  .item{display:flex;gap:8px;align-items:flex-start;}
+  .item .bul{color:var(--accent);margin-top:9px;font-size:12px;flex:none;}
+  .item textarea{flex:1;background:rgba(0,0,0,.22);border:1px solid var(--border);border-radius:7px;color:var(--text);
+    font-family:var(--mono);font-size:13.5px;padding:8px 10px;resize:vertical;min-height:38px;line-height:1.45;}
+  .item textarea:focus{outline:none;border-color:var(--border-strong);}
+  .item .x{background:transparent;border:none;color:var(--text-mut);cursor:pointer;font-size:16px;margin-top:5px;}
+  .item .x:hover{color:var(--danger);}
+  .addrow{margin-top:11px;}
+
+  /* mini canvas map */
+  .mini{display:grid;grid-template-columns:repeat(10,1fr);grid-auto-rows:20px;gap:3px;margin-top:14px;}
+  .mini div{background:rgba(255,255,255,.05);border-radius:3px;border:1px solid transparent;}
+  .mini div.on{background:rgba(var(--accent-rgb),.25);border-color:var(--accent);}
+  .mini div.done{background:rgba(var(--accent-rgb),.10);}
+
+  /* intro */
+  .intro-card{background:var(--bg-surface);border:1px solid var(--border);border-radius:14px;padding:24px 26px;}
+  .intro-card h1{font-family:var(--disp);font-weight:700;font-size:27px;margin:0 0 6px;}
+  .intro-card .lead{font-size:14px;color:var(--text-dim);margin-bottom:18px;}
+  .intro-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:8px;}
+  .intro-grid .c{background:rgba(0,0,0,.16);border:1px solid var(--border);border-radius:10px;padding:13px 14px;}
+  .intro-grid .c h4{margin:0 0 7px;font-size:11px;letter-spacing:.7px;text-transform:uppercase;color:var(--accent);}
+  .intro-grid .c.no h4{color:var(--warn);} .intro-grid .c.who h4{color:var(--info);}
+  .intro-grid .c p,.intro-grid .c li{font-size:12.5px;color:var(--text-dim);}
+  .intro-grid .c ul{margin:0;padding-left:16px;}
+  .intro-grid .c li{margin-bottom:5px;}
+
+  /* final canvas */
+  .bmc{display:grid;grid-template-columns:repeat(10,1fr);grid-auto-rows:minmax(118px,auto);gap:7px;
+    grid-template-areas:
+      "kp kp ka ka vp vp cr cr cs cs"
+      "kp kp kr kr vp vp ch ch cs cs"
+      "cost cost cost cost cost rs rs rs rs rs";}
+  .bcell{background:var(--bg-surface);border:1px solid var(--border);border-radius:9px;padding:9px 10px;min-width:0;overflow-wrap:anywhere;}
+  .bcell.s-cust{border-top:2px solid var(--info);} .bcell.s-val{border-top:2px solid var(--accent);}
+  .bcell.s-infra{border-top:2px solid var(--accent-2);} .bcell.s-money{border-top:2px solid var(--warn);}
+  .bcell h3{margin:0 0 7px;font-family:var(--mono);font-weight:700;font-size:10px;letter-spacing:.7px;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:6px;}
+  .bcell h3 span{font-size:14px;line-height:1;flex:none;}
+  .bcell ul{margin:0;padding-left:15px;}
+  .bcell li{font-size:11.5px;color:var(--text);margin-bottom:4px;line-height:1.35;overflow-wrap:anywhere;word-break:break-word;white-space:normal;}
+  .bcell .empty{font-size:11px;color:var(--text-mut);font-style:italic;}
+  .canvas-title{font-family:var(--disp);font-weight:700;font-size:18px;margin:0 0 3px;}
+  .canvas-sub{font-size:12px;color:var(--text-dim);margin-bottom:12px;}
+
+  .navbtns{display:flex;justify-content:space-between;margin-top:22px;gap:10px;}
+  .note{font-size:11.5px;color:var(--text-mut);margin-top:10px;}
+  @media(max-width:820px){
+    .step{grid-template-columns:1fr;} .explain{position:static;}
+    .intro-grid{grid-template-columns:1fr;}
+    .bmc{display:flex;flex-direction:column;}
+  }
+  /* light theme for exports & print — the on-screen green-screen look stays as is */
+  .bmc-light{background:#ffffff;border-radius:10px;padding:14px 16px 18px;}
+  .bmc-light .canvas-title{color:#10231b;}
+  .bmc-light .canvas-sub{color:#5a6b62;}
+  .bmc-light .bcell{background:#f6faf8;border-color:#d4e7dc;}
+  .bmc-light .bcell h3{color:#1c6b41;}
+  .bmc-light .bcell li{color:#16241d;}
+  .bmc-light .bcell .empty{color:#9bb0a4;}
+  .bmc-light .bcell.s-cust{border-top-color:#2a9fb5;}
+  .bmc-light .bcell.s-val{border-top-color:#1f9d57;}
+  .bmc-light .bcell.s-infra{border-top-color:#1f7a45;}
+  .bmc-light .bcell.s-money{border-top-color:#c79100;}
+
+  @page{ size:A4 landscape; margin:8mm; }
+  @media print{
+    body *{visibility:hidden;}
+    #bmc-export, #bmc-export *{visibility:visible;}
+    #bmc-export{position:absolute;left:0;top:0;width:100%;padding:10px;background:#fff;
+      -webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    #bmc-export .canvas-title{color:#10231b;}
+    #bmc-export .canvas-sub{color:#5a6b62;}
+    #bmc-export .bmc{grid-auto-rows:minmax(96px,auto);}
+    #bmc-export .bcell{background:#f6faf8;border-color:#d4e7dc;break-inside:avoid;}
+    #bmc-export .bcell h3{color:#1c6b41;}
+    #bmc-export .bcell li{color:#16241d;}
+    #bmc-export .bcell.s-cust{border-top-color:#2a9fb5;}
+    #bmc-export .bcell.s-val{border-top-color:#1f9d57;}
+    #bmc-export .bcell.s-infra{border-top-color:#1f7a45;}
+    #bmc-export .bcell.s-money{border-top-color:#c79100;}
+    .noprint{display:none !important;}
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+const {useState,useEffect} = React;
+const LS_KEY = "bmc-builder-v1";
+
+/* nine blocks, in Osterwalder fill order */
+const BLOCKS = [
+  {k:"vp", area:"vp", side:"s-val", ic:"★", title:"Value Propositions",
+   lead:"The heart of the canvas — the bundle of products and services that creates value and gives customers a reason to choose you. Start here: every other block exists to deliver and capture this value.",
+   look:"The problem you solve or the job you help get done, and what makes your offer distinct (newness, performance, price, convenience, design).",
+   qs:["What value do we deliver?","Which problem are we solving?","Which customer jobs are we helping to get done?"],
+   eg:"Find & book sport activities in minutes; fill empty gym/trainer capacity; gamified corporate wellbeing."},
+  {k:"cs", area:"cs", side:"s-cust", ic:"◎", title:"Customer Segments",
+   lead:"The groups of people or organisations your value proposition serves. With the core value defined, pin down exactly who you're creating it for and which segments matter most.",
+   look:"Who you create value for, and which segments matter most. Are you mass-market, niche, segmented, or a two-sided platform?",
+   qs:["For whom are we creating value?","Who are our most important customers?","Is it one segment or several (e.g. buyers and sellers)?"],
+   eg:"Corporate employees (buyers); trainers & gyms (sellers); active individuals."},
+  {k:"ch", area:"ch", side:"s-cust", ic:"⇉", title:"Channels",
+   lead:"How you reach your segments to deliver the value proposition — awareness, evaluation, purchase, delivery and after-sales.",
+   look:"The touchpoints customers prefer, which ones work best, and which are most cost-efficient.",
+   qs:["Through which channels do our segments want to be reached?","How are we reaching them now?","Which channels work best / are most efficient?"],
+   eg:"Mobile app; HR partnerships; in-gym promotion; word of mouth."},
+  {k:"cr", area:"cr", side:"s-cust", ic:"♡", title:"Customer Relationships",
+   lead:"The type of relationship you establish with each segment — how you get, keep and grow customers.",
+   look:"What each segment expects: personal assistance, self-service, automated, communities, co-creation.",
+   qs:["What relationship does each segment expect?","How costly is each one?","How do they fit our model?"],
+   eg:"Self-service app; community & gamification; automated matchmaking."},
+  {k:"rs", area:"rs", side:"s-money", ic:"€", title:"Revenue Streams",
+   lead:"The cash you generate from each segment — the result of value successfully delivered.",
+   look:"What customers truly pay for, the pricing mechanism (one-off, subscription, usage, licensing, brokerage), and how much each stream contributes.",
+   qs:["For what value are customers really willing to pay?","How would they prefer to pay?","Is it one-off or recurring revenue?"],
+   eg:"Corporate subscription €1/employee/mo; booking transaction fee; premium trainer listings."},
+  {k:"kr", area:"kr", side:"s-infra", ic:"▣", title:"Key Resources",
+   lead:"The most important assets required to make the model work — physical, intellectual, human or financial.",
+   look:"What your value propositions, channels, relationships and revenue streams need most.",
+   qs:["What key resources do our value propositions require?","What do our channels & relationships require?"],
+   eg:"The platform & app; the two-sided user base; brand & content."},
+  {k:"ka", area:"ka", side:"s-infra", ic:"⚙", title:"Key Activities",
+   lead:"The most important things you must do well for the model to work.",
+   look:"The critical actions behind your value proposition, channels, relationships and revenue.",
+   qs:["What key activities do our value propositions require?","What do our channels & revenue streams require?"],
+   eg:"Platform development; matchmaking & curation; partner onboarding."},
+  {k:"kp", area:"kp", side:"s-infra", ic:"⊕", title:"Key Partnerships",
+   lead:"The network of suppliers and partners that make the model work — to optimise, reduce risk or acquire resources.",
+   look:"Who you rely on, what you get from them, and which activities they perform.",
+   qs:["Who are our key partners and suppliers?","Which key resources do we get from them?","Which activities do they perform?"],
+   eg:"Gyms & sport facilities; trainers; payment provider; corporate HR teams."},
+  {k:"cost", area:"cost", side:"s-money", ic:"▤", title:"Cost Structure",
+   lead:"All the costs incurred to operate the model — naturally the last block, once resources, activities and partners are known.",
+   look:"The biggest costs, the most expensive resources/activities, and whether you're cost-driven or value-driven.",
+   qs:["What are the most important costs in our model?","Which key resources / activities are most expensive?"],
+   eg:"Platform dev & hosting; customer acquisition; support & operations; partnerships."}
+];
+const ORDER = BLOCKS.map(b=>b.k);
+
+const EXAMPLE = {
+  meta:{name:"SportSpots", tagline:"A platform connecting corporate employees with sports trainers & facilities."},
+  blocks:{
+    cs:["Corporate employees (buyers)","Trainers & gyms (sellers)","Active individuals"],
+    vp:["Find & book sport activities in minutes","Fill empty gym / trainer capacity","Gamified corporate wellbeing"],
+    ch:["Mobile app","HR partnerships","In-gym promotion","Word of mouth"],
+    cr:["Self-service app","Community & gamification","Automated matchmaking"],
+    rs:["Corporate subscription €1/employee/mo","Booking transaction fee","Premium trainer listings"],
+    kr:["The platform & app","Two-sided user base","Brand & content"],
+    ka:["Platform development","Matchmaking & curation","Partner onboarding"],
+    kp:["Gyms & sport facilities","Trainers","Payment provider","Corporate HR teams"],
+    cost:["Platform dev & hosting","Customer acquisition","Support & operations","Partnerships"]
+  }
+};
+const BLANK = {
+  meta:{name:"My venture", tagline:""},
+  blocks:Object.fromEntries(ORDER.map(k=>[k,[""]]))
+};
+const clone=o=>JSON.parse(JSON.stringify(o));
+
+function MiniMap({activeKey,filled}){
+  // 10-col map mirroring the final canvas
+  const cells=[
+    ["kp",2,2],["ka",2,1],["vp",2,2],["cr",2,1],["cs",2,2],
+    ["kr",2,1],["ch",2,1],
+    ["cost",5,1],["rs",5,1]
+  ];
+  // simpler: render by area using same template
+  const style={display:"grid",gridTemplateColumns:"repeat(10,1fr)",gridAutoRows:"18px",gap:"3px",marginTop:"12px",
+    gridTemplateAreas:'"kp kp ka ka vp vp cr cr cs cs" "kp kp kr kr vp vp ch ch cs cs" "cost cost cost cost cost rs rs rs rs rs"'};
+  return (<div style={style} aria-hidden="true">
+    {ORDER.map(k=>{
+      const on=k===activeKey, done=filled[k];
+      return <div key={k} style={{gridArea:k,borderRadius:"3px",border:"1px solid "+(on?"var(--accent)":"transparent"),
+        background:on?"rgba(125,227,141,.28)":(done?"rgba(125,227,141,.12)":"rgba(255,255,255,.05)")}}/>;
+    })}
+  </div>);
+}
+
+function App(){
+  const [model,setModel]=useState(()=>{try{const s=localStorage.getItem(LS_KEY);if(s)return JSON.parse(s);}catch(e){}return clone(BLANK);});
+  const [step,setStep]=useState(0); // 0 = intro, 1..9 = blocks, 10 = canvas
+  useEffect(()=>{try{localStorage.setItem(LS_KEY,JSON.stringify(model));}catch(e){}},[model]);
+
+  const TOTAL=ORDER.length+2; // intro + 9 + canvas
+  const isIntro=step===0, isCanvas=step===TOTAL-1;
+  const block = (!isIntro && !isCanvas) ? BLOCKS[step-1] : null;
+
+  const setMeta=(k,v)=>setModel(m=>({...m,meta:{...m.meta,[k]:v}}));
+  const setItem=(bk,i,v)=>setModel(m=>{const c=clone(m);c.blocks[bk][i]=v;return c;});
+  const addItem=(bk)=>setModel(m=>{const c=clone(m);c.blocks[bk]=[...(c.blocks[bk]||[]),""];return c;});
+  const delItem=(bk,i)=>setModel(m=>{const c=clone(m);c.blocks[bk].splice(i,1);if(!c.blocks[bk].length)c.blocks[bk]=[""];return c;});
+
+  const filled=Object.fromEntries(ORDER.map(k=>[k,(model.blocks[k]||[]).some(x=>x&&x.trim())]));
+
+  const loadExample=()=>{if(confirm("Load the SportSpots example? This replaces your current canvas."))setModel(clone(EXAMPLE));};
+  const reset=()=>{if(confirm("Clear the canvas and start fresh?"))setModel(clone(BLANK));};
+  const exportJSON=()=>{const b=new Blob([JSON.stringify(model,null,2)],{type:"application/json"});const a=document.createElement("a");
+    a.href=URL.createObjectURL(b);a.download=(model.meta.name||"canvas").replace(/\s+/g,"_")+".bmc.json";a.click();};
+  const fname=()=>(model.meta.name||"business-model-canvas").replace(/\s+/g,"_");
+  const loadScript=(src)=>new Promise((res,rej)=>{const s=document.createElement("script");s.src=src;s.onload=()=>res();s.onerror=()=>rej();document.head.appendChild(s);});
+  const ensureH2C=()=> window.html2canvas ? Promise.resolve() : loadScript("https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js");
+  const ensurePDF=()=> (window.jspdf&&window.jspdf.jsPDF) ? Promise.resolve() : loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");
+  const snapCanvas=()=>{const el=document.getElementById("bmc-export");el.classList.add("bmc-light");
+    return window.html2canvas(el,{backgroundColor:"#ffffff",scale:2}).finally(()=>el.classList.remove("bmc-light"));};
+  const exportPNG=()=> ensureH2C().then(snapCanvas).then(cv=>{const a=document.createElement("a");a.href=cv.toDataURL("image/png");a.download=fname()+".png";a.click();})
+      .catch(()=>{alert("Couldn't load the image exporter (network?). Use Print instead.");window.print();});
+  const exportPDF=()=> Promise.all([ensureH2C(),ensurePDF()]).then(snapCanvas).then(cv=>{
+      const {jsPDF}=window.jspdf; const pdf=new jsPDF("l","mm","a4");      // 'l' = landscape A4 (297×210)
+      const pw=297,ph=210,m=8, iw=pw-2*m, ih=ph-2*m, ar=cv.width/cv.height;
+      let w=iw,h=iw/ar; if(h>ih){h=ih;w=ih*ar;}
+      pdf.setFillColor(255,255,255); pdf.rect(0,0,pw,ph,"F");             // white page for print/export
+      pdf.addImage(cv.toDataURL("image/png"),"PNG",(pw-w)/2,(ph-h)/2,w,h);
+      pdf.save(fname()+".pdf");
+    }).catch(()=>{alert("Couldn't load the PDF exporter (network?). Use Print instead.");window.print();});
+
+  return (
+   <div className="wrap">
+    <div className="topbar noprint">
+      <div className="brand"><span className="pp">~/</span> business model canvas
+        <small>a guided walkthrough — Osterwalder &amp; Pigneur's nine building blocks</small></div>
+      <div className="spacer"></div>
+      <button className="btn" onClick={loadExample}>example</button>
+      <button className="btn" onClick={exportJSON}>export json</button>
+      <button className="btn" onClick={reset}>reset</button>
+    </div>
+
+    <div className="idea noprint">
+      <input className="name" value={model.meta.name} onChange={e=>setMeta("name",e.target.value)} placeholder="Venture / idea name"/>
+      <input className="tag" value={model.meta.tagline} onChange={e=>setMeta("tagline",e.target.value)} placeholder="One line describing the idea"/>
+    </div>
+
+    <div className="dots noprint">
+      <button className={"dot"+(isIntro?" on":"")} onClick={()=>setStep(0)} title="Introduction">i</button>
+      {ORDER.map((k,i)=>(
+        <button key={k} className={"dot"+(step===i+1?" on":"")+(filled[k]?" done":"")} onClick={()=>setStep(i+1)} title={BLOCKS[i].title}>{i+1}</button>
+      ))}
+      <button className={"dot"+(isCanvas?" on":"")} onClick={()=>setStep(TOTAL-1)} title="Completed canvas">✓</button>
+    </div>
+    <div className="progress noprint"><i style={{width:((step+1)/TOTAL*100)+"%"}}></i></div>
+
+    {/* ---------- INTRO ---------- */}
+    {isIntro && <div className="intro-card noprint">
+      <h1>The Business Model Canvas</h1>
+      <p className="lead">A one-page, shared picture of how an idea creates, delivers and captures value — nine building blocks grouped into <b>desirability</b> (do they want it?), <b>feasibility</b> (can we deliver it?) and <b>viability</b> (will it pay?). This builder walks you through all nine in a value-first order — starting from the Value Proposition at the core and working outward — with guidance on each.</p>
+      <div className="intro-grid">
+        <div className="c"><h4>What it's for</h4>
+          <ul><li>Describe and visualise a business model on a single page.</li>
+          <li>Create a shared language for your team or investors.</li>
+          <li>Challenge assumptions and explore pivots quickly.</li></ul></div>
+        <div className="c no"><h4>What it is NOT</h4>
+          <ul><li>Not a business plan or financial forecast.</li>
+          <li>Not a strategy or an execution roadmap.</li>
+          <li>Not proof — every box is a hypothesis until tested with real customers.</li></ul></div>
+        <div className="c who"><h4>Who &amp; when</h4>
+          <ul><li>Founders &amp; intrapreneurs shaping or pivoting an idea.</li>
+          <li>Early, high-uncertainty stage — before a detailed plan.</li>
+          <li>Anytime you need a fast, shared snapshot to align and iterate.</li></ul></div>
+      </div>
+      <div className="note">Tip: fill it loosely first, then come back and sharpen. The model is a living snapshot, not a final answer.</div>
+      <div style={{marginTop:18}}><button className="btn primary" onClick={()=>setStep(1)}>start with the value proposition ›</button>
+        <button className="btn" style={{marginLeft:8}} onClick={()=>setStep(TOTAL-1)}>skip to canvas</button></div>
+    </div>}
+
+    {/* ---------- BLOCK STEPS ---------- */}
+    {block && <div className="step">
+      <div className="explain noprint">
+        <div className="tag">Block {step} of {ORDER.length}</div>
+        <h2><span className="ic">{block.ic}</span>{block.title}</h2>
+        <p>{block.lead}</p>
+        <h4>What we're looking for</h4>
+        <p>{block.look}</p>
+        <h4>Ask yourself</h4>
+        <ul>{block.qs.map((q,i)=><li key={i}>{q}</li>)}</ul>
+        <div className="eg"><b>Example —</b> {block.eg}</div>
+        <MiniMap activeKey={block.k} filled={filled}/>
+      </div>
+      <div className="panel">
+        <div className="ph">Add one idea per line — short notes, like sticky notes. Keep them concrete.</div>
+        <div className="items">
+          {(model.blocks[block.k]||[]).map((v,i)=>(
+            <div className="item" key={i}>
+              <span className="bul">▸</span>
+              <textarea value={v} placeholder={"a "+block.title.toLowerCase()+" note…"} onChange={e=>setItem(block.k,i,e.target.value)}/>
+              <button className="x" onClick={()=>delItem(block.k,i)} title="remove">×</button>
+            </div>
+          ))}
+        </div>
+        <button className="btn addrow" onClick={()=>addItem(block.k)}>+ add note</button>
+      </div>
+    </div>}
+
+    {/* ---------- FINAL CANVAS ---------- */}
+    {isCanvas && <>
+      <div id="bmc-export">
+        <div className="canvas-title">{model.meta.name||"Business Model Canvas"}</div>
+        {model.meta.tagline && <div className="canvas-sub">{model.meta.tagline}</div>}
+        <div className="bmc">
+          {BLOCKS.map(b=>(
+            <div key={b.k} className={"bcell "+b.side} style={{gridArea:b.area}}>
+              <h3><span>{b.ic}</span>{b.title}</h3>
+              {(model.blocks[b.k]||[]).filter(x=>x&&x.trim()).length
+                ? <ul>{model.blocks[b.k].filter(x=>x&&x.trim()).map((x,i)=><li key={i}>{x}</li>)}</ul>
+                : <div className="empty">—</div>}
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="navbtns noprint" style={{justifyContent:"flex-start",flexWrap:"wrap"}}>
+        <button className="btn primary" onClick={exportPDF}>⤓ export PDF (landscape)</button>
+        <button className="btn primary" onClick={exportPNG}>⤓ export PNG</button>
+        <button className="btn" onClick={()=>window.print()}>print</button>
+        <button className="btn" onClick={exportJSON}>export JSON</button>
+      </div>
+      <div className="note noprint">Edit any block by clicking its number above. The canvas is auto-saved in your browser.</div>
+    </>}
+
+    {/* ---------- NAV ---------- */}
+    <div className="navbtns noprint">
+      <button className="btn" onClick={()=>setStep(s=>Math.max(0,s-1))} disabled={step===0}>‹ back</button>
+      <button className="btn primary" onClick={()=>setStep(s=>Math.min(TOTAL-1,s+1))} disabled={isCanvas}>
+        {step===0?"begin ›":(step===ORDER.length?"see the canvas ›":"next ›")}</button>
+    </div>
+   </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>

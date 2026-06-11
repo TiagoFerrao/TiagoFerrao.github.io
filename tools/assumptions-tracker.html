@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Assumptions Tracker — ferrao.me</title>
+<meta name="theme-color" content="#001a20">
+<meta name="description" content="Assumptions Tracker — score assumptions by uncertainty and impact, design experiments, and track validation cost and remaining risk.">
+<link rel="icon" href="../img/bee.png">
+<link rel="apple-touch-icon" href="../img/bee.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #001a20;
+    --panel: #042730;
+    --panel-2: #06303a;
+    --text: #e8f4ef;
+    --muted: #8fb3a8;
+    --mint: #7DE38D;
+    --mint-dim: rgba(125,227,141,.35);
+    --mint-faint: rgba(125,227,141,.10);
+    --red: #e07a6b;
+    --amber: #e0b56b;
+    --radius: 12px;
+    --sans: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "Inconsolata", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); padding: 48px 0 80px; }
+  .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+
+  .page-head { margin-bottom: 30px; }
+  .eyebrow { font-family: var(--mono); font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; color: var(--mint); margin-bottom: 8px; }
+  h1 { font-size: 1.55rem; font-weight: 650; }
+  .page-head p { color: var(--muted); font-size: .92rem; margin-top: 8px; max-width: 760px; line-height: 1.6; }
+  .page-head a { color: var(--mint); }
+  .site-back { display: inline-block; font-family: var(--mono); font-size: .72rem; letter-spacing: .12em; color: var(--muted); text-decoration: none; margin-bottom: 14px; }
+  .site-back:hover { color: var(--mint); }
+
+  /* ===== summary band ===== */
+  .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin: 28px 0; }
+  .sum-card { background: var(--panel); border-radius: var(--radius); padding: 18px 20px; }
+  .sum-card .s-label { font-family: var(--mono); font-size: .64rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .sum-card .s-value { font-size: 1.7rem; font-weight: 650; }
+  .sum-card .s-value small { font-size: .9rem; color: var(--muted); font-weight: 400; }
+  .sum-card.gauge-card { display: flex; align-items: center; gap: 16px; }
+  .gauge { width: 84px; height: 84px; flex: 0 0 auto; }
+  .gauge .bgc { stroke: var(--panel-2); }
+  .gauge .fgc { stroke: var(--mint); transition: stroke-dashoffset .6s ease, stroke .3s ease; }
+  .gauge.hot .fgc { stroke: var(--red); }
+  .gauge.warm .fgc { stroke: var(--amber); }
+  .gauge text { fill: var(--text); font-family: var(--mono); font-size: 17px; font-weight: 600; }
+
+  /* ===== riskiest callout ===== */
+  .riskiest { background: var(--panel); border-left: 3px solid var(--red); border-radius: 0 var(--radius) var(--radius) 0; padding: 14px 20px; margin-bottom: 26px; font-size: .9rem; line-height: 1.55; }
+  .riskiest .r-label { font-family: var(--mono); font-size: .64rem; letter-spacing: .16em; text-transform: uppercase; color: var(--red); margin-bottom: 4px; }
+  .riskiest.all-clear { border-left-color: var(--mint); }
+  .riskiest.all-clear .r-label { color: var(--mint); }
+
+  /* ===== risk matrix ===== */
+  .panel-grid { display: grid; grid-template-columns: 300px 1fr; gap: 24px; align-items: start; margin-bottom: 30px; }
+  @media (max-width: 900px) { .panel-grid { grid-template-columns: 1fr; } }
+  .matrix-wrap { background: var(--panel); border-radius: var(--radius); padding: 18px 20px; }
+  .matrix-wrap .m-title { font-family: var(--mono); font-size: .64rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+  .matrix { display: grid; grid-template-columns: 18px repeat(3, 1fr); grid-template-rows: repeat(3, 56px) 18px; gap: 5px; }
+  .m-cell { border-radius: 8px; background: var(--panel-2); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 1rem; cursor: pointer; border: 1.5px solid transparent; transition: border-color .2s ease, background .2s ease; }
+  .m-cell:hover { border-color: var(--mint-dim); }
+  .m-cell.filtered { border-color: var(--mint); }
+  .m-cell[data-score="9"] { background: rgba(224,122,107,.22); }
+  .m-cell[data-score="6"] { background: rgba(224,181,107,.18); }
+  .m-cell[data-score="4"], .m-cell[data-score="3"] { background: rgba(224,181,107,.10); }
+  .m-axis { display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: .58rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .m-axis.vert { writing-mode: vertical-rl; transform: rotate(180deg); }
+  .m-note { font-size: .72rem; color: var(--muted); margin-top: 10px; line-height: 1.5; }
+
+  /* ===== toolbar ===== */
+  .toolbar { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; align-items: center; }
+  button, .btn { font-family: var(--mono); font-size: .76rem; letter-spacing: .04em; color: var(--mint); background: transparent; border: 1px solid var(--mint-dim); border-radius: 999px; padding: 7px 18px; cursor: pointer; transition: background .2s ease; }
+  button:hover, .btn:hover { background: var(--mint-faint); }
+  button.primary { background: var(--mint); color: var(--bg); border-color: var(--mint); font-weight: 600; }
+  .toolbar .spacer { flex: 1; }
+  .filter-pill { font-family: var(--mono); font-size: .7rem; color: var(--amber); }
+
+  /* ===== table ===== */
+  .table-wrap { overflow-x: auto; background: var(--panel); border-radius: var(--radius); }
+  table { border-collapse: collapse; width: 100%; min-width: 1240px; font-size: .82rem; }
+  thead th { font-family: var(--mono); font-size: .6rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); text-align: left; padding: 12px 10px 10px; border-bottom: 1px solid var(--mint-dim); white-space: nowrap; }
+  tbody td { padding: 8px 10px; border-bottom: 1px solid rgba(125,227,141,.08); vertical-align: middle; }
+  tbody tr:hover { background: var(--mint-faint); }
+  tbody tr.resolved { opacity: .55; }
+  tbody tr.riskiest-row { box-shadow: inset 3px 0 0 var(--red); }
+
+  input[type="text"], input[type="number"], select, textarea {
+    width: 100%; background: transparent; border: 1px solid transparent; border-radius: 6px;
+    color: var(--text); font-family: var(--sans); font-size: .82rem; padding: 6px 8px;
+  }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--mint-dim); background: var(--panel-2); }
+  select { appearance: none; cursor: pointer; }
+  select option { background: var(--panel-2); color: var(--text); }
+  input[type="number"] { width: 90px; text-align: right; font-family: var(--mono); }
+  input[type="checkbox"] { width: 17px; height: 17px; accent-color: var(--mint); cursor: pointer; }
+
+  .score-badge { font-family: var(--mono); font-size: .74rem; font-weight: 700; border-radius: 6px; padding: 3px 9px; display: inline-block; min-width: 30px; text-align: center; }
+  .score-badge.s-high { background: rgba(224,122,107,.25); color: var(--red); }
+  .score-badge.s-med  { background: rgba(224,181,107,.22); color: var(--amber); }
+  .score-badge.s-low  { background: var(--mint-faint); color: var(--mint); }
+
+  .result-pill { font-family: var(--mono); font-size: .68rem; border-radius: 999px; padding: 3px 0; }
+  td .del { color: var(--muted); border: none; padding: 4px 8px; font-size: .9rem; }
+  td .del:hover { color: var(--red); background: none; }
+
+  tfoot td { padding: 14px 10px; font-family: var(--mono); font-size: .8rem; color: var(--mint); border-top: 1px solid var(--mint-dim); }
+
+  .hint { font-size: .74rem; color: var(--muted); margin-top: 12px; line-height: 1.55; }
+
+  /* ===== print / PDF export ===== */
+  @media print {
+    :root { --bg: #fff; --panel: #fff; --panel-2: #f2f2f2; --text: #111; --muted: #555; --mint: #0F3D22; --mint-dim: #999; --mint-faint: #f5f5f5; }
+    body { padding: 0; background: #fff; color: #111; }
+    .toolbar, .m-note, .hint, td .del, .matrix-wrap { display: none !important; }
+    .table-wrap { overflow: visible; }
+    table { min-width: 0; font-size: 9pt; }
+    input, select { border: none !important; background: none !important; color: #111 !important; padding: 2px; }
+    input[type="checkbox"] { accent-color: #0F3D22; }
+    .panel-grid { grid-template-columns: 1fr; }
+    .sum-card, .riskiest, .table-wrap { border: 1px solid #ccc; box-shadow: none; }
+    a { color: #111; text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header class="page-head">
+    <a class="site-back" href="../innovation.html">← innovation</a>
+    <div class="eyebrow">// toolbox / assumptions-tracker</div>
+    <h1>Assumptions Tracker</h1>
+    <p>Every idea is a stack of assumptions. Write them down, score them by uncertainty and impact, design the cheapest experiment that clears each one — and always test the riskiest assumption first. Data is saved locally in your browser.</p>
+  </header>
+
+  <!-- summary -->
+  <div class="summary">
+    <div class="sum-card"><div class="s-label">Assumptions</div><div class="s-value" id="sum-total">0</div></div>
+    <div class="sum-card"><div class="s-label">Open / Resolved</div><div class="s-value" id="sum-open">0 <small>/ 0</small></div></div>
+    <div class="sum-card"><div class="s-label">Selected to validate</div><div class="s-value" id="sum-selected">0</div></div>
+    <div class="sum-card"><div class="s-label">Cost to validate (selected)</div><div class="s-value" id="sum-cost">€0</div></div>
+    <div class="sum-card gauge-card">
+      <svg class="gauge" id="gauge" viewBox="0 0 100 100">
+        <circle class="bgc" cx="50" cy="50" r="42" fill="none" stroke-width="10"/>
+        <circle class="fgc" cx="50" cy="50" r="42" fill="none" stroke-width="10" stroke-linecap="round"
+                stroke-dasharray="263.9" stroke-dashoffset="263.9" transform="rotate(-90 50 50)"/>
+        <text x="50" y="56" text-anchor="middle" id="gauge-pct">0%</text>
+      </svg>
+      <div>
+        <div class="s-label">Uncertainty remaining</div>
+        <div style="font-size:.74rem;color:var(--muted);line-height:1.45">Risk-weighted share of open assumptions</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- riskiest assumption callout -->
+  <div class="riskiest" id="riskiest">
+    <div class="r-label">Riskiest assumption — test this first</div>
+    <div id="riskiest-text">—</div>
+  </div>
+
+  <div class="panel-grid">
+    <!-- risk matrix -->
+    <div class="matrix-wrap">
+      <div class="m-title">Open assumptions — impact × uncertainty</div>
+      <div class="matrix" id="matrix">
+        <div class="m-axis vert" style="grid-row:1/4">Impact →</div>
+        <div class="m-cell" data-i="high" data-u="low"  data-score="4">0</div>
+        <div class="m-cell" data-i="high" data-u="medium" data-score="6">0</div>
+        <div class="m-cell" data-i="high" data-u="high" data-score="9">0</div>
+        <div class="m-cell" data-i="medium" data-u="low" data-score="3">0</div>
+        <div class="m-cell" data-i="medium" data-u="medium" data-score="4">0</div>
+        <div class="m-cell" data-i="medium" data-u="high" data-score="6">0</div>
+        <div class="m-cell" data-i="low" data-u="low" data-score="1">0</div>
+        <div class="m-cell" data-i="low" data-u="medium" data-score="2">0</div>
+        <div class="m-cell" data-i="low" data-u="high" data-score="4">0</div>
+        <div></div>
+        <div class="m-axis" style="grid-column:2/5">Uncertainty →</div>
+      </div>
+      <div class="m-note">Top-right is the danger zone: high impact, high uncertainty. Click a cell to filter the table.</div>
+    </div>
+
+    <!-- table -->
+    <div>
+      <div class="toolbar">
+        <button class="primary" id="add-row">+ add assumption</button>
+        <button id="load-sample">load sample</button>
+        <button id="clear-all">clear all</button>
+        <span class="filter-pill" id="filter-pill" hidden></span>
+        <span class="spacer"></span>
+        <button id="export-csv">export CSV</button>
+        <button id="export-pdf">export PDF</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:30px">#</th>
+              <th style="min-width:200px">Assumption</th>
+              <th>Category</th>
+              <th style="min-width:120px">Value</th>
+              <th>Uncertainty</th>
+              <th>Impact</th>
+              <th>Risk</th>
+              <th style="min-width:180px">Experiment</th>
+              <th style="min-width:140px">Threshold</th>
+              <th>Cost (€)</th>
+              <th>Validate?</th>
+              <th>Result</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+          <tfoot>
+            <tr>
+              <td colspan="9" style="text-align:right">Total cost of selected experiments:</td>
+              <td id="foot-cost" style="text-align:right">€0</td>
+              <td colspan="3"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <p class="hint">Risk = uncertainty × impact (low 1 · medium 2 · high 3 — max 9). Resolved assumptions (confirmed or refuted) stop counting toward remaining uncertainty: a refuted assumption is still cleared knowledge. Export PDF uses your browser's print dialog — choose "Save as PDF".</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  var KEY = 'ferrao-assumptions-v1';
+  var W = { low: 1, medium: 2, high: 3 };
+  var rows = [];
+  var filter = null; // {u, i}
+  var uid = function () { return 'a' + Math.random().toString(36).slice(2, 9); };
+
+  var SAMPLE = [
+    { assumption: 'Operators will trust automated dosing recommendations', category: 'Desirability', value: '> 60% adoption in pilot', uncertainty: 'high', impact: 'high', experiment: 'Shadow-mode pilot in 1 plant, 4 weeks', threshold: '≥ 60% of recommendations accepted', cost: 2500, selected: true, result: 'pending' },
+    { assumption: 'Sensor data quality is sufficient for the model', category: 'Feasibility', value: '< 5% missing/invalid readings', uncertainty: 'medium', impact: 'high', experiment: 'Audit 6 months of historical sensor data', threshold: '< 5% gaps after cleaning', cost: 800, selected: true, result: 'pending' },
+    { assumption: 'Utilities will pay per-plant subscription', category: 'Viability', value: '€1.5k–3k / plant / month', uncertainty: 'high', impact: 'medium', experiment: '5 pricing interviews with plant directors', threshold: '≥ 3 of 5 accept the range', cost: 300, selected: false, result: 'pending' },
+    { assumption: 'Integration with existing SCADA is feasible', category: 'Feasibility', value: 'OPC-UA available on site', uncertainty: 'low', impact: 'medium', experiment: 'Technical survey of pilot plant', threshold: 'OPC-UA endpoint confirmed', cost: 0, selected: false, result: 'confirmed' }
+  ];
+
+  function load() {
+    try { var d = JSON.parse(localStorage.getItem(KEY)); if (Array.isArray(d)) rows = d; } catch (e) {}
+    if (!rows.length) rows = [];
+  }
+  function save() { localStorage.setItem(KEY, JSON.stringify(rows)); }
+  function score(r) { return W[r.uncertainty] * W[r.impact]; }
+  function fmt(n) { return '€' + (n || 0).toLocaleString('en-US'); }
+
+  /* ---------- render ---------- */
+  var tbody = document.getElementById('tbody');
+
+  function sel(name, val, opts) {
+    var s = '<select data-f="' + name + '">';
+    opts.forEach(function (o) {
+      s += '<option value="' + o[0] + '"' + (o[0] === val ? ' selected' : '') + '>' + o[1] + '</option>';
+    });
+    return s + '</select>';
+  }
+
+  function render() {
+    tbody.innerHTML = '';
+    var visible = rows.filter(function (r) {
+      return !filter || (r.result === 'pending' && r.uncertainty === filter.u && r.impact === filter.i);
+    });
+    var riskiestId = null, best = -1;
+    rows.forEach(function (r) {
+      if (r.result === 'pending' && score(r) > best) { best = score(r); riskiestId = r.id; }
+    });
+
+    visible.forEach(function (r, idx) {
+      var sc = score(r);
+      var cls = sc >= 6 ? 's-high' : sc >= 3 ? 's-med' : 's-low';
+      var tr = document.createElement('tr');
+      tr.dataset.id = r.id;
+      if (r.result !== 'pending') tr.classList.add('resolved');
+      if (r.id === riskiestId) tr.classList.add('riskiest-row');
+      tr.innerHTML =
+        '<td style="font-family:var(--mono);color:var(--muted)">' + (rows.indexOf(r) + 1) + '</td>' +
+        '<td><input type="text" data-f="assumption" value="' + esc(r.assumption) + '" placeholder="We believe that…"></td>' +
+        '<td>' + sel('category', r.category, [['Desirability','Desirability'],['Feasibility','Feasibility'],['Viability','Viability'],['Adaptability','Adaptability'],['Other','Other']]) + '</td>' +
+        '<td><input type="text" data-f="value" value="' + esc(r.value) + '" placeholder="expected value"></td>' +
+        '<td>' + sel('uncertainty', r.uncertainty, [['low','Low'],['medium','Medium'],['high','High']]) + '</td>' +
+        '<td>' + sel('impact', r.impact, [['low','Low'],['medium','Medium'],['high','High']]) + '</td>' +
+        '<td><span class="score-badge ' + cls + '">' + sc + '</span></td>' +
+        '<td><input type="text" data-f="experiment" value="' + esc(r.experiment) + '" placeholder="cheapest test that clears it"></td>' +
+        '<td><input type="text" data-f="threshold" value="' + esc(r.threshold) + '" placeholder="pass / fail criterion"></td>' +
+        '<td><input type="number" data-f="cost" value="' + (r.cost || 0) + '" min="0" step="50"></td>' +
+        '<td style="text-align:center"><input type="checkbox" data-f="selected"' + (r.selected ? ' checked' : '') + '></td>' +
+        '<td>' + sel('result', r.result, [['pending','Pending'],['confirmed','Confirmed ✓'],['refuted','Refuted ✗']]) + '</td>' +
+        '<td><button class="del" title="delete">✕</button></td>';
+      tbody.appendChild(tr);
+    });
+    summary();
+  }
+
+  function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+  /* ---------- summary, gauge, matrix, riskiest ---------- */
+  function summary() {
+    var total = rows.length;
+    var open = rows.filter(function (r) { return r.result === 'pending'; });
+    var selected = rows.filter(function (r) { return r.selected && r.result === 'pending'; });
+    var cost = selected.reduce(function (a, r) { return a + (Number(r.cost) || 0); }, 0);
+
+    document.getElementById('sum-total').textContent = total;
+    document.getElementById('sum-open').innerHTML = open.length + ' <small>/ ' + (total - open.length) + '</small>';
+    document.getElementById('sum-selected').textContent = selected.length;
+    document.getElementById('sum-cost').textContent = fmt(cost);
+    document.getElementById('foot-cost').textContent = fmt(cost);
+
+    // uncertainty remaining: open risk weight / total risk weight
+    var allW = rows.reduce(function (a, r) { return a + score(r); }, 0);
+    var openW = open.reduce(function (a, r) { return a + score(r); }, 0);
+    var pct = allW ? Math.round(100 * openW / allW) : 0;
+    var g = document.getElementById('gauge');
+    var C = 263.9;
+    g.querySelector('.fgc').style.strokeDashoffset = C - C * pct / 100;
+    document.getElementById('gauge-pct').textContent = pct + '%';
+    g.classList.toggle('hot', pct >= 67);
+    g.classList.toggle('warm', pct >= 34 && pct < 67);
+
+    // matrix counts
+    document.querySelectorAll('.m-cell').forEach(function (c) {
+      var n = open.filter(function (r) { return r.uncertainty === c.dataset.u && r.impact === c.dataset.i; }).length;
+      c.textContent = n;
+    });
+
+    // riskiest
+    var box = document.getElementById('riskiest');
+    var txt = document.getElementById('riskiest-text');
+    var top = null;
+    open.forEach(function (r) { if (!top || score(r) > score(top)) top = r; });
+    if (top && top.assumption) {
+      box.classList.remove('all-clear');
+      box.querySelector('.r-label').textContent = 'Riskiest assumption — test this first (risk ' + score(top) + '/9)';
+      txt.textContent = top.assumption + (top.experiment ? ' → ' + top.experiment : '');
+    } else if (total === 0) {
+      box.classList.add('all-clear');
+      box.querySelector('.r-label').textContent = 'Empty tracker';
+      txt.textContent = 'Add your first assumption, or load the sample to see how it works.';
+    } else {
+      box.classList.add('all-clear');
+      box.querySelector('.r-label').textContent = 'All clear';
+      txt.textContent = 'No open assumptions — every hypothesis has been confirmed or refuted.';
+    }
+  }
+
+  /* ---------- events ---------- */
+  tbody.addEventListener('input', function (e) {
+    var tr = e.target.closest('tr'); if (!tr) return;
+    var r = rows.find(function (x) { return x.id === tr.dataset.id; }); if (!r) return;
+    var f = e.target.dataset.f; if (!f) return;
+    if (f === 'selected') r.selected = e.target.checked;
+    else if (f === 'cost') r.cost = Number(e.target.value) || 0;
+    else r[f] = e.target.value;
+    save();
+    if (f === 'uncertainty' || f === 'impact' || f === 'result' || f === 'selected' || f === 'cost') render();
+    else summary();
+  });
+  tbody.addEventListener('click', function (e) {
+    if (!e.target.classList.contains('del')) return;
+    var tr = e.target.closest('tr');
+    rows = rows.filter(function (x) { return x.id !== tr.dataset.id; });
+    save(); render();
+  });
+
+  document.getElementById('add-row').addEventListener('click', function () {
+    rows.push({ id: uid(), assumption: '', category: 'Desirability', value: '', uncertainty: 'medium', impact: 'medium', experiment: '', threshold: '', cost: 0, selected: false, result: 'pending' });
+    save(); render();
+    var inputs = tbody.querySelectorAll('input[data-f="assumption"]');
+    if (inputs.length) inputs[inputs.length - 1].focus();
+  });
+  document.getElementById('load-sample').addEventListener('click', function () {
+    SAMPLE.forEach(function (s) { rows.push(Object.assign({ id: uid() }, s)); });
+    save(); render();
+  });
+  document.getElementById('clear-all').addEventListener('click', function () {
+    if (confirm('Delete all assumptions? This cannot be undone.')) { rows = []; save(); render(); }
+  });
+
+  document.querySelectorAll('.m-cell').forEach(function (c) {
+    c.addEventListener('click', function () {
+      var same = filter && filter.u === c.dataset.u && filter.i === c.dataset.i;
+      filter = same ? null : { u: c.dataset.u, i: c.dataset.i };
+      document.querySelectorAll('.m-cell').forEach(function (x) { x.classList.remove('filtered'); });
+      var pill = document.getElementById('filter-pill');
+      if (filter) { c.classList.add('filtered'); pill.hidden = false; pill.textContent = 'filtered: ' + filter.i + ' impact × ' + filter.u + ' uncertainty (click cell again to clear)'; }
+      else pill.hidden = true;
+      render();
+    });
+  });
+
+  document.getElementById('export-pdf').addEventListener('click', function () { window.print(); });
+  document.getElementById('export-csv').addEventListener('click', function () {
+    var head = ['Assumption','Category','Value','Uncertainty','Impact','Risk score','Experiment','Threshold','Cost (EUR)','Selected to validate','Result'];
+    var lines = [head.join(';')];
+    rows.forEach(function (r) {
+      lines.push([r.assumption, r.category, r.value, r.uncertainty, r.impact, score(r), r.experiment, r.threshold, r.cost || 0, r.selected ? 'yes' : 'no', r.result]
+        .map(function (v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(';'));
+    });
+    var blob = new Blob(['\uFEFF' + lines.join('\n')], { type: 'text/csv;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'assumptions-tracker.csv';
+    a.click();
+  });
+
+  load(); render();
+})();
+</script>
+</body>
+</html>
