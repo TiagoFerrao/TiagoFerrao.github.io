@@ -1,0 +1,659 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>House of Quality — ferrao.me</title>
+<meta name="theme-color" content="#001a20">
+<meta name="description" content="Guided House of Quality (QFD): turn ranked customer needs into prioritised technical specifications.">
+<link rel="icon" href="../img/bee.png">
+<link rel="apple-touch-icon" href="../img/bee.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inconsolata:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#001a20; --bg-2:#002a33; --panel:rgba(0,50,60,.55); --panel-2:rgba(0,42,51,.92);
+    --accent:#7DE38D; --accent-rgb:125,227,141; --accent-2:#288f5b;
+    --text:#e0f0e8; --dim:#8fb8a0; --mut:#5a8a70;
+    --border:rgba(125,227,141,.18); --border-strong:rgba(125,227,141,.4);
+    --red:#e07a6b; --amber:#ffd166; --info:#4ecdc4; --violet:#c792ea;
+    --mono:'Inconsolata',ui-monospace,monospace; --disp:'Space Grotesk',system-ui,sans-serif; --radius:12px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--disp);background:radial-gradient(1100px 560px at 82% -10%,rgba(125,227,141,.06),transparent 60%),var(--bg);color:var(--text);font-size:15px;line-height:1.5;}
+  a{color:var(--accent)}
+  .wrap{max-width:1180px;margin:0 auto;padding:20px 20px 70px;}
+  .site-back{display:inline-block;font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;color:var(--dim);text-decoration:none;margin-bottom:14px;}
+  .site-back:hover{color:var(--accent);}
+
+  .topbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--border);padding-bottom:13px;margin-bottom:14px;}
+  .brand{font-family:var(--disp);font-weight:700;font-size:18px;}
+  .brand .pp{color:var(--accent);text-shadow:0 0 10px rgba(var(--accent-rgb),.4);}
+  .brand small{display:block;font-family:var(--mono);font-weight:400;font-size:12px;color:var(--dim);}
+  .topbar .sp{flex:1}
+  .btn{font-family:var(--mono);font-size:12.5px;color:var(--dim);background:transparent;border:1px solid var(--border);border-radius:7px;padding:7px 11px;cursor:pointer;transition:.15s;}
+  .btn:hover{color:var(--accent);border-color:var(--border-strong);}
+  .btn.primary{color:var(--bg);background:var(--accent);border-color:var(--accent);font-weight:700;}
+  .btn.primary:hover{filter:brightness(1.08);}
+  .btn:disabled{opacity:.4;cursor:not-allowed;}
+
+  .idea input.name{font-family:var(--disp);font-weight:700;font-size:23px;color:var(--text);background:transparent;border:none;border-bottom:1px dashed transparent;width:100%;padding:2px 0;}
+  .idea input.name:hover,.idea input.name:focus{border-bottom-color:var(--border);outline:none;}
+  .idea input.tag{font-family:var(--mono);font-size:13px;color:var(--dim);background:transparent;border:none;width:100%;padding:3px 0;}
+  .idea input.tag:focus{outline:none;color:var(--text);}
+
+  /* stepper */
+  .dots{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 6px;}
+  .dot{display:flex;align-items:center;gap:7px;background:transparent;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;color:var(--dim);font-size:12px;transition:.15s;}
+  .dot:hover{color:var(--text);border-color:var(--border-strong);}
+  .dot .n{width:18px;height:18px;border-radius:50%;border:1px solid var(--border-strong);display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;font-family:var(--mono);}
+  .dot.on{color:var(--accent);border-color:var(--accent);background:rgba(var(--accent-rgb),.08);}
+  .dot.on .n{background:var(--accent);color:var(--bg);border-color:var(--accent);}
+  .dot.opt{opacity:.8;}
+  .progress{height:3px;background:rgba(255,255,255,.06);border-radius:3px;margin-bottom:18px;overflow:hidden;}
+  .progress i{display:block;height:100%;background:var(--accent);box-shadow:0 0 8px rgba(var(--accent-rgb),.5);transition:width .3s;}
+
+  /* layout: main + sticky results panel */
+  .layout{display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start;}
+  .aside{position:sticky;top:14px;}
+
+  .stephead{font-family:var(--disp);font-weight:600;font-size:19px;display:flex;align-items:center;gap:9px;margin:4px 0 3px;}
+  .stephead .k{font-size:12px;color:var(--accent-2);font-weight:700;font-family:var(--mono);}
+  .purpose{font-size:13px;color:var(--dim);margin-bottom:16px;border-left:2px solid var(--accent-2);padding-left:11px;}
+
+  .block{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:15px 16px;margin-bottom:14px;}
+  .block h3{margin:0 0 8px;font-family:var(--mono);font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--accent);}
+  .ph{font-size:11.5px;color:var(--mut);margin-bottom:10px;}
+
+  .dt{width:100%;border-collapse:collapse;font-size:13px;}
+  .dt th{font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--dim);text-align:left;padding:6px 8px;border-bottom:1px solid var(--border);font-family:var(--mono);}
+  .dt td{padding:5px 8px;border-bottom:1px solid rgba(125,227,141,.07);vertical-align:middle;}
+  .dt input.l,.dt textarea{width:100%;background:rgba(0,0,0,.2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--disp);font-size:13px;padding:7px 9px;resize:vertical;}
+  .dt input.l:focus,.dt textarea:focus,.dt input:focus,.dt select:focus{outline:none;border-color:var(--border-strong);}
+  .dt select{background:rgba(0,0,0,.2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--mono);font-size:12.5px;padding:6px 7px;}
+  .dt select option{background:var(--bg-2);}
+  .imp{display:inline-flex;align-items:center;gap:2px;}
+  .imp b{font-family:var(--mono);color:var(--accent);min-width:14px;text-align:center;}
+  .stepbtn{background:transparent;border:1px solid var(--border);color:var(--dim);border-radius:5px;width:22px;height:22px;cursor:pointer;font-family:var(--mono);}
+  .stepbtn:hover{border-color:var(--accent);color:var(--accent);}
+  .xbtn{background:transparent;border:none;color:var(--mut);cursor:pointer;font-size:15px;}
+  .xbtn:hover{color:var(--red);}
+  .dir{font-family:var(--mono);cursor:pointer;font-size:15px;color:var(--accent);background:transparent;border:1px solid var(--border);border-radius:5px;padding:3px 8px;}
+  .dir:hover{border-color:var(--accent);}
+  .scrollx{overflow-x:auto;}
+
+  /* relationship & roof cells */
+  .relcell{width:34px;height:30px;text-align:center;cursor:pointer;font-size:17px;border-radius:5px;user-select:none;}
+  .relcell:hover{background:rgba(var(--accent-rgb),.10);}
+  .r9{color:var(--accent);} .r3{color:var(--info);} .r1{color:var(--dim);} .r0{color:transparent;}
+  .legend{font-size:11px;color:var(--mut);margin-top:8px;}
+  .legend b{color:var(--accent);}
+
+  /* results / aside panel */
+  .rpanel{background:var(--panel-2);border:1px solid var(--border-strong);border-radius:var(--radius);overflow:hidden;}
+  .rpanel header{padding:13px 15px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+  .rpanel header .t{font-family:var(--disp);font-weight:700;font-size:14px;}
+  .rpanel header .bk{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--dim);background:transparent;border:1px solid var(--border);border-radius:6px;padding:4px 8px;cursor:pointer;}
+  .rpanel header .bk:hover{color:var(--accent);border-color:var(--accent);}
+  .rpanel .body{padding:12px 14px;max-height:72vh;overflow-y:auto;}
+  .rk{display:grid;grid-template-columns:20px 1fr 54px;gap:8px;align-items:center;margin-bottom:9px;font-size:12.5px;}
+  .rk .pos{font-family:var(--mono);color:var(--mut);}
+  .rk .nm{color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .rk .bar{grid-column:2/3;height:6px;background:rgba(0,0,0,.25);border-radius:4px;overflow:hidden;margin-top:-3px;}
+  .rk .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent-2),var(--accent));}
+  .rk .amt{font-family:var(--mono);color:var(--accent);text-align:right;font-weight:600;}
+  /* step visualisations in the side panel */
+  .mrow{margin-bottom:9px;}
+  .mrow .lab{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;gap:8px;}
+  .mrow .lab .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text);}
+  .mrow .lab b{font-family:var(--mono);color:var(--accent);}
+  .mbar{height:6px;background:rgba(0,0,0,.25);border-radius:4px;overflow:hidden;margin-top:3px;}
+  .mbar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent-2),var(--accent));}
+  .hm{display:grid;gap:2px;margin:4px 0 8px;}
+  .hm .c{height:14px;border-radius:2px;}
+  .cov{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;padding:5px 0;border-bottom:1px solid rgba(125,227,141,.06);}
+  .cov .badge{font-family:var(--mono);font-size:10.5px;border-radius:10px;padding:1px 9px;border:1px solid var(--border);color:var(--dim);}
+  .cov .badge.zero{color:var(--amber);border-color:rgba(255,209,102,.4);}
+  .rdetail p{font-size:12.5px;color:var(--dim);line-height:1.55;margin-bottom:9px;}
+  .rdetail .stat{font-family:var(--mono);font-size:12px;color:var(--text);background:rgba(0,0,0,.18);border:1px solid var(--border);border-radius:7px;padding:8px 10px;margin-bottom:7px;}
+  .rdetail .stat b{color:var(--accent);}
+
+  /* the house (results) */
+  .house{font-family:var(--mono);}
+  .hgrid{border-collapse:collapse;}
+  .hgrid td,.hgrid th{border:1px solid var(--border);text-align:center;}
+  .hroom{cursor:pointer;}
+  .hroom:hover{outline:2px solid var(--border-strong);outline-offset:-2px;}
+  .h-need{font-family:var(--disp);font-size:12px;text-align:left;color:var(--text);padding:5px 8px;min-width:150px;max-width:180px;}
+  .h-imp{width:40px;color:var(--accent);font-weight:700;}
+  .h-spec{height:118px;width:34px;vertical-align:bottom;padding-bottom:6px;}
+  .h-spec .v{writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--disp);font-size:11px;white-space:nowrap;color:var(--text);margin:0 auto;}
+  .h-dir{width:34px;color:var(--accent);font-size:14px;}
+  .h-wt{color:var(--accent);font-weight:700;font-size:11px;}
+  .h-pct{color:var(--dim);font-size:10px;}
+  .h-rank{color:var(--violet);font-weight:700;}
+  .h-lab{font-size:9px;letter-spacing:.5px;text-transform:uppercase;color:var(--mut);text-align:right;padding-right:8px;}
+  .h-comp{width:42px;font-size:11px;color:var(--text);}
+  .h-comphead{height:118px;width:42px;vertical-align:bottom;padding-bottom:6px;}
+  .h-comphead .v{writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;white-space:nowrap;color:var(--info);margin:0 auto;}
+
+  .navbtns{display:flex;justify-content:space-between;margin-top:20px;gap:10px;}
+  .note{font-size:11.5px;color:var(--mut);margin-top:10px;}
+  .toggle{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--dim);cursor:pointer;}
+  .toggle input{accent-color:var(--accent);}
+
+  @media(max-width:980px){
+    .layout{grid-template-columns:1fr;} .aside{position:static;}
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+const {useState,useEffect,useMemo} = React;
+const LS_KEY = "house-of-quality-v1";
+const uid = ()=> Date.now()*1000 + Math.floor(Math.random()*1000);
+const clone = o => JSON.parse(JSON.stringify(o));
+const REL_CYCLE = [0,9,3,1];               // click order: none → strong → medium → weak
+const REL_SYM = {0:"",9:"●",3:"◐",1:"○"};
+const DIR_CYCLE = ["up","target","down"];
+const DIR_SYM = {up:"▲",target:"◎",down:"▼"};
+const DIR_LABEL = {up:"maximise",target:"target",down:"minimise"};
+const ROOF_CYCLE = [0,2,1,-1,-2];
+const ROOF_SYM = {0:"",2:"＋＋",1:"＋","-1":"－","-2":"－－"};
+
+/* ---------- seed: SportSpots (from the ISCTE thesis QFD) ---------- */
+const N = (text,imp)=>({id:uid(),text,imp});
+const seedNeeds = [
+  {id:1,text:"Save time finding activities",imp:5},
+  {id:2,text:"Filter & search by interest",imp:4},
+  {id:3,text:"Find groups or training buddies",imp:4},
+  {id:4,text:"Trustworthy recommendations",imp:3},
+  {id:5,text:"Easy booking & payment",imp:4},
+];
+const seedSpecs = [
+  {id:11,text:"Map-based discovery",target:"geolocated, < 2s",dir:"up",from:1},
+  {id:12,text:"Search & filter engine",target:"≥ 6 filter types",dir:"up",from:2},
+  {id:13,text:"Group / event creation",target:"create in < 1 min",dir:"up",from:3},
+  {id:14,text:"Recommendation engine",target:"personalised feed",dir:"up",from:4},
+  {id:15,text:"In-app booking & payment",target:"≤ 3 taps",dir:"down",from:5},
+];
+const rk=(n,s)=>n+"|"+s;
+const seedRel = {};
+[[1,11,9],[1,12,3],[1,15,1],[2,12,9],[2,11,3],[2,14,3],[3,13,9],[3,11,1],[4,14,9],[4,12,1],[5,15,9],[5,11,1]]
+  .forEach(([n,s,v])=>seedRel[rk(n,s)]=v);
+const seedComp = {};
+[[1,"us",3],[1,"Urban Sports",4],[1,"SportID",2],[2,"us",4],[2,"Urban Sports",3],[2,"SportID",3],
+ [3,"us",4],[3,"Urban Sports",2],[3,"SportID",2],[4,"us",3],[4,"Urban Sports",2],[4,"SportID",1],
+ [5,"us",4],[5,"Urban Sports",4],[5,"SportID",3]].forEach(([n,w,v])=>seedComp[n+"|"+w]=v);
+
+const SEED = {
+  meta:{name:"SportSpots", tagline:"From validated user needs to ranked product features (QFD)."},
+  needs:seedNeeds, specs:seedSpecs, rel:seedRel,
+  competitors:[{id:"Urban Sports",name:"Urban Sports Club"},{id:"SportID",name:"SportID"}],
+  comp:seedComp, roofOn:true, roof:{"11|12":1,"12|14":2,"13|15":1,"11|15":-1}
+};
+const BLANK = {
+  meta:{name:"My product", tagline:""},
+  needs:[{id:uid(),text:"",imp:3}], specs:[], rel:{},
+  competitors:[], comp:{}, roofOn:false, roof:{}
+};
+
+/* ---------- engine ---------- */
+function compute(m){
+  const specs = m.specs;
+  const rows = specs.map(s=>{
+    let w=0; m.needs.forEach(n=>{ w += (+n.imp||0) * (m.rel[rk(n.id,s.id)]||0); });
+    return {spec:s, weight:w};
+  });
+  const total = rows.reduce((a,r)=>a+r.weight,0) || 1;
+  rows.forEach(r=>{ r.pct = r.weight/total*100; });
+  const ranked = [...rows].sort((a,b)=>b.weight-a.weight);
+  ranked.forEach((r,i)=>{ r.rank=i+1; });
+  const maxW = Math.max(1,...rows.map(r=>r.weight));
+  // map weight/rank back by spec id
+  const byId = {}; ranked.forEach(r=>byId[r.spec.id]=r);
+  return {rows, ranked, total, maxW, byId};
+}
+
+/* ---------- small controls ---------- */
+function Imp({val,onChange}){
+  return (<span className="imp">
+    <button className="stepbtn" onClick={()=>onChange(Math.max(1,val-1))}>–</button>
+    <b>{val}</b>
+    <button className="stepbtn" onClick={()=>onChange(Math.min(5,val+1))}>+</button>
+  </span>);
+}
+function RelCell({v,onClick}){
+  const cls = "relcell r"+(v||0);
+  return <td className={cls} onClick={onClick} title="click to cycle: ● strong(9)  ◐ medium(3)  ○ weak(1)">{REL_SYM[v||0]}</td>;
+}
+
+/* competitive profile chart — how we compete vs others, per need (1–5) */
+const CPAL = ["#7DE38D","#4ecdc4","#c792ea","#ffd166","#e07a6b","#5b8def"];
+function CompChart({needs,competitors,comp}){
+  const players=[{key:"us",name:"Us"},...competitors.map(c=>({key:c.id,name:c.name||"competitor"}))];
+  const anyRating = needs.some(n=>players.some(p=>comp[n.id+"|"+p.key]));
+  if(!needs.length || !anyRating) return <div className="note">Rate at least one need above to see the competitive profile.</div>;
+  const W=640, labelW=176, padR=18, padT=20, rowH=30, padB=6;
+  const plotW=W-labelW-padR, H=padT+needs.length*rowH+padB;
+  const x=v=>labelW+(Math.max(1,Math.min(5,v))-1)/4*plotW;
+  const y=i=>padT+i*rowH+rowH/2;
+  const avg=p=>{let s=0,c=0;needs.forEach(n=>{const v=comp[n.id+"|"+p.key];if(v){s+=v;c++;}});return c?s/c:null;};
+  return (<div>
+    <div style={{display:"flex",flexWrap:"wrap",gap:"14px",marginBottom:"10px"}}>
+      {players.map((p,pi)=>{const a=avg(p);return (
+        <span key={p.key} style={{display:"inline-flex",alignItems:"center",gap:"7px",fontSize:"12px",color:"var(--dim)",fontFamily:"var(--mono)"}}>
+          <i style={{width:"13px",height:"3px",background:CPAL[pi%CPAL.length],display:"inline-block",borderRadius:"2px"}}></i>
+          {p.name}{a!=null && <b style={{color:CPAL[pi%CPAL.length]}}>avg {a.toFixed(1)}</b>}
+        </span>);})}
+    </div>
+    <svg viewBox={"0 0 "+W+" "+H} width="100%" style={{maxWidth:W}}>
+      {[1,2,3,4,5].map(g=>(<g key={g}>
+        <line x1={x(g)} x2={x(g)} y1={padT-6} y2={H-padB} stroke="rgba(125,227,141,.10)"/>
+        <text x={x(g)} y={padT-9} textAnchor="middle" fontSize="9" fill="#5a8a70" fontFamily="Inconsolata">{g}</text>
+      </g>))}
+      {needs.map((n,i)=>(<text key={n.id} x={labelW-8} y={y(i)+3} textAnchor="end" fontSize="11" fill="#8fb8a0" fontFamily="Inconsolata">{(n.text||"—").length>28?(n.text.slice(0,27)+"…"):(n.text||"—")}</text>))}
+      {players.map((p,pi)=>{
+        const col=CPAL[pi%CPAL.length];
+        const pts=needs.map((n,i)=>{const v=comp[n.id+"|"+p.key];return v?{x:x(v),y:y(i)}:null;});
+        const segs=[];let cur=[];pts.forEach(pt=>{if(pt)cur.push(pt);else{if(cur.length)segs.push(cur);cur=[];}});if(cur.length)segs.push(cur);
+        const us=p.key==="us";
+        return (<g key={p.key}>
+          {segs.map((seg,si)=><polyline key={si} points={seg.map(q=>q.x+","+q.y).join(" ")} fill="none" stroke={col} strokeWidth={us?2.6:1.5} opacity={us?1:.8}/>)}
+          {pts.map((pt,i)=>pt&&<circle key={i} cx={pt.x} cy={pt.y} r={us?4:3} fill={col}/>)}
+        </g>);
+      })}
+    </svg>
+  </div>);
+}
+
+/* the iconic 45° roof — drawn in a colSpan cell so it auto-aligns to the spec columns */
+function Roof({specs,roof,onCell}){
+  const N=specs.length; if(N<2) return null;
+  const colW=34, rowH=17, H=N*rowH, W=N*colW;
+  const sym={2:"++",1:"+","-1":"−","-2":"−−"};
+  const cells=[];
+  for(let i=0;i<N;i++) for(let j=i+1;j<N;j++){
+    const cx=((i+j)/2)*colW+colW/2, cy=H-(j-i)*rowH;
+    cells.push({i,j,cx,cy,v:roof[specs[i].id+"|"+specs[j].id]||0});
+  }
+  return (
+    <svg viewBox={"0 0 "+W+" "+H} width="100%" height={H} preserveAspectRatio="none" style={{display:"block"}}>
+      {cells.map(c=>{
+        const stroke=c.v>0?"#7DE38D":c.v<0?"#e07a6b":"rgba(125,227,141,.22)";
+        const fill=Math.abs(c.v)===2?(c.v>0?"rgba(125,227,141,.20)":"rgba(224,122,107,.20)"):"rgba(0,0,0,.10)";
+        const pts=[[c.cx-16,c.cy],[c.cx,c.cy-16],[c.cx+16,c.cy],[c.cx,c.cy+16]].map(p=>p.join(",")).join(" ");
+        return (<g key={c.i+"-"+c.j} style={{cursor:"pointer"}} onClick={()=>onCell(specs[c.i].id,specs[c.j].id)}>
+          <polygon points={pts} fill={fill} stroke={stroke} strokeWidth="1"/>
+          {c.v!==0 && <text x={c.cx} y={c.cy+3} textAnchor="middle" fontSize="9" fill={stroke} fontFamily="Inconsolata" style={{pointerEvents:"none"}}>{sym[c.v]}</text>}
+        </g>);
+      })}
+    </svg>
+  );
+}
+
+/* ====================================================== */
+function App(){
+  const [m,setM]=useState(()=>{try{const s=localStorage.getItem(LS_KEY);if(s)return JSON.parse(s);}catch(e){}return clone(SEED);});
+  const [step,setStep]=useState(0);
+  const [focus,setFocus]=useState(null); // section detail in right panel
+  useEffect(()=>{try{localStorage.setItem(LS_KEY,JSON.stringify(m));}catch(e){}},[m]);
+  const r = useMemo(()=>compute(m),[m]);
+
+  const up=(path,v)=>setM(x=>{const c=clone(x);let o=c;const k=path.split(".");for(let i=0;i<k.length-1;i++)o=o[k[i]];o[k[k.length-1]]=v;return c;});
+  const mut=(fn)=>setM(x=>{const c=clone(x);fn(c);return c;});
+
+  const STEPS=[
+    {k:"intro", t:"What is the House of Quality", opt:false},
+    {k:"needs", t:"Customer needs & ranking", opt:false},
+    {k:"specs", t:"Technical specifications", opt:false},
+    {k:"rel",   t:"Relationships", opt:false},
+    {k:"comp",  t:"Competitor analysis", opt:false},
+    {k:"roof",  t:"Roof — correlations", opt:true},
+    {k:"res",   t:"Results", opt:false},
+  ];
+  const cur=STEPS[step];
+
+  /* ----- needs ----- */
+  const addNeed=()=>mut(c=>c.needs.push({id:uid(),text:"",imp:3}));
+  const delNeed=(id)=>mut(c=>{c.needs=c.needs.filter(n=>n.id!==id);Object.keys(c.rel).forEach(k=>{if(k.startsWith(id+"|"))delete c.rel[k];});Object.keys(c.comp).forEach(k=>{if(k.startsWith(id+"|"))delete c.comp[k];});});
+  /* ----- specs ----- */
+  const addSpec=(fromNeed)=>mut(c=>c.specs.push({id:uid(),text:"",target:"",dir:"up",from:fromNeed||null}));
+  const delSpec=(id)=>mut(c=>{c.specs=c.specs.filter(s=>s.id!==id);Object.keys(c.rel).forEach(k=>{if(k.endsWith("|"+id))delete c.rel[k];});Object.keys(c.roof).forEach(k=>{if(k.split("|").includes(""+id))delete c.roof[k];});});
+  const cycleDir=(id)=>mut(c=>{const s=c.specs.find(x=>x.id===id);s.dir=DIR_CYCLE[(DIR_CYCLE.indexOf(s.dir)+1)%3];});
+  /* ----- relationships ----- */
+  const cycleRel=(nId,sId)=>mut(c=>{const k=rk(nId,sId);const cur=c.rel[k]||0;const nv=REL_CYCLE[(REL_CYCLE.indexOf(cur)+1)%REL_CYCLE.length];if(nv)c.rel[k]=nv;else delete c.rel[k];});
+  /* ----- competitors ----- */
+  const addComp=()=>mut(c=>{const id="C"+uid();c.competitors.push({id,name:"Competitor "+(c.competitors.length+1)});});
+  const delComp=(id)=>mut(c=>{c.competitors=c.competitors.filter(x=>x.id!==id);Object.keys(c.comp).forEach(k=>{if(k.endsWith("|"+id))delete c.comp[k];});});
+  const setComp=(nId,who,v)=>mut(c=>{c.comp[nId+"|"+who]=v;});
+  /* ----- roof ----- */
+  const cycleRoof=(a,b)=>mut(c=>{const k=a+"|"+b;const cur=c.roof[k]||0;const nv=ROOF_CYCLE[(ROOF_CYCLE.indexOf(cur)+1)%ROOF_CYCLE.length];if(nv)c.roof[k]=nv;else delete c.roof[k];});
+
+  const reset=()=>{if(confirm("Reset to the SportSpots example?"))setM(clone(SEED));};
+  const blank=()=>{if(confirm("Clear everything and start from scratch?"))setM(clone(BLANK));};
+  const goEdit=(sec)=>{const map={needs:1,specs:2,rel:3,comp:4,roof:5};setStep(map[sec]!=null?map[sec]:step);setFocus(null);};
+
+  return (
+   <div className="wrap">
+    <a className="site-back" href="../innovation.html">← innovation</a>
+    <div className="topbar">
+      <div className="brand"><span className="pp">~/</span> house of quality
+        <small>QFD — turn ranked customer needs into prioritised specifications</small></div>
+      <div className="sp"></div>
+      <button className="btn" onClick={reset}>example</button>
+      <button className="btn" onClick={blank}>blank</button>
+    </div>
+    <div className="idea">
+      <input className="name" value={m.meta.name} onChange={e=>up("meta.name",e.target.value)} placeholder="Product / project name"/>
+      <input className="tag" value={m.meta.tagline} onChange={e=>up("meta.tagline",e.target.value)} placeholder="One line about it"/>
+    </div>
+
+    <div className="dots">
+      {STEPS.map((s,i)=>(
+        <button key={s.k} className={"dot"+(step===i?" on":"")+(s.opt?" opt":"")} onClick={()=>{setStep(i);setFocus(null);}}>
+          <span className="n">{i===0?"i":(i===STEPS.length-1?"✓":i)}</span>{s.t}{s.opt?" (optional)":""}
+        </button>
+      ))}
+    </div>
+    <div className="progress"><i style={{width:((step+1)/STEPS.length*100)+"%"}}></i></div>
+
+    <div className="layout">
+      <main>
+        <div className="stephead"><span className="k">STEP {step+1}/{STEPS.length}</span></div>
+
+        {/* INTRO */}
+        {cur.k==="intro" && <>
+          <div className="purpose">The House of Quality is the first matrix of QFD (Quality Function Deployment). It connects what customers want (the WHATs) to how you'll deliver it (the HOWs) — and ranks your technical specifications by how much they actually serve the highest-priority needs.</div>
+          <div className="block"><h3>What it's for</h3>
+            <p style={{fontSize:13,color:"var(--dim)",lineHeight:1.6}}>Stop guessing which features matter. By scoring how strongly each specification answers each weighted need, the house computes an objective priority for every spec — so engineering effort goes where it moves the needle.</p></div>
+          <div className="block"><h3>How this walkthrough works</h3>
+            <p style={{fontSize:13,color:"var(--dim)",lineHeight:1.6}}>1 · list customer needs and rank them &nbsp; 2 · derive a specification for each need (add more freely) &nbsp; 3 · score the need↔spec relationships &nbsp; 4 · rate yourself vs competitors &nbsp; 5 · (optional) the roof — how specs reinforce or fight each other &nbsp; 6 · read the ranked result. The live ranking on the right updates as you go.</p>
+            <div className="note">Seeded with the SportSpots example from the thesis — edit or hit “blank” to start your own.</div></div>
+        </>}
+
+        {/* NEEDS */}
+        {cur.k==="needs" && <>
+          <div className="purpose">List what your (validated) customers need, then rank each by importance from 1 (nice-to-have) to 5 (critical). These weights drive every priority the house computes.</div>
+          <div className="block"><h3>Customer needs — the WHATs</h3>
+            <div className="scrollx"><table className="dt"><thead><tr><th style={{width:"70%"}}>Need</th><th>Importance (1–5)</th><th></th></tr></thead>
+              <tbody>{m.needs.map(n=>(
+                <tr key={n.id}>
+                  <td><input className="l" value={n.text} placeholder="a customer need…" onChange={e=>mut(c=>{c.needs.find(x=>x.id===n.id).text=e.target.value;})}/></td>
+                  <td><Imp val={n.imp} onChange={v=>mut(c=>{c.needs.find(x=>x.id===n.id).imp=v;})}/></td>
+                  <td><button className="xbtn" onClick={()=>delNeed(n.id)}>×</button></td>
+                </tr>))}</tbody></table></div>
+            <button className="btn" style={{marginTop:10}} onClick={addNeed}>+ add need</button>
+          </div>
+        </>}
+
+        {/* SPECS */}
+        {cur.k==="specs" && <>
+          <div className="purpose">For each need, name a technical specification that would satisfy it — then add any others. Give each a measurable target value and a direction of improvement (▲ maximise · ◎ hit target · ▼ minimise).</div>
+          <div className="block"><h3>Derive a spec for each need</h3>
+            <div className="ph">Each need below should be answered by at least one specification.</div>
+            {m.needs.map(n=>{
+              const owned=m.specs.filter(s=>s.from===n.id);
+              return (<div key={n.id} style={{marginBottom:10,paddingBottom:8,borderBottom:"1px dashed var(--border)"}}>
+                <div style={{fontSize:12.5,color:"var(--dim)",marginBottom:5}}>↳ {n.text||"(unnamed need)"} {owned.length===0 && <span style={{color:"var(--amber)"}}>— no spec yet</span>}</div>
+                {owned.map(s=>(
+                  <div key={s.id} style={{display:"flex",gap:8,marginBottom:6,alignItems:"center"}}>
+                    <button className="dir" title={DIR_LABEL[s.dir]} onClick={()=>cycleDir(s.id)}>{DIR_SYM[s.dir]}</button>
+                    <input className="l" style={{flex:2}} value={s.text} placeholder="specification…" onChange={e=>mut(c=>{c.specs.find(x=>x.id===s.id).text=e.target.value;})}/>
+                    <input className="l" style={{flex:1}} value={s.target} placeholder="target value" onChange={e=>mut(c=>{c.specs.find(x=>x.id===s.id).target=e.target.value;})}/>
+                    <button className="xbtn" onClick={()=>delSpec(s.id)}>×</button>
+                  </div>
+                ))}
+                <button className="btn" onClick={()=>addSpec(n.id)}>+ spec for this need</button>
+              </div>);
+            })}
+            <button className="btn" style={{marginTop:6}} onClick={()=>addSpec(null)}>+ add a standalone spec</button>
+            <div className="legend">Direction: <b>▲</b> maximise · <b>◎</b> target · <b>▼</b> minimise</div>
+          </div>
+        </>}
+
+        {/* RELATIONSHIPS */}
+        {cur.k==="rel" && <>
+          <div className="purpose">The body of the house. For each need × spec, click the cell to score how strongly that spec serves that need: ● strong (9), ◐ medium (3), ○ weak (1), blank (none). Be sparing — most cells should be empty.</div>
+          <div className="block"><h3>Relationship matrix</h3>
+            {m.specs.length===0 ? <div className="note">Add some specifications first (step 3).</div> :
+            <div className="scrollx"><table className="dt" style={{width:"auto"}}><thead>
+              <tr><th>Need ↓ / Spec →</th>{m.specs.map(s=>(<th key={s.id} style={{textAlign:"center",maxWidth:60}}>{s.text||"—"}</th>))}</tr>
+            </thead><tbody>
+              {m.needs.map(n=>(<tr key={n.id}>
+                <td style={{maxWidth:200}}>{n.text||"(need)"} <span style={{color:"var(--mut)"}}>·{n.imp}</span></td>
+                {m.specs.map(s=>(<RelCell key={s.id} v={m.rel[rk(n.id,s.id)]} onClick={()=>cycleRel(n.id,s.id)}/>))}
+              </tr>))}
+            </tbody></table></div>}
+            <div className="legend">Click to cycle · <b>●</b> 9 strong · <b>◐</b> 3 medium · <b>○</b> 1 weak · blank none</div>
+          </div>
+        </>}
+
+        {/* COMPETITORS */}
+        {cur.k==="comp" && <>
+          <div className="purpose">Rate how well you and your competitors meet each need today (1–5). This is the planning matrix on the right of the house — later it can be fed from the Competitors &amp; Patents tool.</div>
+          <div className="block"><h3>Competitor analysis</h3>
+            <div className="scrollx"><table className="dt" style={{width:"auto"}}><thead>
+              <tr><th>Need</th><th style={{textAlign:"center"}}>Us</th>
+                {m.competitors.map(c=>(<th key={c.id} style={{textAlign:"center"}}>
+                  <input className="l" style={{width:90,fontSize:11,padding:"4px 6px"}} value={c.name} onChange={e=>mut(x=>{x.competitors.find(y=>y.id===c.id).name=e.target.value;})}/>
+                  <button className="xbtn" onClick={()=>delComp(c.id)}>×</button></th>))}
+              </tr></thead><tbody>
+              {m.needs.map(n=>(<tr key={n.id}>
+                <td style={{maxWidth:200}}>{n.text||"(need)"}</td>
+                <td style={{textAlign:"center"}}><select value={m.comp[n.id+"|us"]||""} onChange={e=>setComp(n.id,"us",+e.target.value)}><option value="">–</option>{[1,2,3,4,5].map(v=><option key={v} value={v}>{v}</option>)}</select></td>
+                {m.competitors.map(c=>(<td key={c.id} style={{textAlign:"center"}}><select value={m.comp[n.id+"|"+c.id]||""} onChange={e=>setComp(n.id,c.id,+e.target.value)}><option value="">–</option>{[1,2,3,4,5].map(v=><option key={v} value={v}>{v}</option>)}</select></td>))}
+              </tr>))}
+            </tbody></table></div>
+            <button className="btn" style={{marginTop:10}} onClick={addComp}>+ add competitor</button>
+            <div className="note">Linking to the Competitors &amp; Patents tool comes later — for now rate them here.</div>
+          </div>
+          <div className="block"><h3>How you compete — competitive profile</h3>
+            <div className="ph">Each line traces a player's rating across the needs (1–5). Where the green “Us” line sits to the left of a competitor, they're beating you on that need — prioritise closing the gap on your highest-importance needs.</div>
+            <CompChart needs={m.needs} competitors={m.competitors} comp={m.comp}/>
+          </div>
+        </>}
+
+        {/* ROOF */}
+        {cur.k==="roof" && <>
+          <div className="purpose">Optional. The roof captures how specifications interact: do two specs reinforce each other (＋ / ＋＋) or trade off (－ / －－)? It surfaces engineering conflicts early. Skip it if you're moving fast.</div>
+          <div className="block"><h3>Roof — spec correlations</h3>
+            <label className="toggle" style={{marginBottom:12}}><input type="checkbox" checked={m.roofOn} onChange={e=>up("roofOn",e.target.checked)}/> include the roof in this house</label>
+            {m.roofOn && (m.specs.length<2 ? <div className="note">Add at least two specs to correlate.</div> :
+            <div className="scrollx"><table className="dt" style={{width:"auto"}}><tbody>
+              {m.specs.map((a,i)=>(<tr key={a.id}>
+                <td style={{maxWidth:160}}>{a.text||"—"}</td>
+                {m.specs.map((b,j)=> j<=i ? <td key={b.id}></td> :
+                  <td key={b.id} className="relcell" style={{color:(m.roof[a.id+"|"+b.id]||0)<0?"var(--red)":"var(--accent)",fontSize:13}} onClick={()=>cycleRoof(a.id,b.id)} title={a.text+" ↔ "+b.text}>{ROOF_SYM[m.roof[a.id+"|"+b.id]||0]}</td>)}
+              </tr>))}
+            </tbody></table></div>)}
+            <div className="legend">Click to cycle · <b>＋＋</b> strong synergy · <b>＋</b> synergy · <b>－</b> trade-off · <b>－－</b> strong trade-off</div>
+          </div>
+        </>}
+
+        {/* RESULTS */}
+        {cur.k==="res" && <>
+          <div className="purpose">The output. Your specifications, ranked by technical importance — the sum of (need importance × relationship) down each column. Click any room of the house to inspect or edit it.</div>
+          {m.specs.length===0 ? <div className="block"><div className="note">Nothing to show yet — add needs, specs and relationships first.</div></div> :
+          <div className="block scrollx">
+            <div className="house">
+              <table className="hgrid">
+                <thead>
+                  {m.roofOn && m.specs.length>=2 && <tr>
+                    <td colSpan={2} style={{border:"none"}}></td>
+                    <td colSpan={m.specs.length} style={{padding:0,border:"none",verticalAlign:"bottom"}}><Roof specs={m.specs} roof={m.roof} onCell={cycleRoof}/></td>
+                    <td colSpan={1+m.competitors.length} style={{border:"none"}}></td>
+                  </tr>}
+                  <tr>
+                    <td className="h-lab hroom" onClick={()=>setFocus("needs")}>direction →</td><td></td>
+                    {m.specs.map(s=>(<td key={s.id} className="h-dir hroom" onClick={()=>setFocus("specs")} title={DIR_LABEL[s.dir]}>{DIR_SYM[s.dir]}</td>))}
+                    {m.competitors.length>0 && <td className="h-lab">us / them</td>}
+                    {m.competitors.map(c=><td key={c.id}></td>)}
+                  </tr>
+                  <tr>
+                    <td className="h-lab hroom" onClick={()=>setFocus("needs")}>need ↓ &nbsp; imp</td><td></td>
+                    {m.specs.map(s=>(<td key={s.id} className="h-spec hroom" onClick={()=>setFocus("specs")}><div className="v">{s.text||"—"}</div></td>))}
+                    <td className="h-comphead"><div className="v" style={{color:"var(--accent)"}}>Us</div></td>
+                    {m.competitors.map(c=>(<td key={c.id} className="h-comphead"><div className="v">{c.name}</div></td>))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {m.needs.map(n=>(<tr key={n.id}>
+                    <td className="h-need hroom" onClick={()=>setFocus("needs")}>{n.text||"(need)"}</td>
+                    <td className="h-imp hroom" onClick={()=>setFocus("needs")}>{n.imp}</td>
+                    {m.specs.map(s=>{const v=m.rel[rk(n.id,s.id)]||0;return <td key={s.id} className={"relcell hroom r"+v} onClick={()=>cycleRel(n.id,s.id)}>{REL_SYM[v]}</td>;})}
+                    <td className="h-comp hroom" onClick={()=>setFocus("comp")}>{m.comp[n.id+"|us"]||"·"}</td>
+                    {m.competitors.map(c=>(<td key={c.id} className="h-comp hroom" onClick={()=>setFocus("comp")}>{m.comp[n.id+"|"+c.id]||"·"}</td>))}
+                  </tr>))}
+                </tbody>
+                <tfoot>
+                  <tr><td className="h-lab">weight</td><td></td>
+                    {m.specs.map(s=>(<td key={s.id} className="h-wt">{r.byId[s.id]?r.byId[s.id].weight:0}</td>))}
+                    {m.competitors.length>0 && <td></td>}{m.competitors.map(c=><td key={c.id}></td>)}</tr>
+                  <tr><td className="h-lab">relative %</td><td></td>
+                    {m.specs.map(s=>(<td key={s.id} className="h-pct">{r.byId[s.id]?r.byId[s.id].pct.toFixed(0):0}%</td>))}
+                    {m.competitors.length>0 && <td></td>}{m.competitors.map(c=><td key={c.id}></td>)}</tr>
+                  <tr><td className="h-lab">rank</td><td></td>
+                    {m.specs.map(s=>(<td key={s.id} className="h-rank">{r.byId[s.id]?("#"+r.byId[s.id].rank):"–"}</td>))}
+                    {m.competitors.length>0 && <td></td>}{m.competitors.map(c=><td key={c.id}></td>)}</tr>
+                </tfoot>
+              </table>
+            </div>
+            <div className="legend" style={{marginTop:12}}>Click a need, a spec, the body, or the us/them block to inspect it on the right · cells are editable here too.</div>
+          </div>}
+        </>}
+
+        <div className="navbtns">
+          <button className="btn" onClick={()=>{setStep(s=>Math.max(0,s-1));setFocus(null);}} disabled={step===0}>‹ back</button>
+          <button className="btn primary" onClick={()=>{setStep(s=>Math.min(STEPS.length-1,s+1));setFocus(null);}} disabled={step===STEPS.length-1}>{step===STEPS.length-2?"see results ›":"next ›"}</button>
+        </div>
+      </main>
+
+      {/* RIGHT PANEL */}
+      <aside className="aside">
+        <div className="rpanel">
+          {focus ? (<>
+            <header><span className="t">{({needs:"◎ Customer needs",specs:"▲ Specifications",comp:"⊟ Competitor analysis",rel:"● Relationships"})[focus]||"Section"}</span>
+              <button className="bk" onClick={()=>setFocus(null)}>← results</button></header>
+            <div className="body rdetail">
+              {focus==="needs" && <>
+                <p>The weighted WHATs. Importance (1–5) scales every relationship in that row, so it's the biggest lever on the final ranking.</p>
+                <div className="stat">Needs: <b>{m.needs.length}</b> · total importance <b>{m.needs.reduce((a,n)=>a+(+n.imp||0),0)}</b></div>
+                {m.needs.slice().sort((a,b)=>b.imp-a.imp).map(n=>(<div key={n.id} className="stat">{n.text||"—"} — <b>{n.imp}</b></div>))}
+                <button className="btn" style={{marginTop:6}} onClick={()=>goEdit("needs")}>edit needs →</button>
+              </>}
+              {focus==="specs" && <>
+                <p>The HOWs — your technical specifications, each with a target and a direction of improvement.</p>
+                {m.specs.map(s=>(<div key={s.id} className="stat">{DIR_SYM[s.dir]} {s.text||"—"} {s.target&&<span style={{color:"var(--dim)"}}>· {s.target}</span>} — rank <b>{r.byId[s.id]?("#"+r.byId[s.id].rank):"–"}</b></div>))}
+                <button className="btn" style={{marginTop:6}} onClick={()=>goEdit("specs")}>edit specs →</button>
+              </>}
+              {focus==="comp" && <>
+                <p>How you rate against competitors on each need (1–5). Gaps where a high-importance need scores low are where the house says to compete.</p>
+                <div className="stat">Competitors: <b>{m.competitors.length}</b></div>
+                <button className="btn" style={{marginTop:6}} onClick={()=>goEdit("comp")}>edit competitor ratings →</button>
+              </>}
+            </div>
+          </>) : cur.k==="res" ? (<>
+            <header><span className="t">▤ Specs by relevance</span></header>
+            <div className="body">
+              {r.ranked.length===0 ? <div className="note">Add specs and score relationships to see the ranking.</div> :
+                r.ranked.map(row=>(
+                  <div key={row.spec.id}>
+                    <div className="rk"><span className="pos">#{row.rank}</span><span className="nm" title={row.spec.text}>{row.spec.text||"—"}</span><span className="amt">{row.weight}</span></div>
+                    <div className="rk" style={{marginTop:-6}}><span></span><div className="bar"><i style={{width:(row.weight/r.maxW*100)+"%"}}></i></div><span className="h-pct" style={{textAlign:"right",fontFamily:"var(--mono)"}}>{row.pct.toFixed(0)}%</span></div>
+                  </div>
+                ))}
+              {r.ranked.length>0 && <div className="note">weight = Σ (need importance × relationship). The main output of the house.</div>}
+            </div>
+          </>) : cur.k==="needs" ? (<>
+            <header><span className="t">◎ Needs by importance</span></header>
+            <div className="body">
+              {m.needs.length===0 ? <div className="note">Add needs to rank them.</div> :
+                m.needs.slice().sort((a,b)=>b.imp-a.imp).map(n=>(
+                  <div className="mrow" key={n.id}><div className="lab"><span className="nm">{n.text||"—"}</span><b>{n.imp}</b></div><div className="mbar"><i style={{width:(n.imp/5*100)+"%"}}></i></div></div>
+                ))}
+              <div className="note">{m.needs.length} needs · total importance {m.needs.reduce((a,n)=>a+(+n.imp||0),0)}. Taller bars pull the final spec ranking hardest.</div>
+            </div>
+          </>) : cur.k==="specs" ? (<>
+            <header><span className="t">▲ Need coverage</span></header>
+            <div className="body">
+              {m.needs.map(n=>{const cnt=m.specs.filter(s=>s.from===n.id).length;return (
+                <div className="cov" key={n.id}><span className="nm" style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{n.text||"—"}</span><span className={"badge"+(cnt===0?" zero":"")}>{cnt} spec{cnt===1?"":"s"}</span></div>
+              );})}
+              {(function(){const covered=m.needs.filter(n=>m.specs.some(s=>s.from===n.id)).length;const sa=m.specs.filter(s=>!m.needs.some(n=>n.id===s.from)).length;return <div className="note">{covered} / {m.needs.length} needs have a spec{sa?(" · "+sa+" standalone"):""}. Aim to cover every need.</div>;})()}
+            </div>
+          </>) : cur.k==="rel" ? (<>
+            <header><span className="t">● Matrix fill</span></header>
+            <div className="body">
+              {(m.specs.length===0||m.needs.length===0) ? <div className="note">Add needs and specs to build the matrix.</div> : <>
+                <div className="hm" style={{gridTemplateColumns:"repeat("+m.specs.length+",1fr)"}}>
+                  {m.needs.map(n=>m.specs.map(s=>{const v=m.rel[rk(n.id,s.id)]||0;const col=v===9?"var(--accent)":v===3?"var(--info)":v===1?"rgba(125,227,141,.28)":"rgba(255,255,255,.05)";return <div key={n.id+"-"+s.id} className="c" style={{background:col}} title={(n.text||"need")+" × "+(s.text||"spec")+" = "+v}></div>;}))}
+                </div>
+                {(function(){const sc=Object.keys(m.rel).length;const tot=m.needs.length*m.specs.length;return <div className="note">{sc} of {tot} cells scored · <span style={{color:"var(--accent)"}}>■</span>9 <span style={{color:"var(--info)"}}>■</span>3 ■1. Keep it sparse.</div>;})()}
+              </>}
+            </div>
+          </>) : cur.k==="comp" ? (<>
+            <header><span className="t">⊟ Competitive standing</span></header>
+            <div className="body">
+              {(function(){
+                const players=[{key:"us",name:"Us"},...m.competitors.map(c=>({key:c.id,name:c.name||"competitor"}))];
+                const avg=p=>{let s=0,c=0;m.needs.forEach(n=>{const v=m.comp[n.id+"|"+p.key];if(v){s+=v;c++;}});return c?s/c:null;};
+                const rows=players.map(p=>({p,a:avg(p)})).filter(x=>x.a!=null).sort((a,b)=>b.a-a.a);
+                if(!rows.length) return <div className="note">Rate yourself and competitors to see standing.</div>;
+                const usRank=rows.findIndex(x=>x.p.key==="us")+1;
+                return <>
+                  {rows.map(({p,a})=>(<div className="mrow" key={p.key}><div className="lab"><span className="nm" style={{color:p.key==="us"?"var(--accent)":"var(--text)"}}>{p.name}</span><b style={{color:p.key==="us"?"var(--accent)":"var(--info)"}}>{a.toFixed(1)}</b></div><div className="mbar"><i style={{width:(a/5*100)+"%",background:p.key==="us"?"linear-gradient(90deg,var(--accent-2),var(--accent))":"var(--info)"}}></i></div></div>))}
+                  <div className="note">You rank #{usRank} of {rows.length} on average. Per-need profile is on the left.</div>
+                </>;
+              })()}
+            </div>
+          </>) : cur.k==="roof" ? (<>
+            <header><span className="t">⌂ Correlations</span></header>
+            <div className="body">
+              {!m.roofOn ? <div className="note">The roof is off. Enable it on the left to map how specs reinforce or fight each other.</div> : (function(){
+                const pairs=[];for(let i=0;i<m.specs.length;i++)for(let j=i+1;j<m.specs.length;j++){const v=m.roof[m.specs[i].id+"|"+m.specs[j].id]||0;if(v)pairs.push({a:m.specs[i],b:m.specs[j],v});}
+                const syn=pairs.filter(p=>p.v>0).length;const tr=pairs.filter(p=>p.v<0);
+                return <>
+                  <div className="stat" style={{fontFamily:"var(--mono)",fontSize:12}}><b style={{color:"var(--accent)"}}>{syn}</b> synergies · <b style={{color:"var(--red)"}}>{tr.length}</b> trade-offs</div>
+                  {tr.length>0 && <div className="note" style={{marginTop:8}}>Conflicts to resolve:</div>}
+                  {tr.map((p,i)=>(<div key={i} className="cov"><span className="nm" style={{whiteSpace:"normal"}}>{p.a.text||"—"} ✕ {p.b.text||"—"}</span><span className="badge" style={{color:"var(--red)",borderColor:"rgba(224,122,107,.4)"}}>{ROOF_SYM[p.v]}</span></div>))}
+                  {pairs.length===0 && <div className="note">No correlations set yet — click cells on the left.</div>}
+                </>;
+              })()}
+            </div>
+          </>) : (<>
+            <header><span className="t">⌂ Anatomy of the house</span></header>
+            <div className="body">
+              <svg viewBox="0 0 280 196" width="100%">
+                <polygon points="72,54 176,54 152,22 96,22" fill="rgba(125,227,141,.05)" stroke="rgba(125,227,141,.35)"/>
+                <text x="124" y="44" textAnchor="middle" fontSize="8" fill="#5a8a70" fontFamily="Inconsolata">roof · correlations</text>
+                <rect x="72" y="56" width="104" height="22" fill="rgba(125,227,141,.08)" stroke="rgba(125,227,141,.3)"/>
+                <text x="124" y="70" textAnchor="middle" fontSize="9" fill="#7DE38D" fontFamily="Inconsolata">HOWs · specs ▲</text>
+                <rect x="12" y="80" width="58" height="80" fill="rgba(0,0,0,.15)" stroke="rgba(125,227,141,.2)"/>
+                <text x="41" y="124" textAnchor="middle" fontSize="9" fill="#8fb8a0" fontFamily="Inconsolata">WHATs</text>
+                <rect x="72" y="80" width="104" height="80" fill="rgba(0,0,0,.1)" stroke="rgba(125,227,141,.2)"/>
+                <text x="124" y="124" textAnchor="middle" fontSize="9" fill="#8fb8a0" fontFamily="Inconsolata">relationships</text>
+                <rect x="178" y="80" width="58" height="80" fill="rgba(0,0,0,.15)" stroke="rgba(125,227,141,.2)"/>
+                <text x="207" y="124" textAnchor="middle" fontSize="8" fill="#4ecdc4" fontFamily="Inconsolata">us / them</text>
+                <rect x="72" y="162" width="104" height="22" fill="rgba(125,227,141,.08)" stroke="rgba(125,227,141,.3)"/>
+                <text x="124" y="176" textAnchor="middle" fontSize="8.5" fill="#c792ea" fontFamily="Inconsolata">weights → rank</text>
+              </svg>
+              <div className="note">Six rooms, filled left-to-right; the bottom row is the output. ● 9 · ◐ 3 · ○ 1.</div>
+            </div>
+          </>)}
+        </div>
+      </aside>
+    </div>
+   </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
