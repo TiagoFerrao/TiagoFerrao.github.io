@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Opportunity Solution Tree — ferrao.me</title>
+<link rel="icon" href="../img/bee.png">
+<style>
+  :root {
+    --bg: #001a20;
+    --panel: #042730;
+    --panel-2: #06303a;
+    --text: #e8f4ef;
+    --muted: #8fb3a8;
+    --mint: #7DE38D;
+    --mint-dim: rgba(125,227,141,.35);
+    --mint-faint: rgba(125,227,141,.10);
+    --red: #e07a6b;
+    --amber: #e0b56b;
+    --blue: #6baee0;
+    --violet: #b48ae0;
+    --line: rgba(143,179,168,.30);
+    --line2: rgba(143,179,168,.16);
+    --c-outcome: var(--mint);
+    --c-opportunity: var(--blue);
+    --c-solution: var(--amber);
+    --c-experiment: var(--violet);
+    --radius: 12px;
+    --sans: "Segoe UI", system-ui, -apple-system, sans-serif;
+    --mono: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); padding: 48px 0 80px; }
+  .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+  a { color: var(--mint); }
+
+  .page-head { margin-bottom: 26px; }
+  .eyebrow { font-family: var(--mono); font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; color: var(--mint); margin-bottom: 8px; }
+  h1 { font-size: 1.55rem; font-weight: 650; }
+  .page-head p { color: var(--muted); font-size: .92rem; margin-top: 8px; max-width: 820px; line-height: 1.6; }
+
+  /* ===== toolbar ===== */
+  .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 4px 0 22px; }
+  .btn { font-family: var(--mono); font-size: .62rem; letter-spacing: .1em; text-transform: uppercase; padding: 8px 13px; border-radius: 8px; border: 1px solid var(--mint-dim); background: transparent; color: var(--mint); cursor: pointer; transition: background .15s; }
+  .btn:hover { background: var(--mint-faint); }
+  .btn.quiet { border-color: var(--line2); color: var(--muted); }
+  .btn.quiet:hover { color: var(--text); background: var(--panel); }
+  .btn.danger { border-color: rgba(224,122,107,.4); color: var(--red); }
+  .btn.danger:hover { background: rgba(224,122,107,.08); }
+  .btn.solid { background: var(--mint); border-color: var(--mint); color: #03241b; font-weight: 700; }
+  .sep { width: 1px; align-self: stretch; background: var(--line2); margin: 0 4px; }
+  .saved { font-family: var(--mono); font-size: .6rem; letter-spacing: .12em; text-transform: uppercase; color: var(--mint); opacity: 0; transition: opacity .4s; margin-left: auto; }
+  .saved.show { opacity: 1; }
+
+  /* ===== summary band ===== */
+  .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin: 0 0 24px; }
+  .sum-card { background: var(--panel); border-radius: var(--radius); padding: 16px 18px; border: 1px solid transparent; }
+  .sum-card.clickable { cursor: pointer; transition: border-color .15s; }
+  .sum-card.clickable:hover { border-color: var(--mint-dim); }
+  .s-label { font-family: var(--mono); font-size: .6rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .s-value { font-size: 1.65rem; font-weight: 650; }
+  .s-value.sm { font-size: .9rem; font-weight: 600; line-height: 1.4; }
+  .s-sub { font-family: var(--mono); font-size: .6rem; letter-spacing: .08em; color: var(--muted); margin-top: 6px; text-transform: uppercase; }
+
+  /* ===== legend ===== */
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 12px; font-family: var(--mono); font-size: .6rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .legend span { display: flex; align-items: center; gap: 6px; }
+  .lg { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+
+  /* ===== tree ===== */
+  .tree-wrap { overflow-x: auto; padding: 6px 2px 30px; }
+  .tree { display: inline-block; min-width: 100%; }
+  .tree ul { display: flex; justify-content: center; padding-top: 28px; position: relative; list-style: none; }
+  .tree ul::before { content: ''; position: absolute; top: 0; left: 50%; width: 0; height: 28px; border-left: 1.5px solid var(--line); }
+  .tree li { display: flex; flex-direction: column; align-items: center; position: relative; padding: 28px 7px 0; }
+  .tree li::before, .tree li::after { content: ''; position: absolute; top: 0; right: 50%; width: 50%; height: 28px; border-top: 1.5px solid var(--line); }
+  .tree li::after { right: auto; left: 50%; border-left: 1.5px solid var(--line); }
+  .tree li:only-child::before, .tree li:only-child::after { display: none; }
+  .tree li:only-child { padding-top: 0; }
+  .tree li:first-child::before, .tree li:last-child::after { border: 0 none; }
+  .tree li:last-child::before { border-right: 1.5px solid var(--line); border-radius: 0 10px 0 0; }
+  .tree li:first-child::after { border-radius: 10px 0 0 0; }
+  .tree > ul { padding-top: 0; }
+  .tree > ul::before { display: none; }
+  .tree > ul > li { padding-top: 0; }
+  .kids.hidden { display: none; }
+
+  /* ===== node cards ===== */
+  .node { background: var(--panel); border: 1px solid var(--line2); border-top: 3px solid var(--muted); border-radius: 10px; padding: 10px 12px 11px; width: 200px; cursor: pointer; text-align: left; transition: background .15s, box-shadow .15s; }
+  .node:hover { background: var(--panel-2); }
+  .node:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--mint-dim); }
+  .node.sel { box-shadow: 0 0 0 2px var(--mint); }
+  .node.onpath { box-shadow: 0 0 0 1.5px var(--mint-dim), 0 0 22px rgba(125,227,141,.16); }
+  .node.sel.onpath { box-shadow: 0 0 0 2px var(--mint), 0 0 22px rgba(125,227,141,.2); }
+  .node.t-outcome { border-top-color: var(--c-outcome); }
+  .node.t-opportunity { border-top-color: var(--c-opportunity); }
+  .node.t-solution { border-top-color: var(--c-solution); }
+  .node.t-experiment { border-top-color: var(--c-experiment); }
+  .n-head { display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-bottom: 6px; }
+  .n-type { font-family: var(--mono); font-size: .56rem; letter-spacing: .16em; text-transform: uppercase; }
+  .t-outcome .n-type { color: var(--c-outcome); }
+  .t-opportunity .n-type { color: var(--c-opportunity); }
+  .t-solution .n-type { color: var(--c-solution); }
+  .t-experiment .n-type { color: var(--c-experiment); }
+  .collapse-btn { font-family: var(--mono); font-size: .6rem; color: var(--muted); background: none; border: 1px solid transparent; border-radius: 6px; padding: 1px 5px; cursor: pointer; }
+  .collapse-btn:hover { border-color: var(--line2); color: var(--text); }
+  .n-text { font-size: .78rem; line-height: 1.42; color: var(--text); overflow-wrap: break-word; }
+  .n-badges { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+  .badge { font-family: var(--mono); font-size: .54rem; letter-spacing: .06em; padding: 2px 7px; border-radius: 999px; background: var(--panel-2); color: var(--muted); }
+  .badge.mint { color: var(--mint); background: var(--mint-faint); }
+  .badge.red { color: var(--red); background: rgba(224,122,107,.12); }
+  .badge.amber { color: var(--amber); background: rgba(224,181,107,.12); }
+  .badge.blue { color: var(--blue); background: rgba(107,174,224,.12); }
+  .badge.star { color: #03241b; background: var(--mint); font-weight: 700; }
+
+  /* ===== detail panel ===== */
+  .panel { background: var(--panel); border-radius: var(--radius); padding: 22px 24px 24px; margin-top: 8px; }
+  .panel.flash { animation: pf .7s ease; }
+  @keyframes pf { 0% { box-shadow: 0 0 0 2px var(--mint-dim); } 100% { box-shadow: 0 0 0 0 transparent; } }
+  .p-empty { color: var(--muted); font-size: .85rem; }
+  .p-eyebrow { font-family: var(--mono); font-size: .62rem; letter-spacing: .18em; text-transform: uppercase; display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .p-dot { width: 9px; height: 9px; border-radius: 3px; }
+  .p-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px 16px; margin-top: 14px; }
+  .field { min-width: 0; }
+  .field.wide { grid-column: 1 / -1; }
+  .field label { display: block; font-family: var(--mono); font-size: .58rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .field input, .field textarea, .field select { width: 100%; background: var(--panel-2); border: 1px solid var(--line2); color: var(--text); border-radius: 8px; padding: 8px 10px; font-family: var(--sans); font-size: .84rem; line-height: 1.45; }
+  .field textarea { resize: vertical; min-height: 60px; }
+  .field input:focus, .field textarea:focus, .field select:focus { outline: none; border-color: var(--mint-dim); }
+  .p-score { font-family: var(--mono); font-size: 1.3rem; color: var(--mint); padding-top: 4px; }
+  .p-note { font-size: .8rem; color: var(--muted); line-height: 1.6; margin-top: 16px; border-left: 2px solid var(--mint-dim); padding-left: 12px; max-width: 860px; }
+  .p-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .p-hint { font-size: .8rem; color: var(--amber); line-height: 1.6; margin-top: 10px; border-left: 2px solid rgba(224,181,107,.5); padding-left: 12px; max-width: 860px; }
+
+  /* ===== intro ===== */
+  .intro { background: var(--panel); border-radius: var(--radius); margin-bottom: 20px; }
+  .intro-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 18px; cursor: pointer; user-select: none; border-radius: var(--radius); }
+  .intro-head:hover { background: var(--panel-2); }
+  .intro-head .t { font-family: var(--mono); font-size: .66rem; letter-spacing: .16em; text-transform: uppercase; color: var(--mint); }
+  .intro-head .chev { font-family: var(--mono); font-size: .72rem; color: var(--muted); }
+  .intro-body { padding: 0 18px 18px; display: none; }
+  .intro.open .intro-body { display: block; }
+  .intro-body p { font-size: .85rem; color: var(--muted); line-height: 1.65; max-width: 900px; margin-top: 10px; }
+  .intro-body strong { color: var(--text); font-weight: 600; }
+  .intro-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 14px; }
+  .intro-col { background: var(--panel-2); border-radius: 10px; padding: 12px 14px; }
+  .intro-col h3 { font-family: var(--mono); font-size: .6rem; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 7px; font-weight: 600; }
+  .intro-col.use h3 { color: var(--mint); }
+  .intro-col.notuse h3 { color: var(--amber); }
+  .intro-col.fits h3 { color: var(--blue); }
+  .intro-col p { font-size: .78rem; margin-top: 0; line-height: 1.6; }
+
+  /* ===== discovery path ===== */
+  .path { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 22px; }
+  .step { flex: 1; min-width: 185px; background: var(--panel); border: 1px solid var(--line2); border-radius: 10px; padding: 10px 12px 11px; cursor: pointer; text-align: left; transition: border-color .15s, background .15s; font-family: var(--sans); color: var(--text); }
+  .step:hover { background: var(--panel-2); border-color: var(--mint-dim); }
+  .step .st-num { display: flex; justify-content: space-between; gap: 6px; font-family: var(--mono); font-size: .56rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .step .tick { font-size: .72rem; }
+  .step.done { border-color: var(--mint-dim); }
+  .step.done .st-num, .step.done .tick { color: var(--mint); }
+  .step.next { border-color: var(--mint); box-shadow: 0 0 14px rgba(125,227,141,.12); }
+  .step.next .st-num { color: var(--mint); }
+  .step .st-title { display: block; font-size: .76rem; font-weight: 600; line-height: 1.35; }
+  .step .st-hint { display: block; font-size: .7rem; color: var(--muted); line-height: 1.45; margin-top: 4px; }
+  .step.next .st-hint { color: var(--text); }
+
+  /* ===== tooltips ===== */
+  .tip { position: relative; cursor: help; border-bottom: 1px dotted rgba(143,179,168,.55); }
+  .tip::after { content: attr(data-tip); position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: #0a3a46; color: var(--text); font-family: var(--sans); font-size: .72rem; font-weight: 400; letter-spacing: 0; text-transform: none; line-height: 1.5; padding: 8px 11px; border-radius: 8px; border: 1px solid var(--mint-dim); width: 230px; text-align: left; opacity: 0; pointer-events: none; transition: opacity .15s; z-index: 30; }
+  .tip:hover::after, .tip:focus-visible::after { opacity: 1; }
+
+  .foot { margin-top: 26px; font-size: .74rem; color: var(--muted); line-height: 1.6; }
+
+  button:focus-visible { outline: 2px solid var(--mint-dim); outline-offset: 2px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+
+  @media (max-width: 640px) {
+    body { padding: 28px 0 60px; }
+    .container { padding: 0 14px; }
+    .node { width: 160px; }
+    .saved { display: none; }
+    .step { min-width: 46%; }
+  }
+
+  /* ===== print / PDF ===== */
+  @media print {
+    @page { size: A4 landscape; margin: 12mm; }
+    body { background: #fff; color: #111; padding: 0; }
+    .toolbar, .panel, .collapse-btn, .legend, .page-head a.back, .saved, .foot, .intro, .path { display: none !important; }
+    .kids.hidden { display: flex !important; }
+    .tree-wrap { overflow: visible; }
+    h1, .s-value, .n-text { color: #111; }
+    .page-head p { color: #444; }
+    .eyebrow { color: #2c8f6f; }
+    .sum-card, .node { background: #fff; border-color: #bbb; box-shadow: none !important; break-inside: avoid; }
+    .s-label, .s-sub, .n-type, .badge { color: #555; }
+    .badge { background: #f2f2f2; }
+    .badge.star { background: #2c8f6f; color: #fff; }
+    .tree ul::before, .tree li::before, .tree li::after { border-color: #999 !important; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="page-head">
+    <div class="eyebrow">Innovation Toolbox</div>
+    <h1>Opportunity Solution Tree</h1>
+    <p>Decide what to build next without skipping the evidence. Click any node to edit it — the tree highlights the path to your highest-scoring &#9733; target opportunity. <a class="back" href="../innovation.html">&larr; back to the innovation process</a></p>
+  </div>
+
+  <div class="intro" id="intro">
+    <div class="intro-head" id="introHead" role="button" tabindex="0" aria-expanded="true">
+      <span class="t">What is this &amp; when to use it</span>
+      <span class="chev" id="introChev">&#9662;</span>
+    </div>
+    <div class="intro-body">
+      <p>An <strong>Opportunity Solution Tree</strong> (Teresa Torres) is a living map of discovery work. You set one measurable <strong>outcome</strong>, map the customer <strong>opportunities</strong> — needs, pains and desires heard in research — that drive it, compare competing <strong>solutions</strong> for the most promising opportunity, and de-risk them with small <strong>experiments</strong>. Unlike a one-off canvas, the tree lives: scores shift, evidence accumulates, branches get parked or killed, and the &#9733; target path always shows where the focus is.</p>
+      <div class="intro-cols">
+        <div class="intro-col use"><h3>Use it when</h3><p>You have (or can define) a measurable outcome and need to decide what to build next; you keep jumping between ideas; or stakeholders push pet solutions and you need to show the reasoning between the goal and the backlog.</p></div>
+        <div class="intro-col notuse"><h3>Don't use it when</h3><p>You don't have an outcome yet — start with the <a href="value-proposition.html">Value Proposition Designer</a> to understand jobs, pains and gains first — or decisions are already locked and you're in pure delivery mode.</p></div>
+        <div class="intro-col fits"><h3>How it fits the toolbox</h3><p>Validated pains and jobs from the VPC become opportunities here; every experiment can be queued to the <a href="assumptions-tracker.html">Assumptions Tracker</a> to manage validation cost and remaining risk.</p></div>
+      </div>
+      <p>Follow the five steps below — they check themselves off as your tree grows, and clicking a step takes you to (or creates) the right node.</p>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <button class="btn quiet" id="btnSample">Load sample</button>
+    <button class="btn danger" id="btnClear">Clear tree</button>
+    <div class="sep"></div>
+    <button class="btn" id="btnExportJson">Export JSON</button>
+    <button class="btn" id="btnImportJson">Import JSON</button>
+    <div class="sep"></div>
+    <button class="btn" id="btnCsv">Experiments &rarr; CSV</button>
+    <button class="btn" id="btnQueue">Queue &rarr; Assumptions Tracker</button>
+    <div class="sep"></div>
+    <button class="btn solid" id="btnPrint">Print / PDF</button>
+    <span class="saved" id="saved">saved &#10003;</span>
+  </div>
+
+  <div class="path" id="path" aria-label="Discovery path"></div>
+
+  <div class="summary">
+    <div class="sum-card clickable" id="sumTarget" title="Click to open the target opportunity">
+      <div class="s-label">&#9733; Target opportunity</div>
+      <div class="s-value sm" id="vTarget">—</div>
+      <div class="s-sub" id="vTargetSub">score —</div>
+    </div>
+    <div class="sum-card">
+      <div class="s-label">Opportunities</div>
+      <div class="s-value" id="vOpp">0</div>
+      <div class="s-sub" id="vOppSub">0% backed by evidence</div>
+    </div>
+    <div class="sum-card">
+      <div class="s-label">Solutions</div>
+      <div class="s-value" id="vSol">0</div>
+      <div class="s-sub" id="vSolSub">—</div>
+    </div>
+    <div class="sum-card">
+      <div class="s-label">Experiments</div>
+      <div class="s-value" id="vExp">0</div>
+      <div class="s-sub" id="vExpSub">—</div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span><i class="lg" style="background:var(--c-outcome)"></i>Outcome</span>
+    <span><i class="lg" style="background:var(--c-opportunity)"></i>Opportunity</span>
+    <span><i class="lg" style="background:var(--c-solution)"></i>Solution</span>
+    <span><i class="lg" style="background:var(--c-experiment)"></i>Experiment</span>
+    <span style="margin-left:auto" class="tip" tabindex="0" data-tip="Opportunity score = reach &times; frequency &times; severity (max 125). The highest score among open opportunities becomes the &#9733; target.">R&times;F&times;S = reach &times; frequency &times; severity</span>
+  </div>
+
+  <div class="tree-wrap"><div class="tree" id="tree"></div></div>
+
+  <div class="panel" id="panel"><div class="p-empty">Select a node above to edit it, score it, or grow the tree from it.</div></div>
+
+  <p class="foot">Data stays in this browser (localStorage) — export JSON to back up or share. Method: Teresa Torres, <em>Continuous Discovery Habits</em> (2021).</p>
+
+</div>
+<input type="file" id="fileInput" accept="application/json" hidden>
+<script>
+(function () {
+  var KEY = 'ferrao-ost-v1';
+  var QUEUE_KEY = 'ferrao-assumptions-import-queue';
+  var INTRO_KEY = 'ferrao-ost-intro';
+  var seq = 1;
+  var state = null;
+  var selId = null;
+
+  var TYPES = {
+    outcome: {
+      label: 'Outcome', color: 'var(--c-outcome)',
+      note: "One tree, one outcome. Make it measurable and time-bound — discovery only works against a number you can move. Everything below exists to move this metric.",
+      childTypes: ['opportunity']
+    },
+    opportunity: {
+      label: 'Opportunity', color: 'var(--c-opportunity)',
+      note: "Phrase it as a customer need, pain or desire — in the customer's words, never as a solution. Opportunities come from interviews and evidence, not brainstorms. Score reach \u00d7 frequency \u00d7 severity to compare siblings; the highest open score becomes the target.",
+      childTypes: ['opportunity', 'solution']
+    },
+    solution: {
+      label: 'Solution', color: 'var(--c-solution)',
+      note: "Generate at least three solutions per target opportunity and compare them side by side — committing to the first idea is the classic discovery failure.",
+      childTypes: ['experiment']
+    },
+    experiment: {
+      label: 'Experiment', color: 'var(--c-experiment)',
+      note: "Find the riskiest assumption behind the solution and design the smallest, cheapest test that could change your mind — days, not sprints. Queue it to the Assumptions Tracker to manage cost and remaining risk.",
+      childTypes: []
+    }
+  };
+
+  function nid() { return 'n' + (seq++); }
+
+  function newNode(type, text) {
+    var n = { id: nid(), type: type, text: text || '', collapsed: false, children: [] };
+    if (type === 'outcome') { n.metric = ''; n.current = ''; n.target = ''; }
+    if (type === 'opportunity') { n.evidence = ''; n.reach = 3; n.frequency = 3; n.severity = 3; n.status = 'open'; }
+    if (type === 'solution') { n.notes = ''; n.status = 'idea'; }
+    if (type === 'experiment') { n.method = ''; n.threshold = ''; n.uncertainty = 'high'; n.impact = 'high'; n.cost = 0; n.result = 'pending'; }
+    return n;
+  }
+
+  function sampleTree() {
+    var root = newNode('outcome', 'Cut non-revenue water in the Set\u00fabal DMA cluster from 28% to 20% within 18 months');
+    root.metric = 'Non-revenue water (%)'; root.current = '28%'; root.target = '20%';
+
+    var o1 = newNode('opportunity', "Operators can't pinpoint leaks fast enough once night flows rise");
+    o1.reach = 5; o1.frequency = 4; o1.severity = 5;
+    o1.evidence = '12 field interviews across 3 municipalities; mean time-to-locate is 11 days; ops logs show 60% of losses concentrate in 4 DMAs.';
+
+    var o1a = newNode('opportunity', 'Night-flow anomalies are spotted days late because review is manual');
+    o1a.reach = 4; o1a.frequency = 4; o1a.severity = 4;
+    o1a.evidence = 'Telemetry exists but alarms are threshold-only; analysts review weekly.';
+
+    var s1 = newNode('solution', 'Acoustic logger mesh in the four highest-loss DMAs');
+    s1.status = 'testing'; s1.notes = 'Correlate night noise between loggers to localise leaks within ~50 m.';
+    var e1 = newNode('experiment', 'Deploy 10 acoustic loggers in DMA-S3 for 30 days');
+    e1.method = 'Install loggers on hydrants; nightly correlation review with the ops team.';
+    e1.threshold = '\u2265 3 field-confirmed leaks found within 30 days';
+    e1.uncertainty = 'high'; e1.impact = 'high'; e1.cost = 4500; e1.result = 'pending';
+    s1.children.push(e1);
+
+    var s2 = newNode('solution', 'Automated night-flow anomaly alerts from existing SCADA');
+    s2.status = 'idea'; s2.notes = 'Reuse current pressure/flow telemetry; no new hardware.';
+    var e2 = newNode('experiment', 'Backtest 6 months of SCADA data against known bursts');
+    e2.method = 'Run the anomaly model offline; compare hits with repair records.';
+    e2.threshold = 'Detect \u2265 70% of recorded bursts with < 2 false alarms/week';
+    e2.uncertainty = 'medium'; e2.impact = 'high'; e2.cost = 1200; e2.result = 'confirmed';
+    s2.children.push(e2);
+    o1a.children.push(s2);
+
+    o1.children.push(o1a, s1);
+
+    var o2 = newNode('opportunity', 'Aging meters under-register real consumption, inflating apparent losses');
+    o2.reach = 3; o2.frequency = 3; o2.severity = 4;
+    o2.evidence = '2025 meter-park audit: 31% of meters are older than 12 years.';
+    var s3 = newNode('solution', 'Targeted swap of meters older than 15 years');
+    s3.status = 'idea'; s3.notes = 'Start where the audit flagged the worst drift.';
+    var e3 = newNode('experiment', 'Swap 200 meters in the Amora zone and compare registration');
+    e3.method = 'Paired before/after measurement against a neighbouring control DMA.';
+    e3.threshold = 'Registered consumption rises \u2265 4% vs control';
+    e3.uncertainty = 'medium'; e3.impact = 'medium'; e3.cost = 9000; e3.result = 'pending';
+    s3.children.push(e3);
+    o2.children.push(s3);
+
+    var o3 = newNode('opportunity', 'Repair crews duplicate inspection routes across municipalities');
+    o3.reach = 2; o3.frequency = 4; o3.severity = 2; o3.status = 'parked';
+
+    root.children.push(o1, o2, o3);
+    return root;
+  }
+
+  /* ---------- tree utils ---------- */
+  function walk(node, fn, parent, depth) {
+    fn(node, parent || null, depth || 0);
+    node.children.forEach(function (c) { walk(c, fn, node, (depth || 0) + 1); });
+  }
+  function findPath(id) {
+    var path = null;
+    (function rec(node, acc) {
+      if (path) return;
+      var next = acc.concat([node]);
+      if (node.id === id) { path = next; return; }
+      for (var i = 0; i < node.children.length && !path; i++) rec(node.children[i], next);
+    })(state, []);
+    return path;
+  }
+  function findNode(id) { var p = findPath(id); return p ? p[p.length - 1] : null; }
+  function findParent(id) { var p = findPath(id); return p && p.length > 1 ? p[p.length - 2] : null; }
+
+  function scoreOf(o) { return (o.reach || 0) * (o.frequency || 0) * (o.severity || 0); }
+
+  function computeTarget() {
+    var best = null;
+    walk(state, function (n) {
+      if (n.type === 'opportunity' && n.status !== 'parked') {
+        if (!best || scoreOf(n) > scoreOf(best)) best = n;
+      }
+    });
+    return best;
+  }
+
+  /* ---------- persistence ---------- */
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify({ seq: seq, tree: state })); } catch (e) {}
+    var s = document.getElementById('saved');
+    s.classList.add('show');
+    clearTimeout(save._t);
+    save._t = setTimeout(function () { s.classList.remove('show'); }, 1400);
+  }
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (!raw) return false;
+      var obj = JSON.parse(raw);
+      if (!obj || !obj.tree || obj.tree.type !== 'outcome') return false;
+      state = obj.tree; seq = obj.seq || 5000;
+      return true;
+    } catch (e) { return false; }
+  }
+
+  /* ---------- rendering ---------- */
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+  function money(n) { return '\u20ac ' + (Number(n) || 0).toLocaleString('de-DE'); }
+  function truncate(s, n) { s = String(s || ''); return s.length > n ? s.slice(0, n - 1) + '\u2026' : s; }
+
+  function badgesFor(n, target) {
+    var b = [];
+    if (n.type === 'outcome') {
+      if (n.current || n.target) b.push('<span class="badge mint">' + esc(n.current || '?') + ' \u2192 ' + esc(n.target || '?') + '</span>');
+    }
+    if (n.type === 'opportunity') {
+      b.push('<span class="badge blue">R\u00d7F\u00d7S ' + scoreOf(n) + '</span>');
+      if (n.evidence && n.evidence.trim()) b.push('<span class="badge mint">evidence</span>');
+      else b.push('<span class="badge">no evidence</span>');
+      if (n.status === 'parked') b.push('<span class="badge amber">parked</span>');
+      if (target && n.id === target.id) b.push('<span class="badge star">\u2605 target</span>');
+    }
+    if (n.type === 'solution') {
+      var smap = { idea: '', testing: 'amber', validated: 'mint', killed: 'red' };
+      b.push('<span class="badge ' + (smap[n.status] || '') + '">' + esc(n.status) + '</span>');
+    }
+    if (n.type === 'experiment') {
+      var rmap = { pending: '', confirmed: 'mint', refuted: 'red' };
+      b.push('<span class="badge ' + (rmap[n.result] || '') + '">' + esc(n.result) + '</span>');
+      if (n.cost) b.push('<span class="badge">' + money(n.cost) + '</span>');
+    }
+    return b.join('');
+  }
+
+  function nodeHTML(n, target) {
+    var t = TYPES[n.type];
+    var chev = '';
+    if (n.children.length) {
+      chev = '<button class="collapse-btn" data-id="' + n.id + '" title="Collapse / expand branch">' +
+        (n.collapsed ? '\u25b8 ' + n.children.length : '\u25be') + '</button>';
+    }
+    return '<div class="n-head"><span class="n-type">' + t.label + '</span>' + chev + '</div>' +
+      '<div class="n-text">' + (n.text ? esc(n.text) : '<em style="color:var(--muted)">untitled \u2014 click to edit</em>') + '</div>' +
+      '<div class="n-badges">' + badgesFor(n, target) + '</div>';
+  }
+
+  function buildUL(nodes, pathIds, target) {
+    var ul = document.createElement('ul');
+    nodes.forEach(function (n) {
+      var li = document.createElement('li');
+      var card = document.createElement('div');
+      card.className = 'node t-' + n.type + (n.id === selId ? ' sel' : '') + (pathIds.has(n.id) ? ' onpath' : '');
+      card.dataset.id = n.id;
+      card.tabIndex = 0;
+      card.innerHTML = nodeHTML(n, target);
+      li.appendChild(card);
+      if (n.children.length) {
+        var kids = buildUL(n.children, pathIds, target);
+        kids.className = 'kids' + (n.collapsed ? ' hidden' : '');
+        li.appendChild(kids);
+      }
+      ul.appendChild(li);
+    });
+    return ul;
+  }
+
+  function render() {
+    var target = computeTarget();
+    var pathIds = new Set();
+    if (target) {
+      var p = findPath(target.id);
+      if (p) p.forEach(function (n) { pathIds.add(n.id); });
+    }
+    var tree = document.getElementById('tree');
+    tree.innerHTML = '';
+    tree.appendChild(buildUL([state], pathIds, target));
+    renderSummary(target);
+    renderPanel();
+  }
+
+  function renderSummary(target) {
+    var opps = [], sols = [], exps = [];
+    walk(state, function (n) {
+      if (n.type === 'opportunity') opps.push(n);
+      if (n.type === 'solution') sols.push(n);
+      if (n.type === 'experiment') exps.push(n);
+    });
+    document.getElementById('vTarget').textContent = target ? truncate(target.text || 'untitled', 64) : '\u2014';
+    document.getElementById('vTargetSub').textContent = target ? 'score ' + scoreOf(target) + ' \u00b7 click to open' : 'add an opportunity';
+    document.getElementById('vOpp').textContent = opps.length;
+    var withEv = opps.filter(function (o) { return o.evidence && o.evidence.trim(); }).length;
+    document.getElementById('vOppSub').textContent = (opps.length ? Math.round(100 * withEv / opps.length) : 0) + '% backed by evidence';
+    document.getElementById('vSol').textContent = sols.length;
+    var val = sols.filter(function (s) { return s.status === 'validated'; }).length;
+    var kil = sols.filter(function (s) { return s.status === 'killed'; }).length;
+    document.getElementById('vSolSub').textContent = val + ' validated \u00b7 ' + kil + ' killed';
+    document.getElementById('vExp').textContent = exps.length;
+    var pe = exps.filter(function (x) { return x.result === 'pending'; }).length;
+    var co = exps.filter(function (x) { return x.result === 'confirmed'; }).length;
+    var re = exps.filter(function (x) { return x.result === 'refuted'; }).length;
+    document.getElementById('vExpSub').textContent = pe + ' pending \u00b7 ' + co + ' confirmed \u00b7 ' + re + ' refuted';
+    document.getElementById('sumTarget').dataset.targetId = target ? target.id : '';
+    renderPath({ opps: opps, sols: sols, exps: exps, target: target, withEv: withEv });
+  }
+
+  /* ---------- discovery path ---------- */
+  function solutionsUnder(node) {
+    var out = [];
+    walk(node, function (n) { if (n.type === 'solution') out.push(n); });
+    return out;
+  }
+  function firstWhere(pred) {
+    var hit = null;
+    walk(state, function (n, p) { if (!hit && pred(n, p)) hit = n; });
+    return hit;
+  }
+  function addChildAndSelect(parent, type) {
+    var kid = newNode(type, '');
+    parent.collapsed = false;
+    parent.children.push(kid);
+    selId = kid.id;
+    save();
+  }
+
+  var STEPS = [
+    { num: '01', title: 'Define the outcome',
+      done: function () { return !!(state.text && state.metric && state.current && state.target); },
+      todo: 'Open the outcome and fill in metric, current and target.',
+      doneHint: 'Measurable and time-bound.',
+      go: function () { selId = state.id; } },
+
+    { num: '02', title: 'Map opportunities',
+      done: function (s) { return s.opps.length >= 2 && s.withEv >= Math.ceil(s.opps.length / 2); },
+      todo: 'Add at least two opportunities heard in research, backed by evidence.',
+      doneHint: 'Backed by evidence, not brainstorms.',
+      go: function (s) {
+        if (!s.opps.length) { addChildAndSelect(state, 'opportunity'); return; }
+        var gap = null;
+        s.opps.forEach(function (o) { if (!gap && !(o.evidence && o.evidence.trim())) gap = o; });
+        selId = (gap || s.opps[0]).id;
+      } },
+
+    { num: '03', title: 'Score & pick the target',
+      done: function (s) {
+        if (!s.target || s.opps.length < 2) return false;
+        var distinct = {};
+        s.opps.forEach(function (o) { distinct[scoreOf(o)] = 1; });
+        return Object.keys(distinct).length > 1;
+      },
+      todo: 'Score reach, frequency and severity on each opportunity until a \u2605 target emerges.',
+      doneHint: 'The \u2605 path shows your focus.',
+      go: function (s) {
+        if (s.target) selId = s.target.id;
+        else if (s.opps.length) selId = s.opps[0].id;
+        else selId = state.id;
+      } },
+
+    { num: '04', title: 'Compare solutions',
+      done: function (s) { return !!s.target && solutionsUnder(s.target).length >= 2; },
+      todo: 'Put at least two competing solutions under the \u2605 target \u2014 click to add one.',
+      doneHint: "Compare, don't fall in love.",
+      go: function (s) {
+        if (!s.target) { selId = state.id; return; }
+        var su = solutionsUnder(s.target);
+        if (su.length < 2) addChildAndSelect(s.target, 'solution');
+        else selId = su[0].id;
+      } },
+
+    { num: '05', title: 'Design the experiments',
+      done: function (s) {
+        var live = s.sols.filter(function (x) { return x.status !== 'killed'; });
+        return live.length > 0 && live.every(function (x) {
+          return x.children.some(function (c) { return c.type === 'experiment'; });
+        });
+      },
+      todo: 'Give every live solution its smallest, cheapest test \u2014 click to add one.',
+      doneHint: 'Every live solution has a test.',
+      go: function () {
+        var gap = firstWhere(function (n) {
+          return n.type === 'solution' && n.status !== 'killed' &&
+            !n.children.some(function (c) { return c.type === 'experiment'; });
+        });
+        if (gap) { addChildAndSelect(gap, 'experiment'); return; }
+        var pend = firstWhere(function (n) { return n.type === 'experiment' && n.result === 'pending'; });
+        if (pend) selId = pend.id;
+      } }
+  ];
+
+  function renderPath(stats) {
+    var wrap = document.getElementById('path');
+    wrap.innerHTML = '';
+    var nextFound = false;
+    STEPS.forEach(function (st) {
+      var d = st.done(stats);
+      var isNext = !d && !nextFound;
+      if (isNext) nextFound = true;
+      var b = document.createElement('button');
+      b.className = 'step' + (d ? ' done' : '') + (isNext ? ' next' : '');
+      b.innerHTML = '<span class="st-num"><span>' + (isNext ? 'start here \u00b7 ' : 'step ') + st.num + '</span><span class="tick">' + (d ? '\u2713' : '\u25cb') + '</span></span>' +
+        '<span class="st-title">' + st.title + '</span>' +
+        '<span class="st-hint">' + (d ? st.doneHint : st.todo) + '</span>';
+      b.addEventListener('click', function () {
+        st.go(stats);
+        render();
+        var p = document.getElementById('panel');
+        p.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        p.classList.remove('flash'); void p.offsetWidth; p.classList.add('flash');
+        var ta = document.querySelector('#panel textarea');
+        if (ta && !ta.value) ta.focus();
+      });
+      wrap.appendChild(b);
+    });
+  }
+
+  /* ---------- contextual panel hints ---------- */
+  function panelHint(n) {
+    if (n.type === 'outcome') {
+      if (!n.metric || !n.current || !n.target) return 'Next: fill metric, current and target \u2014 a vague outcome makes every score below it meaningless.';
+      if (!n.children.length) return 'Next: add your first opportunity \u2014 a need, pain or desire you heard in research.';
+      return '';
+    }
+    if (n.type === 'opportunity') {
+      if (n.status === 'parked') return 'Parked: kept on the map but excluded from the target race.';
+      if (!(n.evidence && n.evidence.trim())) return 'Next: capture at least one piece of evidence before trusting the score \u2014 opportunities come from research, not brainstorms.';
+      var t2 = computeTarget();
+      var hasSol = n.children.some(function (c) { return c.type === 'solution'; });
+      if (t2 && t2.id === n.id && !hasSol) return 'This is the \u2605 target: add two or three competing solutions under it.';
+      return '';
+    }
+    if (n.type === 'solution') {
+      if (n.status === 'killed') return 'Killed: risk cleared. Keep it visible so the team remembers why.';
+      if (!n.children.length) return "Next: what's the cheapest test that could kill this idea? Add an experiment.";
+      return '';
+    }
+    if (n.type === 'experiment') {
+      if (!n.method) return 'Next: describe the smallest method that could change your mind.';
+      if (!n.threshold) return 'Next: set the pass/fail threshold before running \u2014 deciding after the data arrives is how teams fool themselves.';
+      if (n.result === 'refuted') return 'Refuted is progress: risk cleared. Consider killing or reshaping the parent solution.';
+      return '';
+    }
+    return '';
+  }
+
+  /* ---------- detail panel ---------- */
+  function field(label, el, wide, tip) {
+    var d = document.createElement('div');
+    d.className = 'field' + (wide ? ' wide' : '');
+    var l = document.createElement('label');
+    if (tip) {
+      var sp = document.createElement('span');
+      sp.className = 'tip';
+      sp.tabIndex = 0;
+      sp.setAttribute('data-tip', tip);
+      sp.textContent = label;
+      l.appendChild(sp);
+    } else {
+      l.textContent = label;
+    }
+    d.appendChild(l); d.appendChild(el);
+    return d;
+  }
+  function mkInput(value, oninput, type) {
+    var i = document.createElement('input');
+    i.type = type || 'text';
+    i.value = value == null ? '' : value;
+    i.addEventListener('input', oninput);
+    return i;
+  }
+  function mkTextarea(value, oninput, rows) {
+    var t = document.createElement('textarea');
+    t.rows = rows || 3;
+    t.value = value || '';
+    t.addEventListener('input', oninput);
+    return t;
+  }
+  function mkSelect(options, value, onchange) {
+    var s = document.createElement('select');
+    options.forEach(function (o) {
+      var op = document.createElement('option');
+      op.value = o[0]; op.textContent = o[1];
+      if (String(o[0]) === String(value)) op.selected = true;
+      s.appendChild(op);
+    });
+    s.addEventListener('change', onchange);
+    return s;
+  }
+
+  /* update the selected card + summary without rebuilding the panel (keeps typing focus) */
+  function refreshCard(n) {
+    var target = computeTarget();
+    var card = document.querySelector('.node[data-id="' + n.id + '"]');
+    if (card) card.innerHTML = nodeHTML(n, target);
+    renderSummary(target);
+  }
+
+  function renderPanel() {
+    var panel = document.getElementById('panel');
+    panel.innerHTML = '';
+    var n = selId ? findNode(selId) : null;
+    if (!n) {
+      panel.innerHTML = '<div class="p-empty">Select a node above to edit it, score it, or grow the tree from it.</div>';
+      return;
+    }
+    var t = TYPES[n.type];
+    var head = document.createElement('div');
+    head.className = 'p-eyebrow';
+    head.innerHTML = '<span class="p-dot" style="background:' + t.color + '"></span><span style="color:' + t.color + '">' + t.label + '</span>';
+    panel.appendChild(head);
+
+    var grid = document.createElement('div');
+    grid.className = 'p-grid';
+
+    var title = mkTextarea(n.text, function () { n.text = title.value; refreshCard(n); save(); }, 2);
+    grid.appendChild(field(n.type === 'experiment' ? 'Hypothesis' : 'Statement', title, true));
+
+    if (n.type === 'outcome') {
+      var m = mkInput(n.metric, function () { n.metric = m.value; save(); });
+      var c = mkInput(n.current, function () { n.current = c.value; refreshCard(n); save(); });
+      var g = mkInput(n.target, function () { n.target = g.value; refreshCard(n); save(); });
+      grid.appendChild(field('Metric', m));
+      grid.appendChild(field('Current', c));
+      grid.appendChild(field('Target', g));
+    }
+
+    if (n.type === 'opportunity') {
+      var ev = mkTextarea(n.evidence, function () { n.evidence = ev.value; refreshCard(n); save(); }, 3);
+      grid.appendChild(field('Evidence (interviews, data, tickets\u2026)', ev, true, 'Quotes, interview counts, telemetry, support tickets \u2014 anything observed rather than assumed.'));
+      var opts = [[1, '1 \u2014 minimal'], [2, '2'], [3, '3'], [4, '4'], [5, '5 \u2014 extreme']];
+      var r = mkSelect(opts, n.reach, function () { n.reach = +r.value; save(); render(); });
+      var f = mkSelect(opts, n.frequency, function () { n.frequency = +f.value; save(); render(); });
+      var sv = mkSelect(opts, n.severity, function () { n.severity = +sv.value; save(); render(); });
+      grid.appendChild(field('Reach \u2014 how many customers', r, false, 'How many customers or users does this touch? 1 = a handful, 5 = nearly everyone.'));
+      grid.appendChild(field('Frequency \u2014 how often', f, false, 'How often do they run into it? 1 = rarely, 5 = every single day.'));
+      grid.appendChild(field('Severity \u2014 how painful', sv, false, 'How painful is it when it happens? 1 = a shrug, 5 = a showstopper.'));
+      var scoreEl = document.createElement('div');
+      scoreEl.className = 'p-score';
+      scoreEl.textContent = scoreOf(n);
+      grid.appendChild(field('Opportunity score', scoreEl, false, 'Reach \u00d7 frequency \u00d7 severity, max 125. The highest score among open opportunities becomes the \u2605 target.'));
+      var stSel = mkSelect([['open', 'open \u2014 in play'], ['parked', 'parked \u2014 excluded from target']], n.status, function () { n.status = stSel.value; save(); render(); });
+      grid.appendChild(field('Status', stSel, false, 'Parked opportunities stay on the map but are excluded from the target race.'));
+    }
+
+    if (n.type === 'solution') {
+      var no = mkTextarea(n.notes, function () { n.notes = no.value; save(); }, 3);
+      grid.appendChild(field('Notes', no, true));
+      var ss = mkSelect([['idea', 'idea'], ['testing', 'testing'], ['validated', 'validated'], ['killed', 'killed']], n.status, function () { n.status = ss.value; save(); render(); });
+      grid.appendChild(field('Status', ss));
+    }
+
+    if (n.type === 'experiment') {
+      var me = mkTextarea(n.method, function () { n.method = me.value; save(); }, 3);
+      grid.appendChild(field('Method \u2014 smallest test that could change your mind', me, true));
+      var th = mkInput(n.threshold, function () { n.threshold = th.value; save(); });
+      grid.appendChild(field('Success threshold', th, true, 'Decide the pass/fail number before running the test \u2014 it keeps the result honest.'));
+      var lvl = [['low', 'low'], ['medium', 'medium'], ['high', 'high']];
+      var un = mkSelect(lvl, n.uncertainty, function () { n.uncertainty = un.value; save(); });
+      var im = mkSelect(lvl, n.impact, function () { n.impact = im.value; save(); });
+      var co2 = mkInput(n.cost, function () { n.cost = +co2.value || 0; refreshCard(n); save(); }, 'number');
+      var rs = mkSelect([['pending', 'pending'], ['confirmed', 'confirmed'], ['refuted', 'refuted']], n.result, function () { n.result = rs.value; save(); render(); });
+      grid.appendChild(field('Uncertainty', un, false, 'How unsure are you that the underlying assumption holds?'));
+      grid.appendChild(field('Impact', im, false, 'If the assumption turns out false, how badly does the solution break?'));
+      grid.appendChild(field('Cost to run (\u20ac)', co2, false, 'What the experiment costs to run \u2014 feeds the totals in the Assumptions Tracker.'));
+      grid.appendChild(field('Result', rs));
+    }
+
+    panel.appendChild(grid);
+
+    var note = document.createElement('div');
+    note.className = 'p-note';
+    note.textContent = t.note;
+    panel.appendChild(note);
+
+    var hintText = panelHint(n);
+    if (hintText) {
+      var hint = document.createElement('div');
+      hint.className = 'p-hint';
+      hint.textContent = hintText;
+      panel.appendChild(hint);
+    }
+
+    var actions = document.createElement('div');
+    actions.className = 'p-actions';
+    t.childTypes.forEach(function (ct) {
+      var b = document.createElement('button');
+      b.className = 'btn';
+      b.textContent = '+ ' + (ct === 'opportunity' && n.type === 'opportunity' ? 'sub-opportunity' : TYPES[ct].label.toLowerCase());
+      b.addEventListener('click', function () {
+        var kid = newNode(ct, '');
+        n.collapsed = false;
+        n.children.push(kid);
+        selId = kid.id;
+        save(); render();
+        var ta = document.querySelector('#panel textarea');
+        if (ta) ta.focus();
+      });
+      actions.appendChild(b);
+    });
+    if (n.children.length) {
+      var bc = document.createElement('button');
+      bc.className = 'btn quiet';
+      bc.textContent = n.collapsed ? 'Expand branch' : 'Collapse branch';
+      bc.addEventListener('click', function () { n.collapsed = !n.collapsed; save(); render(); });
+      actions.appendChild(bc);
+    }
+    if (n.type !== 'outcome') {
+      var bd = document.createElement('button');
+      bd.className = 'btn danger';
+      bd.textContent = 'Delete node';
+      bd.addEventListener('click', function () {
+        if (n.children.length && !confirm('Delete this node and everything beneath it?')) return;
+        var parent = findParent(n.id);
+        if (!parent) return;
+        parent.children = parent.children.filter(function (c) { return c.id !== n.id; });
+        selId = parent.id;
+        save(); render();
+      });
+      actions.appendChild(bd);
+    }
+    panel.appendChild(actions);
+  }
+
+  /* ---------- interactions ---------- */
+  document.getElementById('tree').addEventListener('click', function (e) {
+    var cb = e.target.closest('.collapse-btn');
+    if (cb) {
+      var nc = findNode(cb.dataset.id);
+      if (nc) { nc.collapsed = !nc.collapsed; save(); render(); }
+      e.stopPropagation();
+      return;
+    }
+    var card = e.target.closest('.node');
+    if (card) {
+      maybeCollapseIntroOnce();
+      selId = card.dataset.id;
+      render();
+      var p = document.getElementById('panel');
+      p.classList.remove('flash'); void p.offsetWidth; p.classList.add('flash');
+    }
+  });
+  document.getElementById('tree').addEventListener('keydown', function (e) {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('node')) {
+      e.preventDefault();
+      e.target.click();
+    }
+  });
+
+  document.getElementById('sumTarget').addEventListener('click', function () {
+    var id = this.dataset.targetId;
+    if (id) {
+      selId = id;
+      render();
+      document.getElementById('panel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  });
+
+  /* ---------- toolbar ---------- */
+  document.getElementById('btnSample').addEventListener('click', function () {
+    if (!confirm('Replace the current tree with the sample dataset?')) return;
+    state = sampleTree(); selId = null; save(); render();
+  });
+  document.getElementById('btnClear').addEventListener('click', function () {
+    if (!confirm('Clear the whole tree? This cannot be undone \u2014 export JSON first if you need a backup.')) return;
+    state = newNode('outcome', ''); selId = state.id; save(); render();
+  });
+  document.getElementById('btnExportJson').addEventListener('click', function () {
+    var blob = new Blob([JSON.stringify({ seq: seq, tree: state }, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'opportunity-solution-tree.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+  var fileInput = document.getElementById('fileInput');
+  document.getElementById('btnImportJson').addEventListener('click', function () { fileInput.click(); });
+  fileInput.addEventListener('change', function () {
+    var f = fileInput.files[0];
+    if (!f) return;
+    var rd = new FileReader();
+    rd.onload = function () {
+      try {
+        var obj = JSON.parse(rd.result);
+        var tree = obj.tree || obj;
+        if (!tree || tree.type !== 'outcome') throw new Error('bad');
+        state = tree; seq = obj.seq || 9000; selId = null;
+        save(); render();
+      } catch (err) {
+        alert('Could not import: the file is not a valid Opportunity Solution Tree JSON export.');
+      }
+      fileInput.value = '';
+    };
+    rd.readAsText(f);
+  });
+
+  function collectExperiments() {
+    var rows = [];
+    walk(state, function (n, parent) {
+      if (n.type !== 'experiment') return;
+      var sol = parent && parent.type === 'solution' ? parent.text : '';
+      var path = findPath(n.id) || [];
+      var opp = '';
+      for (var i = path.length - 1; i >= 0; i--) {
+        if (path[i].type === 'opportunity') { opp = path[i].text; break; }
+      }
+      rows.push({
+        assumption: n.text,
+        category: 'OST \u2014 ' + truncate(sol || 'solution', 40),
+        value: truncate(opp || '', 60),
+        uncertainty: n.uncertainty,
+        impact: n.impact,
+        experiment: n.method,
+        threshold: n.threshold,
+        cost_to_validate: Number(n.cost) || 0,
+        result: n.result === 'pending' ? '' : n.result
+      });
+    });
+    return rows;
+  }
+  function csvCell(v) { v = String(v == null ? '' : v); return '"' + v.replace(/"/g, '""') + '"'; }
+
+  document.getElementById('btnCsv').addEventListener('click', function () {
+    var rows = collectExperiments();
+    if (!rows.length) { alert('No experiments in the tree yet.'); return; }
+    var cols = ['assumption', 'category', 'value', 'uncertainty', 'impact', 'experiment', 'threshold', 'cost_to_validate', 'result'];
+    var csv = cols.join(',') + '\n' + rows.map(function (r) {
+      return cols.map(function (cl) { return csvCell(r[cl]); }).join(',');
+    }).join('\n');
+    var blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'ost-experiments.csv';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  document.getElementById('btnQueue').addEventListener('click', function () {
+    var rows = collectExperiments();
+    if (!rows.length) { alert('No experiments in the tree yet.'); return; }
+    try {
+      localStorage.setItem(QUEUE_KEY, JSON.stringify({ from: 'opportunity-solution-tree', at: new Date().toISOString(), rows: rows }));
+      alert(rows.length + ' experiment(s) queued under the shared key "' + QUEUE_KEY + '".\n\nNote: the Assumptions Tracker needs a small import patch to read this queue \u2014 next iteration.');
+    } catch (e) {
+      alert('Could not write to localStorage in this browser.');
+    }
+  });
+
+  document.getElementById('btnPrint').addEventListener('click', function () { window.print(); });
+
+  /* ---------- intro ---------- */
+  var introEl = document.getElementById('intro');
+  function setIntro(open, persist) {
+    introEl.classList.toggle('open', open);
+    document.getElementById('introHead').setAttribute('aria-expanded', open ? 'true' : 'false');
+    document.getElementById('introChev').innerHTML = open ? '&#9662;' : '&#9656;';
+    if (persist) { try { localStorage.setItem(INTRO_KEY, open ? 'open' : 'closed'); } catch (e) {} }
+  }
+  function maybeCollapseIntroOnce() {
+    try { if (!localStorage.getItem(INTRO_KEY)) setIntro(false, true); } catch (e) {}
+  }
+  (function initIntro() {
+    var st = null;
+    try { st = localStorage.getItem(INTRO_KEY); } catch (e) {}
+    setIntro(st !== 'closed', false);
+  })();
+  document.getElementById('introHead').addEventListener('click', function () {
+    setIntro(!introEl.classList.contains('open'), true);
+  });
+  document.getElementById('introHead').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.click(); }
+  });
+
+  /* ---------- init ---------- */
+  if (!load()) { state = sampleTree(); }
+  render();
+})();
+</script>
+</body>
+</html>

@@ -245,6 +245,44 @@
   .discovery .stage .label { font-size: 0.74rem; }
 
   /* ============================================================
+     DISCOVERY LOOP — the OST spanning companion (stages 02–07)
+     ============================================================ */
+  .loop-track {
+    position: relative;
+    height: 58px;
+    margin-top: 16px;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+  .loop-track.revealed { opacity: 1; }
+  .loop-bracket {
+    position: absolute;
+    top: 0;
+    height: 22px;
+    border: 2px solid var(--mint-dim);
+    border-top: none;
+    border-radius: 0 0 14px 14px;
+  }
+  .loop-node {
+    position: absolute;
+    top: 22px;
+    transform: translate(-50%, -50%);
+    background: var(--bg);
+    padding: 3px 14px;
+    cursor: pointer;
+    z-index: 3;
+    white-space: nowrap;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    transition: transform 0.25s ease;
+  }
+  .loop-node:hover, .loop-node:focus-visible { transform: translate(-50%, -50%) scale(1.06); outline: none; }
+  .loop-node .lg { color: var(--mint); font-size: 0.8rem; }
+  .loop-node.active .ll { color: var(--mint); }
+
+  /* ============================================================
      DETAIL PANEL — opens below the diagram on click
      ============================================================ */
   .detail-panel {
@@ -337,8 +375,9 @@
   .tool-card .tc-desc { font-size: 0.8rem; line-height: 1.5; color: var(--muted); }
 
   @media (prefers-reduced-motion: reduce) {
-    .stage, .arrow, .discovery, .assumptions-node, .detail-card { transition: none !important; }
-    .stage, .arrow, .discovery { opacity: 1 !important; transform: none !important; }
+    .stage, .arrow, .discovery, .assumptions-node, .detail-card, .loop-track, .loop-node { transition: none !important; }
+    .stage, .arrow, .discovery, .loop-track { opacity: 1 !important; }
+    .stage, .arrow, .discovery { transform: none !important; }
   }
 </style>
 </head>
@@ -358,7 +397,7 @@
       <path d="M9.5 9.5 12 12l2.5-2.5" opacity="0.5"/>
     </svg>
     <h2>From idea to pitch — one process</h2>
-    <p>Click any stage to explore it. The assumptions table follows you: it is always present, always updated.</p>
+    <p>Click any stage to explore it. The assumptions table follows you above the flow, and the discovery loop runs beneath stages 02–07 — the method on top, the living tree underneath.</p>
   </section>
 </div>
 
@@ -455,6 +494,14 @@
       </div>
 
     </div><!-- /flow -->
+
+    <!-- DISCOVERY LOOP — spanning companion: bracket placed by JS under stages 02–07 -->
+    <div class="loop-track">
+      <div class="loop-bracket" id="loop-bracket"></div>
+      <div class="loop-node" id="discovery-loop" data-stage="discovery-loop" tabindex="0" role="button" aria-label="Discovery Loop — Opportunity Solution Tree">
+        <span class="lg">&#10227;</span> <span class="ll">Discovery Loop &mdash; Opportunity Solution Tree</span>
+      </div>
+    </div>
   </div><!-- /funnel-canvas -->
 </section>
 <div class="scroll-hint">&larr; drag to explore &rarr;</div>
@@ -495,7 +542,8 @@
   var TOOLS = {
     'assumptions-tracker': { name: 'assumptions-tracker', desc: 'Score assumptions by uncertainty and impact, design experiments, track validation cost and remaining risk.', href: 'tools/assumptions-tracker.html' },
     'value-proposition': { name: 'value-proposition', desc: 'Interactive Value Proposition Canvas: map customer jobs, pains and gains against your offer until they fit.', href: 'tools/value-proposition.html' },
-    'press-release-canvas': { name: 'press-release-canvas', desc: 'Working-backwards template: announce the product before building it.', href: '#' },
+    'opportunity-solution-tree': { name: 'opportunity-solution-tree', desc: 'Living Opportunity Solution Tree: one measurable outcome, evidence-scored opportunities, competing solutions and the smallest experiments \u2014 with a guided five-step discovery path.', href: 'tools/opportunity-solution-tree.html' },
+    'press-release-canvas': { name: 'press-release', desc: 'Working-backwards press release: announce the finished product — headline, value and features — before you build it.', href: 'tools/press-release.html' },
     'hoq-builder': { name: 'house-of-quality', desc: 'Guided House of Quality (QFD): rank customer needs, derive specs, score the matrix, and read your specs ordered by relevance.', href: 'tools/house-of-quality.html' },
     'cost-revenue-model': { name: 'cost-revenue-model', desc: 'Cost structure and revenue stream modelling for early concepts.', href: '#' },
     'bc-template': { name: 'business-case-builder', desc: 'Guided 7-step business case — from problem and market sizing (TAM/SOM) to a multi-year P&L ending in EBITDA.', href: 'business-case-builder/' },
@@ -539,6 +587,11 @@
       body: '<p>Every stage of the process generates assumptions: about the user, the technology, the costs, the market. The assumptions table is where they all live — explicitly written down, classified by risk, and updated as evidence arrives.</p><p>That is why it travels with you across the diagram: it is never "done". It is the connective tissue between discovery and validation, and the direct input to the validation plan.</p>',
       tools: ['assumptions-tracker']
     },
+    'discovery-loop': {
+      num: '\u27f3', title: 'Discovery Loop \u2014 where the tree runs',
+      body: '<p>The stages above are the <strong>method</strong>; the Opportunity Solution Tree is where one project <strong>runs</strong> it \u2014 a living instance of stages 02\u201307. The press release defines the <em>outcome</em>; possible and validated pains are <em>opportunities</em>, first hypothesised, then scored on evidence; the concept and its alternatives are competing <em>solutions</em>; and the validation plan is the tree\u2019s <em>experiments</em>, feeding the assumptions table.</p><p>The flow is linear because governance needs gates. Discovery is cyclical because learning is not: scores shift, solutions get killed, the target moves. The tree is the adapter between the two \u2014 the loop lives here and reports upward.</p>',
+      tools: ['opportunity-solution-tree', 'value-proposition', 'assumptions-tracker']
+    },
     'press-release': {
       num: '01', title: 'Press Release',
       body: '<p>The process starts at the end: write the press release announcing the finished product. Working backwards forces clarity — who is this for, what pain does it kill, why would anyone care on launch day?</p><p>If the press release is not compelling, the idea is not ready. Rewrite it before writing a single line of anything else.</p>',
@@ -552,12 +605,12 @@
     'validated-user-pains': {
       num: '03', title: 'Validated User Pains',
       body: '<p>Interviews, observation and evidence separate real pains from imagined ones. A pain is validated when real users confirm it is frequent, intense, and currently unsolved — not when it merely sounds plausible.</p><p>The assumptions table gets its first big update here: hypotheses become confirmed facts or get killed.</p>',
-      tools: ['assumptions-tracker', 'value-proposition']
+      tools: ['assumptions-tracker', 'value-proposition', 'opportunity-solution-tree']
     },
     'concept-design': {
       num: '04', title: 'Concept Design',
       body: '<p>Design the concept that answers the validated pains: what it is, what it does, what it deliberately does not do. The concept is a hypothesis about the solution, just as the pains were hypotheses about the problem.</p>',
-      tools: ['value-proposition', 'platform-model-builder']
+      tools: ['value-proposition', 'platform-model-builder', 'opportunity-solution-tree']
     },
     'discovery': {
       num: '05', title: 'Technical &amp; Financial Discovery',
@@ -592,7 +645,7 @@
     'validation-plan': {
       num: '07', title: 'Create a Validation Plan',
       body: '<p>The assumptions table becomes an experiment backlog: for each high-risk assumption, define the test, the metric, and the kill criterion. The riskiest assumptions get tested first — cheap experiments before expensive commitments.</p>',
-      tools: ['assumptions-tracker']
+      tools: ['assumptions-tracker', 'opportunity-solution-tree']
     },
     'pitch': {
       num: '08', title: 'Pitch',
@@ -636,7 +689,7 @@
     var s = STAGES[id];
     card.classList.add('swapping');
     setTimeout(function () {
-      document.getElementById('d-eyebrow').textContent = (id.indexOf('phase-') === 0 ? '// phase ' : '// stage ') + s.num;
+      document.getElementById('d-eyebrow').textContent = (id.indexOf('phase-') === 0 ? '// phase ' : id === 'discovery-loop' ? '// loop ' : '// stage ') + s.num;
       document.getElementById('d-title').innerHTML = s.title;
       document.getElementById('d-body').innerHTML = s.body;
       var toolsWrap = document.getElementById('d-tools');
@@ -702,6 +755,27 @@
   });
 
   /* ============================================================
+     DISCOVERY LOOP GEOMETRY — bracket hugs stages 02–07
+     ============================================================ */
+  var loopBracket = document.getElementById('loop-bracket');
+  var loopNode = document.getElementById('discovery-loop');
+  function placeLoop() {
+    /* measure against the track itself: the bracket is absolutely positioned
+       inside .loop-track, so the canvas padding must not enter the math */
+    var c = loopBracket.parentNode.getBoundingClientRect();
+    var a = document.querySelector('.stage[data-stage="possible-user-pains"]').getBoundingClientRect();
+    var b = document.querySelector('.stage[data-stage="validation-plan"]').getBoundingClientRect();
+    var left = a.left - c.left + 4;
+    var right = b.right - c.left - 4;
+    loopBracket.style.left = left + 'px';
+    loopBracket.style.width = (right - left) + 'px';
+    loopNode.style.left = (left + (right - left) / 2) + 'px';
+  }
+  placeLoop();
+  window.addEventListener('load', placeLoop);
+  window.addEventListener('resize', placeLoop);
+
+  /* ============================================================
      REVEAL ON SCROLL
      ============================================================ */
   var io = new IntersectionObserver(function (entries) {
@@ -711,6 +785,8 @@
         nodes.forEach(function (n, i) {
           setTimeout(function () { n.classList.add('revealed'); }, i * 90);
         });
+        var lt = document.querySelector('.loop-track');
+        if (lt) setTimeout(function () { lt.classList.add('revealed'); }, nodes.length * 90);
         io.disconnect();
       }
     });
