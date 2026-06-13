@@ -160,7 +160,7 @@
     </div>
     <div class="intro-body">
       <p>Amazon's <strong>working backwards</strong> instrument: instead of building first and announcing later, you draft the press release on day zero — a future date when success is already real. The constraint of one page forces clarity; the tricky issues you surface become the project's first assumptions to test. <strong>Most future press releases should die here</strong> — killing one before a single euro is spent is a win, not a failure.</p>
-      <p>The tool grows with your document, in <strong>three levels</strong>: start with free text (Level 1), evolve into structured sections when you're ready (Level 2), and graduate to the full PR/FAQ with internal hard questions in a later release (Level 3). You choose when to move; nothing is forced.</p>
+      <p>The tool meets you where you are, in <strong>three levels you switch freely</strong>: <strong>Level 1</strong> for an early-stage idea or a first-time user — just headline and free text; <strong>Level 2</strong> when you want structured sections, the one sentence, and the handoffs; <strong>Level 3</strong> (a later release) for the full PR/FAQ. Move up or down at any time — <strong>nothing is ever lost</strong>, the level only changes what you see. Pushing an early idea straight to Level 2 can overwhelm; start simple, grow when ready.</p>
       <div class="intro-cols">
         <div class="intro-col use"><h3>Use it when</h3><p>A new project, product or initiative is being considered and nothing has been committed yet — this is the very first artifact, before any canvas or plan.</p></div>
         <div class="intro-col notuse"><h3>Don't use it when</h3><p>The decision to build is already locked, or you're documenting something that exists — then it's marketing copy, not discovery.</p></div>
@@ -197,12 +197,12 @@
   <!-- LEVEL 1 -->
   <div class="frame" id="lvl1Frame">
     <div class="sec-eyebrow">Level 1 · Free draft</div>
-    <div class="row"><div class="field"><label>The release — free text, one page</label><textarea id="fFree" rows="12" placeholder="Write it as the journalist would publish it on that future date: who is the customer, what changed in their life, how does it work, why does it matter. Don't worry about structure yet — worry about whether it's worth reading."></textarea><div class="hint">Tip: read it aloud. If it sounds like internal jargon, the customer isn't in it yet.</div></div></div>
+    <div class="row"><div class="field"><label>The release — free text, one page</label><textarea id="fFree" rows="12" placeholder="Write it as the journalist would publish it on that future date: who is the customer, what changed in their life, how does it work, why does it matter. Don't worry about structure yet — worry about whether it's worth reading."></textarea><div class="hint">Tip: read it aloud — if it sounds like internal jargon, the customer isn't in it yet. Your free text is kept even if you switch to Level 2, so you can move between views freely.</div></div></div>
   </div>
 
   <!-- LEVEL 2 -->
   <div id="lvl2Wrap" hidden>
-    <details class="arch" id="archBox" hidden><summary>Your original free draft (read-only reference)</summary><pre id="archText"></pre></details>
+    <details class="arch" id="archBox" hidden><summary>Your Level 1 free draft (still live — switch back any time)</summary><pre id="archText"></pre></details>
     <div class="frame">
       <div class="sec-eyebrow">Level 2 · Structured release</div>
       <div class="row"><div class="field sentence"><label><span class="tip" tabindex="0" data-tip="One sentence that, alone, defines what the product must do — the Marketplace pattern: 'a seller does everything without ever talking to anyone at Amazon.'">The one sentence that imposes the requirements &#9432;</span></label><input id="fSentence" placeholder="A municipal operator, at 3 a.m., sees the leak, the crew and the cost — before the street floods."></div></div>
@@ -224,7 +224,7 @@
     </div>
   </div>
 
-  <p class="foot">Data stays in this browser (localStorage) — export JSON to back up or branch a document. Method: Bryar &amp; Carr, <em>Working Backwards</em>; Rossman, <em>The Amazon Way</em>. Level 3 (dual FAQ + the "So what?" gate) arrives in a later release.</p>
+  <p class="foot">Data stays in this browser (localStorage) — export JSON to back up or branch a document. Method: Bryar &amp; Carr, <em>Working Backwards</em>; Rossman, <em>The Amazon Way</em>. Switch levels freely — nothing is lost. Level 3 (dual FAQ + the "So what?" gate) arrives in a later release.</p>
 
 </div>
 <input type="file" id="fileInput" accept="application/json" hidden>
@@ -250,7 +250,7 @@
     d.date = '2028-03-14';
     d.headline = 'AdP cuts non-revenue water 30% with the SAFE-Cycle network';
     d.level = 2; d.draft = 6;
-    d.freeArchived = 'First rough draft lived here — evolved to structured on draft 4.';
+    d.free = 'SAFE-Cycle gives municipal water operators a network that warns them before a leak floods a street. Early free-form pitch — switch to Level 1 to see it, edit it, and it stays as you refine the structured version.';
     d.sentence = 'A municipal operator, at 3 a.m., sees the leak, the crew and the cost — before the street floods.';
     d.open = 'For the operators of 42 municipal networks, the night shift changed: instead of waiting for a resident to call about a flooded street, the network calls them first.';
     d.problem = 'Until 2026, locating a leak took 11 days on average; almost a third of treated water never reached a paying customer.';
@@ -313,7 +313,7 @@
     var w = $('levels');
     w.innerHTML = '';
     var defs = [
-      { n: 1, t: 'Free draft', s: 'Headline + one page of free text. Just make it worth reading.' },
+      { n: 1, t: 'Free draft', s: 'Headline + one page of free text. Best for early ideas or a first try.' },
       { n: 2, t: 'Structured release', s: 'Rossman sections, the one sentence, tricky issues \u2192 Tracker, results \u2192 OST.' },
       { n: 3, t: 'Full PR/FAQ', s: 'Dual FAQ + the \u201cSo what?\u201d gate \u2014 arrives in a later release.' }
     ];
@@ -322,22 +322,22 @@
       var locked = d.n === 3;
       var active = doc.level === d.n;
       el.className = 'lvl' + (active ? ' active' : '') + (locked ? ' locked' : '');
-      var state = locked ? 'locked' : (active ? 'you are here' : (d.n < doc.level ? 'evolved \u2713' : ''));
+      el.setAttribute('role', 'button');
+      if (!locked) el.tabIndex = 0;
+      var state = locked ? 'soon' : (active ? 'you are here' : 'switch \u2192');
       el.innerHTML = '<span class="l-num"><span>level 0' + d.n + '</span><span>' + state + '</span></span>' +
         '<span class="l-title">' + d.t + '</span><span class="l-sub">' + d.s + '</span>';
-      if (d.n === 2 && doc.level === 1) {
-        var b = document.createElement('button');
-        b.textContent = 'Evolve to structured \u25b8';
-        b.addEventListener('click', evolve);
-        el.appendChild(b);
+      if (!locked && !active) {
+        el.style.cursor = 'pointer';
+        el.addEventListener('click', function () { setLevel(d.n); });
+        el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setLevel(d.n); } });
       }
       w.appendChild(el);
     });
   }
-  function evolve() {
-    if (!confirm('Evolve this document to Level 2?\n\nYour free draft is kept as a read-only reference; you will redistribute it into structured sections. This is one-way for this document (export JSON first if you want to branch).')) return;
-    doc.freeArchived = doc.free;
-    doc.level = 2;
+  function setLevel(n) {
+    if (doc.level === n) return;
+    doc.level = n;
     save(); render();
   }
 
@@ -444,9 +444,10 @@
     $('fResults').value = doc.results; $('fQuotes').value = doc.quotes;
     $('lvl1Frame').hidden = doc.level !== 1;
     $('lvl2Wrap').hidden = doc.level !== 2;
-    var hasArch = !!(doc.freeArchived && doc.freeArchived.trim());
-    $('archBox').hidden = !hasArch;
-    $('archText').textContent = doc.freeArchived || '';
+    // both datasets persist regardless of level; the level only changes which is shown
+    var freeLive = (doc.free && doc.free.trim()) ? doc.free : (doc.freeArchived || '');
+    $('archBox').hidden = !freeLive;
+    $('archText').textContent = freeLive;
     $('outcomeFlag').hidden = true; $('queueFlag').hidden = true;
     renderLevels(); renderTricky(); renderMeta(); applyStatus(); updBudget();
   }
@@ -521,7 +522,7 @@
   });
 
   /* ---------- init ---------- */
-  if (!load()) { doc = sample(); }
+  if (!load()) { doc = sample(); doc.level = 1; }
   render();
 })();
 </script>
