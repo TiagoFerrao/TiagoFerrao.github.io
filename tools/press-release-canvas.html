@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Future Press Release — ferrao.me</title>
+<link rel="icon" href="../img/bee.png">
+<style>
+  :root {
+    --bg: #001a20; --panel: #042730; --panel-2: #06303a;
+    --text: #e8f4ef; --muted: #8fb3a8;
+    --mint: #7DE38D; --mint-dim: rgba(125,227,141,.35); --mint-faint: rgba(125,227,141,.10);
+    --red: #e07a6b; --amber: #e0b56b; --blue: #6baee0; --violet: #b48ae0;
+    --line: rgba(143,179,168,.30); --line2: rgba(143,179,168,.16);
+    --radius: 12px;
+    --sans: "Segoe UI", system-ui, -apple-system, sans-serif;
+    --mono: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); padding: 48px 0 90px; }
+  .container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+  a { color: var(--mint); }
+  .eyebrow { font-family: var(--mono); font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; color: var(--mint); margin-bottom: 8px; }
+  h1 { font-size: 1.55rem; font-weight: 650; }
+  .page-head p { color: var(--muted); font-size: .92rem; margin-top: 8px; max-width: 840px; line-height: 1.6; }
+
+  /* ===== intro (collapsible) ===== */
+  .intro { background: var(--panel); border-radius: var(--radius); margin: 20px 0; }
+  .intro-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 18px; cursor: pointer; user-select: none; border-radius: var(--radius); }
+  .intro-head:hover { background: var(--panel-2); }
+  .intro-head .t { font-family: var(--mono); font-size: .66rem; letter-spacing: .16em; text-transform: uppercase; color: var(--mint); }
+  .intro-head .chev { font-family: var(--mono); font-size: .72rem; color: var(--muted); }
+  .intro-body { padding: 0 18px 18px; display: none; }
+  .intro.open .intro-body { display: block; }
+  .intro-body p { font-size: .85rem; color: var(--muted); line-height: 1.65; max-width: 880px; margin-top: 10px; }
+  .intro-body strong { color: var(--text); font-weight: 600; }
+  .intro-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 14px; }
+  .intro-col { background: var(--panel-2); border-radius: 10px; padding: 12px 14px; }
+  .intro-col h3 { font-family: var(--mono); font-size: .6rem; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 7px; font-weight: 600; }
+  .intro-col.use h3 { color: var(--mint); }
+  .intro-col.notuse h3 { color: var(--amber); }
+  .intro-col.fits h3 { color: var(--blue); }
+  .intro-col p { font-size: .78rem; margin-top: 0; line-height: 1.6; }
+
+  /* ===== level strip ===== */
+  .levels { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 20px; }
+  .lvl { flex: 1; min-width: 220px; background: var(--panel); border: 1px solid var(--line2); border-radius: 10px; padding: 11px 13px; text-align: left; font-family: var(--sans); color: var(--text); }
+  .lvl .l-num { font-family: var(--mono); font-size: .56rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; margin-bottom: 5px; }
+  .lvl .l-title { display: block; font-size: .78rem; font-weight: 600; }
+  .lvl .l-sub { display: block; font-size: .7rem; color: var(--muted); margin-top: 4px; line-height: 1.45; }
+  .lvl.active { border-color: var(--mint); box-shadow: 0 0 14px rgba(125,227,141,.12); }
+  .lvl.active .l-num { color: var(--mint); }
+  .lvl.locked { opacity: .55; }
+  .lvl button { font-family: var(--mono); font-size: .58rem; letter-spacing: .08em; text-transform: uppercase; margin-top: 8px; padding: 6px 10px; border-radius: 7px; border: 1px solid var(--mint-dim); background: transparent; color: var(--mint); cursor: pointer; }
+  .lvl button:hover { background: var(--mint-faint); }
+
+  /* ===== toolbar ===== */
+  .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 20px; }
+  .btn { font-family: var(--mono); font-size: .62rem; letter-spacing: .1em; text-transform: uppercase; padding: 8px 13px; border-radius: 8px; border: 1px solid var(--mint-dim); background: transparent; color: var(--mint); cursor: pointer; transition: background .15s; }
+  .btn:hover { background: var(--mint-faint); }
+  .btn.quiet { border-color: var(--line2); color: var(--muted); }
+  .btn.quiet:hover { color: var(--text); background: var(--panel); }
+  .btn.danger { border-color: rgba(224,122,107,.4); color: var(--red); }
+  .btn.danger:hover { background: rgba(224,122,107,.08); }
+  .btn.solid { background: var(--mint); border-color: var(--mint); color: #03241b; font-weight: 700; }
+  .sep { width: 1px; align-self: stretch; background: var(--line2); margin: 0 4px; }
+  .saved { font-family: var(--mono); font-size: .6rem; letter-spacing: .12em; text-transform: uppercase; color: var(--mint); opacity: 0; transition: opacity .4s; margin-left: auto; }
+  .saved.show { opacity: 1; }
+
+  /* ===== editor ===== */
+  .frame { background: var(--panel); border-radius: var(--radius); padding: 20px 22px; margin-bottom: 14px; }
+  .row { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: flex-end; margin-bottom: 14px; }
+  .row:last-child { margin-bottom: 0; }
+  .field { flex: 1; min-width: 200px; }
+  .field.sm { flex: 0 0 170px; min-width: 150px; }
+  .field label { display: block; font-family: var(--mono); font-size: .58rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .field input, .field textarea, .field select { width: 100%; background: var(--panel-2); border: 1px solid var(--line2); color: var(--text); border-radius: 8px; padding: 9px 11px; font-family: var(--sans); font-size: .88rem; line-height: 1.5; }
+  .field textarea { resize: vertical; }
+  .field input:focus, .field textarea:focus, .field select:focus { outline: none; border-color: var(--mint-dim); }
+  .hint { font-size: .72rem; color: var(--muted); margin-top: 5px; line-height: 1.5; }
+  .headline input { font-size: 1.15rem; font-weight: 650; }
+  .sentence { border: 1px solid var(--mint-dim); border-radius: 10px; padding: 12px 14px; background: var(--mint-faint); }
+  .sentence label { color: var(--mint); }
+  .sentence input { background: transparent; border-color: transparent; font-size: .95rem; }
+  .sentence input:focus { border-color: var(--mint-dim); background: var(--panel-2); }
+
+  /* word budget */
+  .budget { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .meter { height: 8px; border-radius: 999px; background: var(--panel-2); overflow: hidden; flex: 1; min-width: 160px; }
+  .meter i { display: block; height: 100%; width: 0%; background: var(--mint); transition: width .2s, background .2s; }
+  .meter.warn i { background: var(--amber); }
+  .meter.over i { background: var(--red); }
+  .wcount { font-family: var(--mono); font-size: .64rem; letter-spacing: .06em; color: var(--muted); white-space: nowrap; }
+  .wcount.warn { color: var(--amber); }
+  .wcount.over { color: var(--red); }
+
+  /* status + draft */
+  .badge { font-family: var(--mono); font-size: .56rem; letter-spacing: .08em; padding: 3px 9px; border-radius: 999px; background: var(--panel-2); color: var(--muted); white-space: nowrap; }
+  .badge.mint { color: var(--mint); background: var(--mint-faint); }
+  .badge.red { color: var(--red); background: rgba(224,122,107,.12); }
+  .badge.amber { color: var(--amber); background: rgba(224,181,107,.12); }
+  .killnote { display: none; border-left: 3px solid var(--mint); background: var(--mint-faint); color: var(--mint); padding: 10px 12px; border-radius: 0 8px 8px 0; font-size: .8rem; margin-bottom: 14px; }
+  body.is-killed .killnote { display: block; }
+
+  /* tricky issues */
+  .tricky-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
+  .tricky-row input[type=text] { flex: 1; min-width: 220px; background: var(--panel-2); border: 1px solid var(--line2); color: var(--text); border-radius: 8px; padding: 8px 10px; font-size: .84rem; }
+  .tricky-row select { background: var(--panel-2); border: 1px solid var(--line2); color: var(--text); border-radius: 8px; padding: 8px; font-size: .76rem; }
+  .tricky-row .del { font-family: var(--mono); border: 1px solid transparent; background: none; color: var(--muted); cursor: pointer; font-size: .8rem; padding: 4px 7px; border-radius: 6px; }
+  .tricky-row .del:hover { color: var(--red); border-color: rgba(224,122,107,.4); }
+
+  /* archived free draft */
+  .arch { background: var(--panel-2); border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; }
+  .arch summary { font-family: var(--mono); font-size: .6rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
+  .arch pre { white-space: pre-wrap; font-family: var(--sans); font-size: .82rem; color: var(--muted); margin-top: 10px; line-height: 1.6; }
+
+  .sec-eyebrow { font-family: var(--mono); font-size: .62rem; letter-spacing: .18em; text-transform: uppercase; color: var(--mint); margin: 4px 0 12px; }
+
+  /* tooltips */
+  .tip { position: relative; cursor: help; border-bottom: 1px dotted rgba(143,179,168,.55); }
+  .tip::after { content: attr(data-tip); position: absolute; bottom: calc(100% + 8px); left: 0; background: #0a3a46; color: var(--text); font-family: var(--sans); font-size: .72rem; font-weight: 400; letter-spacing: 0; text-transform: none; line-height: 1.5; padding: 8px 11px; border-radius: 8px; border: 1px solid var(--mint-dim); width: 240px; text-align: left; opacity: 0; pointer-events: none; transition: opacity .15s; z-index: 30; }
+  .tip:hover::after, .tip:focus-visible::after { opacity: 1; }
+
+  .foot { margin-top: 26px; font-size: .74rem; color: var(--muted); line-height: 1.6; }
+  button:focus-visible { outline: 2px solid var(--mint-dim); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  @media (max-width: 640px) { body { padding: 28px 0 60px; } .container { padding: 0 14px; } .saved { display: none; } }
+
+  /* ===== print: render as an actual press release ===== */
+  @media print {
+    @page { size: A4 portrait; margin: 18mm; }
+    body { background: #fff; color: #111; padding: 0; }
+    .toolbar, .intro, .levels, .btn, .saved, .foot, .hint, .tricky-row .del, .page-head a.back, .killnote { display: none !important; }
+    .container { max-width: 100%; padding: 0; }
+    .frame { background: #fff; padding: 0; margin-bottom: 14px; }
+    .eyebrow { color: #1f7a4d; }
+    h1, .headline input { color: #111; }
+    .field label, .sec-eyebrow { color: #555; }
+    .field input, .field textarea, .field select, .tricky-row input, .tricky-row select { background: #fff; border-color: #ddd; color: #111; }
+    .sentence { background: #f3faf4; border-color: #9fd8a8; }
+    .meter { display: none; } .wcount { color: #555; }
+    .badge { background: #f2f2f2; color: #555; }
+    .arch { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="page-head">
+    <div class="eyebrow">Innovation Toolbox</div>
+    <h1>Future Press Release — Working Backwards</h1>
+    <p>Write the launch announcement <em>before</em> the project exists, dated after success has happened. If the release isn't worth reading, the product isn't worth building. <a class="back" href="../innovation.html">&larr; back to the innovation process</a></p>
+  </div>
+
+  <div class="intro" id="intro">
+    <div class="intro-head" id="introHead" role="button" tabindex="0" aria-expanded="true">
+      <span class="t">What is this &amp; when to use it</span>
+      <span class="chev" id="introChev">&#9662;</span>
+    </div>
+    <div class="intro-body">
+      <p>Amazon's <strong>working backwards</strong> instrument: instead of building first and announcing later, you draft the press release on day zero — a future date when success is already real. The constraint of one page forces clarity; the tricky issues you surface become the project's first assumptions to test. <strong>Most future press releases should die here</strong> — killing one before a single euro is spent is a win, not a failure.</p>
+      <p>The tool grows with your document, in <strong>three levels</strong>: start with free text (Level 1), evolve into structured sections when you're ready (Level 2), and graduate to the full PR/FAQ with internal hard questions in a later release (Level 3). You choose when to move; nothing is forced.</p>
+      <div class="intro-cols">
+        <div class="intro-col use"><h3>Use it when</h3><p>A new project, product or initiative is being considered and nothing has been committed yet — this is the very first artifact, before any canvas or plan.</p></div>
+        <div class="intro-col notuse"><h3>Don't use it when</h3><p>The decision to build is already locked, or you're documenting something that exists — then it's marketing copy, not discovery.</p></div>
+        <div class="intro-col fits"><h3>How it fits the toolbox</h3><p>The measurable results seed the <a href="opportunity-solution-tree.html">Opportunity Solution Tree</a> outcome; every tricky issue can be queued for the <a href="assumptions-tracker.html">Assumptions Tracker</a> as a pressuposto to test.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="levels" id="levels"></div>
+
+  <div class="toolbar">
+    <button class="btn quiet" id="btnSample">Load sample</button>
+    <button class="btn danger" id="btnClear">New / clear</button>
+    <div class="sep"></div>
+    <button class="btn" id="btnExport">Export JSON</button>
+    <button class="btn" id="btnImport">Import JSON</button>
+    <div class="sep"></div>
+    <button class="btn solid" id="btnPrint">Print / PDF</button>
+    <span class="saved" id="saved">saved &#10003;</span>
+  </div>
+
+  <div class="killnote">This release was killed before a euro was spent — that is the instrument working. The reasoning stays on record.</div>
+
+  <div class="frame">
+    <div class="row">
+      <div class="field sm"><label><span class="tip" tabindex="0" data-tip="Pick a date AFTER launch — the moment success has already happened. Not the launch day.">Future dateline &#9432;</span></label><input id="fCity" placeholder="Lisboa" style="margin-bottom:6px"><input id="fDate" type="date"></div>
+      <div class="field sm"><label>Draft</label><div class="budget"><span class="badge mint" id="draftBadge">DRAFT 1</span><button class="btn quiet" id="btnDraft" style="padding:6px 10px">+1 draft</button></div><div class="hint" id="histHint"></div></div>
+      <div class="field sm"><label>Status</label><select id="fStatus"><option value="active">active</option><option value="parked">parked</option><option value="killed">killed — a win</option></select></div>
+    </div>
+    <div class="row"><div class="field headline"><label>Headline — what a customer would retell</label><input id="fHeadline" placeholder="AdP cuts non-revenue water 30% with the SAFE-Cycle network"></div></div>
+    <div class="row"><div class="field budget" style="min-width:100%"><label style="margin:0">PR length</label><div class="meter" id="meter"><i></i></div><span class="wcount" id="wcount">0 / 400 words</span></div></div>
+  </div>
+
+  <!-- LEVEL 1 -->
+  <div class="frame" id="lvl1Frame">
+    <div class="sec-eyebrow">Level 1 · Free draft</div>
+    <div class="row"><div class="field"><label>The release — free text, one page</label><textarea id="fFree" rows="12" placeholder="Write it as the journalist would publish it on that future date: who is the customer, what changed in their life, how does it work, why does it matter. Don't worry about structure yet — worry about whether it's worth reading."></textarea><div class="hint">Tip: read it aloud. If it sounds like internal jargon, the customer isn't in it yet.</div></div></div>
+  </div>
+
+  <!-- LEVEL 2 -->
+  <div id="lvl2Wrap" hidden>
+    <details class="arch" id="archBox" hidden><summary>Your original free draft (read-only reference)</summary><pre id="archText"></pre></details>
+    <div class="frame">
+      <div class="sec-eyebrow">Level 2 · Structured release</div>
+      <div class="row"><div class="field sentence"><label><span class="tip" tabindex="0" data-tip="One sentence that, alone, defines what the product must do — the Marketplace pattern: 'a seller does everything without ever talking to anyone at Amazon.'">The one sentence that imposes the requirements &#9432;</span></label><input id="fSentence" placeholder="A municipal operator, at 3 a.m., sees the leak, the crew and the cost — before the street floods."></div></div>
+      <div class="row"><div class="field"><label>Customer-first opening — whose life improved, what delights them</label><textarea id="fOpen" rows="3"></textarea></div></div>
+      <div class="row"><div class="field"><label>The problem — today's pain, in the customer's words</label><textarea id="fProblem" rows="3"></textarea></div></div>
+      <div class="row"><div class="field"><label>The solution — what it is, how it works, what it deliberately does not do</label><textarea id="fSolution" rows="3"></textarea></div></div>
+      <div class="row"><div class="field"><label><span class="tip" tabindex="0" data-tip="Audacious AND measurable: financial, operating or market results. These seed the outcome of your Opportunity Solution Tree.">Measurable results &#9432;</span></label><textarea id="fResults" rows="2" placeholder="NRW 28% &rarr; 20% in 18 months &middot; time-to-locate 11 days &rarr; 36 h"></textarea><div class="hint" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">Feeds the tree: <button class="btn" id="btnOutcome" style="padding:5px 10px">Send to OST as outcome &rarr;</button><span class="badge" id="outcomeFlag" hidden>queued for the OST &#10003;</span></div></div></div>
+      <div class="row"><div class="field"><label>Quotes — a customer and an internal leader (optional)</label><textarea id="fQuotes" rows="2"></textarea></div></div>
+    </div>
+    <div class="frame">
+      <div class="sec-eyebrow">Tricky issues — surfaced, not solved</div>
+      <div class="hint" style="margin-bottom:10px">The hard things that must be true for this release to happen. Name them now; test them later. <span class="tip" tabindex="0" data-tip="Desirability: does the customer want it? Feasibility: can we build and operate it? Viability: does it sustain itself financially and organisationally?">Dimensions &#9432;</span></div>
+      <div id="trickyList"></div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn quiet" id="btnAddTricky">+ tricky issue</button>
+        <button class="btn" id="btnQueue">Queue all &rarr; Assumptions Tracker</button>
+        <span class="badge" id="queueFlag" hidden></span>
+      </div>
+    </div>
+  </div>
+
+  <p class="foot">Data stays in this browser (localStorage) — export JSON to back up or branch a document. Method: Bryar &amp; Carr, <em>Working Backwards</em>; Rossman, <em>The Amazon Way</em>. Level 3 (dual FAQ + the "So what?" gate) arrives in a later release.</p>
+
+</div>
+<input type="file" id="fileInput" accept="application/json" hidden>
+<script>
+(function () {
+  var KEY = 'ferrao-prfaq-v1';
+  var INTRO_KEY = 'ferrao-prfaq-intro';
+  var QUEUE_KEY = 'ferrao-prfaq-assumptions-queue';
+  var OUTCOME_KEY = 'ferrao-prfaq-outcome';
+  var LIMIT = 400;
+  var doc = null;
+  var tseq = 1;
+
+  function blank() {
+    return { v: 1, level: 1, status: 'active', draft: 1, city: '', date: '',
+      headline: '', free: '', freeArchived: '',
+      open: '', problem: '', solution: '', results: '', quotes: '', sentence: '',
+      tricky: [], history: [] };
+  }
+  function sample() {
+    var d = blank();
+    d.city = 'Lisboa';
+    d.date = '2028-03-14';
+    d.headline = 'AdP cuts non-revenue water 30% with the SAFE-Cycle network';
+    d.level = 2; d.draft = 6;
+    d.freeArchived = 'First rough draft lived here — evolved to structured on draft 4.';
+    d.sentence = 'A municipal operator, at 3 a.m., sees the leak, the crew and the cost — before the street floods.';
+    d.open = 'For the operators of 42 municipal networks, the night shift changed: instead of waiting for a resident to call about a flooded street, the network calls them first.';
+    d.problem = 'Until 2026, locating a leak took 11 days on average; almost a third of treated water never reached a paying customer.';
+    d.solution = 'SAFE-Cycle correlates acoustic and pressure telemetry across DMAs and dispatches crews to a 50-metre radius. It deliberately does not replace SCADA — it listens to it.';
+    d.results = 'NRW 28% \u2192 20% in 18 months \u00b7 time-to-locate 11 days \u2192 36 hours \u00b7 \u20ac410k/year recovered per cluster';
+    d.quotes = '\u201cI stopped being the last to know about my own network.\u201d \u2014 ops lead, A. do Norte';
+    d.tricky = [
+      { id: 't1', text: '20+ legacy systems must integrate for the alert chain to work end-to-end', dim: 'fea' },
+      { id: 't2', text: 'Operators trust automated alerts enough to dispatch crews at night', dim: 'des' },
+      { id: 't3', text: 'Municipalities accept a per-DMA subscription model', dim: 'via' }
+    ];
+    tseq = 4;
+    d.history = [{ draft: 1, at: '2026-05-02', level: 1, words: 180 }, { draft: 4, at: '2026-05-20', level: 2, words: 310 }];
+    return d;
+  }
+
+  /* ---------- persistence ---------- */
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify({ doc: doc, tseq: tseq })); } catch (e) {}
+    var s = document.getElementById('saved');
+    s.classList.add('show');
+    clearTimeout(save._t);
+    save._t = setTimeout(function () { s.classList.remove('show'); }, 1400);
+  }
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (!raw) return false;
+      var o = JSON.parse(raw);
+      if (!o || !o.doc) return false;
+      doc = o.doc; tseq = o.tseq || 100;
+      return true;
+    } catch (e) { return false; }
+  }
+
+  /* ---------- helpers ---------- */
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function words(s) { s = String(s || '').trim(); return s ? s.split(/\s+/).length : 0; }
+  function prWords() {
+    if (doc.level === 1) return words(doc.free);
+    return words(doc.open) + words(doc.problem) + words(doc.solution) + words(doc.results) + words(doc.quotes) + words(doc.sentence);
+  }
+
+  /* ---------- word budget ---------- */
+  function updBudget() {
+    var n = prWords();
+    var pct = Math.min(100, Math.round(100 * n / LIMIT));
+    var meter = $('meter'), wc = $('wcount');
+    meter.querySelector('i').style.width = pct + '%';
+    meter.className = 'meter' + (n > LIMIT ? ' over' : (n > LIMIT * .85 ? ' warn' : ''));
+    wc.className = 'wcount' + (n > LIMIT ? ' over' : (n > LIMIT * .85 ? ' warn' : ''));
+    wc.textContent = n + ' / ' + LIMIT + ' words' + (n > LIMIT ? ' — over one page' : '');
+  }
+
+  /* ---------- levels ---------- */
+  function renderLevels() {
+    var w = $('levels');
+    w.innerHTML = '';
+    var defs = [
+      { n: 1, t: 'Free draft', s: 'Headline + one page of free text. Just make it worth reading.' },
+      { n: 2, t: 'Structured release', s: 'Rossman sections, the one sentence, tricky issues \u2192 Tracker, results \u2192 OST.' },
+      { n: 3, t: 'Full PR/FAQ', s: 'Dual FAQ + the \u201cSo what?\u201d gate \u2014 arrives in a later release.' }
+    ];
+    defs.forEach(function (d) {
+      var el = document.createElement('div');
+      var locked = d.n === 3;
+      var active = doc.level === d.n;
+      el.className = 'lvl' + (active ? ' active' : '') + (locked ? ' locked' : '');
+      var state = locked ? 'locked' : (active ? 'you are here' : (d.n < doc.level ? 'evolved \u2713' : ''));
+      el.innerHTML = '<span class="l-num"><span>level 0' + d.n + '</span><span>' + state + '</span></span>' +
+        '<span class="l-title">' + d.t + '</span><span class="l-sub">' + d.s + '</span>';
+      if (d.n === 2 && doc.level === 1) {
+        var b = document.createElement('button');
+        b.textContent = 'Evolve to structured \u25b8';
+        b.addEventListener('click', evolve);
+        el.appendChild(b);
+      }
+      w.appendChild(el);
+    });
+  }
+  function evolve() {
+    if (!confirm('Evolve this document to Level 2?\n\nYour free draft is kept as a read-only reference; you will redistribute it into structured sections. This is one-way for this document (export JSON first if you want to branch).')) return;
+    doc.freeArchived = doc.free;
+    doc.level = 2;
+    save(); render();
+  }
+
+  /* ---------- tricky issues ---------- */
+  function renderTricky() {
+    var list = $('trickyList');
+    list.innerHTML = '';
+    doc.tricky.forEach(function (t) {
+      var row = document.createElement('div');
+      row.className = 'tricky-row';
+      var inp = document.createElement('input');
+      inp.type = 'text'; inp.value = t.text;
+      inp.placeholder = 'What must be true \u2014 and is not yet proven?';
+      inp.addEventListener('input', function () { t.text = inp.value; save(); });
+      var sel = document.createElement('select');
+      [['des', 'desirability'], ['fea', 'feasibility'], ['via', 'viability']].forEach(function (o) {
+        var op = document.createElement('option');
+        op.value = o[0]; op.textContent = o[1];
+        if (t.dim === o[0]) op.selected = true;
+        sel.appendChild(op);
+      });
+      sel.addEventListener('change', function () { t.dim = sel.value; save(); });
+      var del = document.createElement('button');
+      del.className = 'del'; del.title = 'Remove'; del.textContent = '\u00d7';
+      del.addEventListener('click', function () {
+        doc.tricky = doc.tricky.filter(function (x) { return x.id !== t.id; });
+        save(); renderTricky();
+      });
+      row.appendChild(inp); row.appendChild(sel); row.appendChild(del);
+      list.appendChild(row);
+    });
+  }
+  $('btnAddTricky').addEventListener('click', function () {
+    doc.tricky.push({ id: 't' + (tseq++), text: '', dim: 'des' });
+    save(); renderTricky();
+    var rows = document.querySelectorAll('#trickyList input');
+    if (rows.length) rows[rows.length - 1].focus();
+  });
+  $('btnQueue').addEventListener('click', function () {
+    var rows = doc.tricky.filter(function (t) { return t.text.trim(); });
+    if (!rows.length) { alert('No tricky issues to queue yet.'); return; }
+    var dmap = { des: 'desirability', fea: 'feasibility', via: 'viability' };
+    var payload = {
+      v: 1, from: 'press-release-canvas', headline: doc.headline, at: new Date().toISOString(),
+      rows: rows.map(function (t) {
+        return { assumption: t.text, dimension: dmap[t.dim] || 'desirability',
+          category: 'PR/FAQ \u2014 ' + (doc.headline || 'untitled').slice(0, 40),
+          uncertainty: 'high', impact: 'high', experiment: '', threshold: '', cost_to_validate: 0, result: '' };
+      })
+    };
+    try {
+      localStorage.setItem(QUEUE_KEY, JSON.stringify(payload));
+      var f = $('queueFlag');
+      f.textContent = rows.length + ' queued for the Tracker \u2713';
+      f.hidden = false; f.className = 'badge mint';
+    } catch (e) { alert('Could not write to localStorage in this browser.'); }
+  });
+
+  /* ---------- OST outcome handoff ---------- */
+  $('btnOutcome').addEventListener('click', function () {
+    if (!doc.results.trim()) { alert('Write the measurable results first \u2014 they become the outcome.'); return; }
+    try {
+      localStorage.setItem(OUTCOME_KEY, JSON.stringify({
+        v: 1, from: 'press-release-canvas', headline: doc.headline,
+        results: doc.results, sentence: doc.sentence, at: new Date().toISOString()
+      }));
+      var f = $('outcomeFlag');
+      f.hidden = false; f.className = 'badge mint';
+    } catch (e) { alert('Could not write to localStorage in this browser.'); }
+  });
+
+  /* ---------- bindings ---------- */
+  function bind(id, prop, after) {
+    var el = $(id);
+    el.addEventListener('input', function () {
+      doc[prop] = el.value;
+      save();
+      if (after) after();
+    });
+  }
+  function applyStatus() {
+    document.body.classList.toggle('is-killed', doc.status === 'killed');
+  }
+  $('fStatus').addEventListener('change', function () {
+    doc.status = this.value; applyStatus(); save();
+  });
+  $('btnDraft').addEventListener('click', function () {
+    doc.history.push({ draft: doc.draft, at: new Date().toISOString().slice(0, 10), level: doc.level, words: prWords() });
+    doc.draft++;
+    save(); renderMeta();
+  });
+
+  function renderMeta() {
+    $('draftBadge').textContent = 'DRAFT ' + doc.draft;
+    $('histHint').textContent = doc.history.length ? (doc.history.length + ' snapshot' + (doc.history.length > 1 ? 's' : '') + ' \u00b7 last: draft ' + doc.history[doc.history.length - 1].draft) : 'snapshots keep the ritual honest';
+  }
+
+  function render() {
+    $('fCity').value = doc.city; $('fDate').value = doc.date;
+    $('fHeadline').value = doc.headline; $('fStatus').value = doc.status;
+    $('fFree').value = doc.free;
+    $('fSentence').value = doc.sentence; $('fOpen').value = doc.open;
+    $('fProblem').value = doc.problem; $('fSolution').value = doc.solution;
+    $('fResults').value = doc.results; $('fQuotes').value = doc.quotes;
+    $('lvl1Frame').hidden = doc.level !== 1;
+    $('lvl2Wrap').hidden = doc.level !== 2;
+    var hasArch = !!(doc.freeArchived && doc.freeArchived.trim());
+    $('archBox').hidden = !hasArch;
+    $('archText').textContent = doc.freeArchived || '';
+    $('outcomeFlag').hidden = true; $('queueFlag').hidden = true;
+    renderLevels(); renderTricky(); renderMeta(); applyStatus(); updBudget();
+  }
+
+  bind('fCity', 'city'); bind('fDate', 'date');
+  bind('fHeadline', 'headline');
+  bind('fFree', 'free', updBudget);
+  bind('fSentence', 'sentence', updBudget);
+  bind('fOpen', 'open', updBudget);
+  bind('fProblem', 'problem', updBudget);
+  bind('fSolution', 'solution', updBudget);
+  bind('fResults', 'results', updBudget);
+  bind('fQuotes', 'quotes', updBudget);
+
+  /* ---------- toolbar ---------- */
+  $('btnSample').addEventListener('click', function () {
+    if (!confirm('Replace the current document with the sample?')) return;
+    doc = sample(); save(); render();
+  });
+  $('btnClear').addEventListener('click', function () {
+    if (!confirm('Start a new blank release? Export JSON first if you need a backup.')) return;
+    doc = blank(); save(); render();
+  });
+  $('btnExport').addEventListener('click', function () {
+    var blob = new Blob([JSON.stringify({ doc: doc, tseq: tseq }, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'future-press-release.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+  var fileInput = $('fileInput');
+  $('btnImport').addEventListener('click', function () { fileInput.click(); });
+  fileInput.addEventListener('change', function () {
+    var f = fileInput.files[0];
+    if (!f) return;
+    var rd = new FileReader();
+    rd.onload = function () {
+      try {
+        var o = JSON.parse(rd.result);
+        var d = o.doc || o;
+        if (!d || typeof d.level === 'undefined') throw new Error('bad');
+        doc = d; tseq = o.tseq || 500;
+        save(); render();
+      } catch (e) { alert('Could not import: not a valid Future Press Release JSON export.'); }
+      fileInput.value = '';
+    };
+    rd.readAsText(f);
+  });
+  $('btnPrint').addEventListener('click', function () { window.print(); });
+
+  /* ---------- intro ---------- */
+  var introEl = $('intro');
+  function setIntro(open, persist) {
+    introEl.classList.toggle('open', open);
+    $('introHead').setAttribute('aria-expanded', open ? 'true' : 'false');
+    $('introChev').innerHTML = open ? '&#9662;' : '&#9656;';
+    if (persist) { try { localStorage.setItem(INTRO_KEY, open ? 'open' : 'closed'); } catch (e) {} }
+  }
+  (function () {
+    var st = null;
+    try { st = localStorage.getItem(INTRO_KEY); } catch (e) {}
+    setIntro(st !== 'closed', false);
+  })();
+  $('introHead').addEventListener('click', function () { setIntro(!introEl.classList.contains('open'), true); });
+  $('introHead').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.click(); }
+  });
+  document.addEventListener('input', function once() {
+    try { if (!localStorage.getItem(INTRO_KEY)) setIntro(false, true); } catch (e) {}
+    document.removeEventListener('input', once);
+  });
+
+  /* ---------- init ---------- */
+  if (!load()) { doc = sample(); }
+  render();
+})();
+</script>
+</body>
+</html>

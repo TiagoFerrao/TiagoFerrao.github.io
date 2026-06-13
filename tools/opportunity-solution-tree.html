@@ -150,6 +150,13 @@
   .intro-col.fits h3 { color: var(--blue); }
   .intro-col p { font-size: .78rem; margin-top: 0; line-height: 1.6; }
 
+  /* ===== PR/FAQ handoff banner ===== */
+  .pr-banner { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; border-left: 3px solid var(--mint); background: var(--mint-faint); border-radius: 0 10px 10px 0; padding: 12px 14px; margin: 0 0 18px; }
+  .pr-banner[hidden] { display: none; }
+  .pr-label { font-family: var(--mono); font-size: .6rem; letter-spacing: .14em; text-transform: uppercase; color: var(--mint); white-space: nowrap; }
+  .pr-text { font-size: .82rem; color: var(--text); flex: 1; min-width: 220px; line-height: 1.5; }
+  .pr-actions { display: flex; gap: 8px; }
+
   /* ===== discovery path ===== */
   .path { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 22px; }
   .step { flex: 1; min-width: 185px; background: var(--panel); border: 1px solid var(--line2); border-radius: 10px; padding: 10px 12px 11px; cursor: pointer; text-align: left; transition: border-color .15s, background .15s; font-family: var(--sans); color: var(--text); }
@@ -240,6 +247,12 @@
     <div class="sep"></div>
     <button class="btn solid" id="btnPrint">Print / PDF</button>
     <span class="saved" id="saved">saved &#10003;</span>
+  </div>
+
+  <div class="pr-banner" id="prBanner" hidden>
+    <span class="pr-label">From the Future Press Release</span>
+    <span class="pr-text" id="prText"></span>
+    <span class="pr-actions"><button class="btn" id="prUse">Use as outcome</button><button class="btn quiet" id="prDismiss">Dismiss</button></span>
   </div>
 
   <div class="path" id="path" aria-label="Discovery path"></div>
@@ -997,6 +1010,33 @@
   /* ---------- init ---------- */
   if (!load()) { state = sampleTree(); }
   render();
+
+  /* ---------- PR/FAQ outcome handoff (receiver) ---------- */
+  (function () {
+    var PRK = 'ferrao-prfaq-outcome';
+    var SEEN = 'ferrao-prfaq-outcome-seen';
+    var data = null;
+    try { data = JSON.parse(localStorage.getItem(PRK) || 'null'); } catch (e) {}
+    if (!data || !data.results) return;
+    var seen = null;
+    try { seen = localStorage.getItem(SEEN); } catch (e) {}
+    if (seen === data.at) return;
+    if (state.text && state.text.trim() === String(data.results).trim()) return;
+    var b = document.getElementById('prBanner');
+    document.getElementById('prText').textContent = (data.headline ? '\u201c' + data.headline + '\u201d \u2014 ' : '') + data.results;
+    b.hidden = false;
+    document.getElementById('prUse').addEventListener('click', function () {
+      state.text = data.results;
+      try { localStorage.setItem(SEEN, data.at); } catch (e) {}
+      b.hidden = true;
+      selId = state.id;
+      save(); render();
+    });
+    document.getElementById('prDismiss').addEventListener('click', function () {
+      try { localStorage.setItem(SEEN, data.at); } catch (e) {}
+      b.hidden = true;
+    });
+  })();
 })();
 </script>
 </body>
