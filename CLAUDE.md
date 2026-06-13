@@ -5,6 +5,12 @@ Personal site of Tiago Ferrão. Static site, **GitHub Pages** from repo `tiagofe
 CDN caches ~10 min — hard-refresh to see changes). DNS at Namecheap; `api.ferrao.me` → a Railway app
 (the notion-agent backend, see "Next step").
 
+## Dev / handoff
+Mockups, design explorations and the session **handoff notes** live in a **separate private repo**,
+`TiagoFerrao/homepage-dev` (no Pages). This repo stays public + lean. To resume work on another machine,
+clone that repo and read its `HANDOFF.md` (current state, checkpoint, open TODOs). Reason it's separate:
+making this `username.github.io` repo private would disable GitHub Pages on a free plan and take the site down.
+
 ## Purpose (drives design decisions)
 Dual audience: (1) Tiago's own complete archive of his work; (2) an employer-facing pitch. The IA must
 serve both — a curated, high-signal surface on top, the full archive underneath.
