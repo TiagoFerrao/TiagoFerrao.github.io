@@ -40,10 +40,10 @@
   .site-back:hover { color: var(--mint); }
 
   /* ===== summary band ===== */
-  .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin: 28px 0; }
-  .sum-card { background: var(--panel); border-radius: var(--radius); padding: 18px 20px; }
-  .sum-card .s-label { font-family: var(--mono); font-size: .64rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
-  .sum-card .s-value { font-size: 1.7rem; font-weight: 650; }
+  .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr)); gap: 10px; margin: 24px 0; }
+  .sum-card { background: var(--panel); border-radius: var(--radius); padding: 13px 16px; }
+  .sum-card .s-label { font-family: var(--mono); font-size: .6rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .sum-card .s-value { font-size: 1.45rem; font-weight: 650; }
   .sum-card .s-value small { font-size: .9rem; color: var(--muted); font-weight: 400; }
   .sum-card.gauge-card { display: flex; align-items: center; gap: 16px; }
   .gauge { width: 84px; height: 84px; flex: 0 0 auto; }
@@ -59,13 +59,58 @@
   .riskiest.all-clear { border-left-color: var(--mint); }
   .riskiest.all-clear .r-label { color: var(--mint); }
 
+  /* ===== project bar (shared layer) ===== */
+  #project-bar:empty { display: none; }
+  .fp-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; background: var(--panel); border: 1px solid var(--line2); border-radius: var(--radius); padding: 10px 16px; margin-bottom: 16px; position: relative; }
+  .fp-label { font-family: var(--mono); font-size: .58rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .fp-select { display: inline-flex; align-items: center; gap: 8px; background: var(--panel-2); border: 1px solid var(--mint-dim); border-radius: 8px; padding: 7px 12px; cursor: pointer; }
+  .fp-name { font-weight: 650; font-size: .9rem; color: var(--mint); }
+  .fp-chev { color: var(--muted); font-family: var(--mono); font-size: .7rem; }
+  .fp-actions { display: flex; gap: 7px; margin-left: auto; flex-wrap: wrap; }
+  .fp-btn { font-family: var(--mono); font-size: .58rem; letter-spacing: .08em; text-transform: uppercase; padding: 6px 11px; border-radius: 8px; border: 1px solid var(--line2); background: transparent; color: var(--muted); cursor: pointer; }
+  .fp-btn:hover { color: var(--text); background: var(--panel-2); }
+  .fp-btn.fp-danger { border-color: rgba(224,122,107,.4); color: var(--red); }
+  .fp-btn.fp-danger:hover { background: rgba(224,122,107,.08); }
+  .fp-dd { position: absolute; top: calc(100% - 6px); left: 16px; z-index: 40; margin-top: 8px; min-width: 280px; max-width: 380px; background: var(--panel-2); border: 1px solid var(--mint-dim); border-radius: 10px; overflow: hidden; box-shadow: 0 8px 28px rgba(0,0,0,.4); }
+  .fp-dd-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; text-align: left; padding: 10px 14px; border: none; border-bottom: 1px solid var(--line2); background: transparent; cursor: pointer; }
+  .fp-dd-item:hover { background: rgba(125,227,141,.06); }
+  .fp-dd-item.fp-on { background: var(--mint-faint); }
+  .fp-di-name { font-size: .86rem; color: var(--text); }
+  .fp-dd-item.fp-on .fp-di-name { color: var(--mint); font-weight: 650; }
+  .fp-di-meta { font-family: var(--mono); font-size: .62rem; color: var(--muted); white-space: nowrap; }
+  .fp-di-check { color: var(--mint); }
+  .fp-dd-new { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; padding: 11px 14px; color: var(--mint); font-family: var(--mono); font-size: .64rem; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; background: rgba(125,227,141,.05); border: none; }
+  .fp-dd-new:hover { background: rgba(125,227,141,.1); }
+
+  /* ===== how-to block ===== */
+  .howto { background: var(--panel); border-radius: var(--radius); margin: 0 0 22px; }
+  .howto > summary { list-style: none; cursor: pointer; padding: 13px 18px; display: flex; align-items: center; justify-content: space-between; gap: 10px; font-family: var(--mono); font-size: .66rem; letter-spacing: .16em; text-transform: uppercase; color: var(--mint); }
+  .howto > summary::-webkit-details-marker { display: none; }
+  .howto > summary::after { content: '▸'; color: var(--muted); transition: transform .15s; }
+  .howto[open] > summary::after { transform: rotate(90deg); }
+  .howto .howto-body { padding: 0 18px 18px; }
+  .howto .ht-flow { font-size: .82rem; color: var(--text); line-height: 1.6; margin-bottom: 14px; }
+  .howto .ht-flow b { color: var(--mint); }
+  .howto dl { display: grid; grid-template-columns: minmax(110px, 150px) 1fr; gap: 8px 16px; margin: 0; }
+  .howto dt { font-family: var(--mono); font-size: .68rem; color: var(--mint); letter-spacing: .04em; }
+  .howto dd { margin: 0; font-size: .8rem; color: var(--muted); line-height: 1.5; }
+  .howto .ht-sub { font-family: var(--mono); font-size: .58rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 16px 0 8px; }
+
+  /* ===== top band: indicators + matrix ===== */
+  .topband { display: grid; grid-template-columns: minmax(280px, 360px) 1fr; gap: 20px; align-items: start; margin: 24px 0 18px; }
+  @media (max-width: 820px) { .topband { grid-template-columns: 1fr; } }
+  .topband .summary { margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-content: start; }
+  .topband .summary .gauge-card.wide { grid-column: 1 / -1; }
+  .topband .matrix-wrap { margin: 0; height: 100%; }
+  .table-block { /* full page width */ }
+
   /* ===== risk matrix ===== */
   .panel-grid { display: grid; grid-template-columns: 300px 1fr; gap: 24px; align-items: start; margin-bottom: 30px; }
   @media (max-width: 900px) { .panel-grid { grid-template-columns: 1fr; } }
-  .matrix-wrap { background: var(--panel); border-radius: var(--radius); padding: 18px 20px; }
+  .matrix-wrap { background: var(--panel); border-radius: var(--radius); padding: 14px 18px; }
   .matrix-wrap .m-title { font-family: var(--mono); font-size: .64rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
-  .matrix { display: grid; grid-template-columns: 18px repeat(3, 1fr); grid-template-rows: repeat(3, 56px) 18px; gap: 5px; }
-  .m-cell { border-radius: 8px; background: var(--panel-2); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 1rem; cursor: pointer; border: 1.5px solid transparent; transition: border-color .2s ease, background .2s ease; }
+  .matrix { display: grid; grid-template-columns: 16px repeat(3, 1fr); grid-template-rows: repeat(3, 44px) 16px; gap: 4px; }
+  .m-cell { border-radius: 7px; background: var(--panel-2); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: .95rem; cursor: pointer; border: 1.5px solid transparent; transition: border-color .2s ease, background .2s ease; }
   .m-cell:hover { border-color: var(--mint-dim); }
   .m-cell.filtered { border-color: var(--mint); }
   .m-cell[data-score="9"] { background: rgba(224,122,107,.22); }
@@ -81,11 +126,21 @@
   button:hover, .btn:hover { background: var(--mint-faint); }
   button.primary { background: var(--mint); color: var(--bg); border-color: var(--mint); font-weight: 600; }
   .toolbar .spacer { flex: 1; }
+  /* view toggle (Frame / Test) */
+  .viewtabs { display: inline-flex; border: 1px solid var(--mint-dim); border-radius: 999px; overflow: hidden; margin-right: 4px; }
+  .viewtabs button { border: none; border-radius: 0; padding: 7px 16px; color: var(--muted); background: transparent; }
+  .viewtabs button.on { background: var(--mint); color: var(--bg); font-weight: 600; }
+  .viewtabs button:not(.on):hover { background: var(--mint-faint); color: var(--mint); }
+  .view-note { font-family: var(--mono); font-size: .68rem; color: var(--muted); margin: 0 0 10px; }
+  .test-allbox { font-family: var(--mono); font-size: .7rem; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+  .test-empty { background: var(--panel); border-radius: var(--radius); padding: 22px; text-align: center; color: var(--muted); font-size: .86rem; line-height: 1.6; }
+  .print-only { display: none; }
+  .print-section-title { display: none; }
   .filter-pill { font-family: var(--mono); font-size: .7rem; color: var(--amber); }
 
   /* ===== table ===== */
   .table-wrap { overflow-x: auto; background: var(--panel); border-radius: var(--radius); }
-  table { border-collapse: collapse; width: 100%; min-width: 1240px; font-size: .82rem; }
+  table { border-collapse: collapse; width: 100%; min-width: 680px; font-size: .8rem; table-layout: fixed; }
   thead th { font-family: var(--mono); font-size: .6rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); text-align: left; padding: 12px 10px 10px; border-bottom: 1px solid var(--mint-dim); white-space: nowrap; }
   tbody td { padding: 8px 10px; border-bottom: 1px solid rgba(125,227,141,.08); vertical-align: middle; }
   tbody tr:hover { background: var(--mint-faint); }
@@ -99,7 +154,15 @@
   input:focus, select:focus, textarea:focus { outline: none; border-color: var(--mint-dim); background: var(--panel-2); }
   select { appearance: none; cursor: pointer; }
   select option { background: var(--panel-2); color: var(--text); }
-  input[type="number"] { width: 90px; text-align: right; font-family: var(--mono); }
+  input[type="number"] { width: 72px; text-align: right; font-family: var(--mono); }
+  /* compact columns (layout pass) */
+  select { min-width: 0; }
+  th, td { white-space: nowrap; overflow: hidden; }
+  thead th, tbody td { padding-left: 8px; padding-right: 8px; }
+  td input[type="text"], td select { width: 100%; max-width: 100%; }
+  td input[type="number"] { width: 100%; }
+  /* text-overflow ellipsis on inputs so fixed columns never blow out */
+  td input[type="text"] { text-overflow: ellipsis; }
   input[type="checkbox"] { width: 17px; height: 17px; accent-color: var(--mint); cursor: pointer; }
 
   .score-badge { font-family: var(--mono); font-size: .74rem; font-weight: 700; border-radius: 6px; padding: 3px 9px; display: inline-block; min-width: 30px; text-align: center; }
@@ -115,17 +178,50 @@
 
   .hint { font-size: .74rem; color: var(--muted); margin-top: 12px; line-height: 1.55; }
 
+  /* ===== dimension coverage strip (rec 12) ===== */
+  .coverage { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; background: var(--panel); border-radius: var(--radius); padding: 7px 16px; margin-bottom: 12px; }
+  .coverage .c-title { font-family: var(--mono); font-size: .6rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-right: 4px; }
+  .cov-chip { font-family: var(--mono); font-size: .72rem; padding: 4px 11px; border-radius: 999px; background: var(--panel-2); color: var(--muted); white-space: nowrap; }
+  .cov-chip b { color: var(--text); font-weight: 700; }
+  .cov-chip.warn { background: rgba(224,181,107,.14); color: var(--amber); }
+  .cov-chip.warn b { color: var(--amber); }
+  .cov-chip.zero { background: rgba(224,122,107,.14); color: var(--red); }
+  .cov-chip.zero b { color: var(--red); }
+  .cov-msg { font-size: .74rem; color: var(--muted); flex: 1 1 100%; line-height: 1.5; margin-top: 2px; }
+  .cov-msg.warn { color: var(--amber); }
+  .cov-tip { position: relative; cursor: help; border-bottom: 1px dotted var(--mint-dim); }
+  .cov-tip::after { content: attr(data-tip); position: absolute; bottom: calc(100% + 8px); left: 0; width: 250px; background: #0a3a46; color: var(--text); font-family: var(--sans); font-size: .72rem; letter-spacing: 0; text-transform: none; line-height: 1.5; padding: 8px 11px; border-radius: 8px; border: 1px solid var(--mint-dim); opacity: 0; pointer-events: none; transition: opacity .15s; z-index: 30; }
+  .cov-tip:hover::after, .cov-tip:focus-visible::after { opacity: 1; }
+
+  /* ===== evidence strength (rec 13) ===== */
+  .ev-opinion { color: var(--muted); }
+  .ev-stated { color: var(--amber); }
+  .ev-observed { color: var(--mint); }
+
+  /* ===== PR/FAQ import banner (rec 14) ===== */
+  .import-banner { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; background: var(--panel); border-left: 3px solid var(--mint); border-radius: 0 var(--radius) var(--radius) 0; padding: 13px 18px; margin-bottom: 18px; }
+  .import-banner[hidden] { display: none; }
+  .import-banner .ib-label { font-family: var(--mono); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--mint); white-space: nowrap; }
+  .import-banner .ib-text { font-size: .86rem; color: var(--text); flex: 1; min-width: 220px; line-height: 1.5; }
+
   /* ===== print / PDF export ===== */
   @media print {
     :root { --bg: #fff; --panel: #fff; --panel-2: #f2f2f2; --text: #111; --muted: #555; --mint: #0F3D22; --mint-dim: #999; --mint-faint: #f5f5f5; }
     body { padding: 0; background: #fff; color: #111; }
-    .toolbar, .m-note, .hint, td .del, .matrix-wrap { display: none !important; }
+    .toolbar, .m-note, .hint, td .del, .matrix-wrap, .coverage, .import-banner { display: none !important; }
+    .ev-opinion, .ev-stated, .ev-observed { color: #111 !important; }
     .table-wrap { overflow: visible; }
     table { min-width: 0; font-size: 9pt; }
     input, select { border: none !important; background: none !important; color: #111 !important; padding: 2px; }
     input[type="checkbox"] { accent-color: #0F3D22; }
     .panel-grid { grid-template-columns: 1fr; }
     .sum-card, .riskiest, .table-wrap { border: 1px solid #ccc; box-shadow: none; }
+    .viewtabs, .view-note, .howto, #project-bar { display: none !important; }
+    .table-wrap:not(.print-frame):not(.print-test) { display: none !important; }
+    tfoot { display: none !important; }
+    .print-only { display: block !important; }
+    .print-section-title { display: block !important; font-family: var(--mono); font-size: 11pt; font-weight: 700; color: #0F3D22; margin: 16px 0 6px; }
+    .table-wrap.print-frame, .table-wrap.print-test { page-break-inside: auto; margin-bottom: 8px; }
     a { color: #111; text-decoration: none; }
   }
 </style>
@@ -140,34 +236,74 @@
     <p>Every idea is a stack of assumptions. Write them down, score them by uncertainty and impact, design the cheapest experiment that clears each one — and always test the riskiest assumption first. Data is saved locally in your browser.</p>
   </header>
 
-  <!-- summary -->
-  <div class="summary">
-    <div class="sum-card"><div class="s-label">Assumptions</div><div class="s-value" id="sum-total">0</div></div>
-    <div class="sum-card"><div class="s-label">Open / Resolved</div><div class="s-value" id="sum-open">0 <small>/ 0</small></div></div>
-    <div class="sum-card"><div class="s-label">Selected to validate</div><div class="s-value" id="sum-selected">0</div></div>
-    <div class="sum-card"><div class="s-label">Cost to validate (selected)</div><div class="s-value" id="sum-cost">€0</div></div>
-    <div class="sum-card gauge-card">
-      <svg class="gauge" id="gauge" viewBox="0 0 100 100">
-        <circle class="bgc" cx="50" cy="50" r="42" fill="none" stroke-width="10"/>
-        <circle class="fgc" cx="50" cy="50" r="42" fill="none" stroke-width="10" stroke-linecap="round"
-                stroke-dasharray="263.9" stroke-dashoffset="263.9" transform="rotate(-90 50 50)"/>
-        <text x="50" y="56" text-anchor="middle" id="gauge-pct">0%</text>
-      </svg>
-      <div>
-        <div class="s-label">Uncertainty remaining</div>
-        <div style="font-size:.74rem;color:var(--muted);line-height:1.45">Risk-weighted share of open assumptions</div>
+  <div id="project-bar"></div>
+
+  <details class="howto">
+    <summary>How to use this &amp; what each column means</summary>
+    <div class="howto-body">
+      <p class="ht-flow">Work in two phases. In <b>Frame &amp; prioritise</b>, list every assumption, tag its risk type, and score it by uncertainty × impact — then tick the few worth testing. In <b>Test</b>, design the cheapest experiment for each, set the pass/fail threshold, record what you measured, and mark the result. The flow of a single assumption: <b>belief → score → experiment → threshold → measured → result</b>.</p>
+
+      <div class="ht-sub">Risk categories — the kind of risk each assumption carries</div>
+      <dl>
+        <dt>Desirability</dt><dd>Does the customer actually want it? Demand and value risk.</dd>
+        <dt>Feasibility</dt><dd>Can we build and operate it? Technical and operational risk.</dd>
+        <dt>Viability</dt><dd>Does it sustain itself financially and organisationally? Economic risk.</dd>
+        <dt>Adaptability</dt><dd>Does it hold up as regulation, market or tech change over time?</dd>
+        <dt>Other</dt><dd>Anything that doesn't fit the four above.</dd>
+      </dl>
+
+      <div class="ht-sub">Frame &amp; prioritise columns</div>
+      <dl>
+        <dt>Assumption</dt><dd>What must be true, as a statement: "We believe that…". One per row.</dd>
+        <dt>Value</dt><dd>The value you expect if it holds (e.g. "&gt; 60% adoption") — the belief, not yet tested.</dd>
+        <dt>Uncertainty</dt><dd>How sure you are it's true. Low = strong evidence; High = mostly a guess.</dd>
+        <dt>Impact</dt><dd>How badly the idea breaks if it's false. Low = minor; High = fatal.</dd>
+        <dt>Risk</dt><dd>Uncertainty × Impact (max 9). Test the highest first.</dd>
+        <dt>Evidence</dt><dd>Strength of proof: Opinion → Stated preference → Observed behaviour.</dd>
+      </dl>
+
+      <div class="ht-sub">Test columns</div>
+      <dl>
+        <dt>Experiment</dt><dd>The cheapest, fastest test that could change your mind.</dd>
+        <dt>Threshold</dt><dd>The pass/fail bar, set before running — the number it must hit.</dd>
+        <dt>Measured</dt><dd>What the test actually recorded. Compare to threshold, then set result.</dd>
+        <dt>Cost (€)</dt><dd>What the experiment costs to run; selected ones are totalled.</dd>
+        <dt>Validate?</dt><dd>Tick the ones you'll test — the Test view shows only these.</dd>
+        <dt>Result</dt><dd>Pending, Confirmed (met threshold) or Refuted (didn't — still cleared knowledge).</dd>
+      </dl>
+    </div>
+  </details>
+
+  <!-- PR/FAQ import banner (rec 14) -->
+  <div class="import-banner" id="import-banner" hidden>
+    <span class="ib-label">From the Future Press Release</span>
+    <span class="ib-text" id="import-text"></span>
+    <button class="primary" id="import-accept">Import as assumptions</button>
+    <button id="import-dismiss">Dismiss</button>
+  </div>
+
+  <!-- top band: indicator cards (left) + risk matrix (right) -->
+  <div class="topband">
+    <div class="summary">
+      <div class="sum-card"><div class="s-label">Assumptions</div><div class="s-value" id="sum-total">0</div></div>
+      <div class="sum-card"><div class="s-label">Open / Resolved</div><div class="s-value" id="sum-open">0 <small>/ 0</small></div></div>
+      <div class="sum-card"><div class="s-label">Selected to validate</div><div class="s-value" id="sum-selected">0</div></div>
+      <div class="sum-card"><div class="s-label">Cost to validate (selected)</div><div class="s-value" id="sum-cost">€0</div></div>
+      <div class="sum-card gauge-card wide">
+        <svg class="gauge" id="gauge" viewBox="0 0 100 100">
+          <circle class="bgc" cx="50" cy="50" r="42" fill="none" stroke-width="10"/>
+          <circle class="fgc" cx="50" cy="50" r="42" fill="none" stroke-width="10" stroke-linecap="round"
+                  stroke-dasharray="263.9" stroke-dashoffset="263.9" transform="rotate(-90 50 50)"/>
+          <text x="50" y="56" text-anchor="middle" id="gauge-pct">0%</text>
+        </svg>
+        <div>
+          <div class="s-label">Uncertainty remaining</div>
+          <div style="font-size:.74rem;color:var(--muted);line-height:1.45">Risk-weighted share of open assumptions</div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- riskiest assumption callout -->
-  <div class="riskiest" id="riskiest">
-    <div class="r-label">Riskiest assumption — test this first</div>
-    <div id="riskiest-text">—</div>
-  </div>
-
-  <div class="panel-grid">
-    <!-- risk matrix -->
+    <!-- risk matrix (right of the cards) -->
     <div class="matrix-wrap">
       <div class="m-title">Open assumptions — impact × uncertainty</div>
       <div class="matrix" id="matrix">
@@ -186,10 +322,30 @@
       </div>
       <div class="m-note">Top-right is the danger zone: high impact, high uncertainty. Click a cell to filter the table.</div>
     </div>
+  </div>
+  <!-- /topband -->
 
-    <!-- table -->
-    <div>
+  <!-- riskiest assumption callout -->
+  <div class="riskiest" id="riskiest">
+    <div class="r-label">Riskiest assumption — test this first</div>
+    <div id="riskiest-text">—</div>
+  </div>
+
+  <!-- table (full width) -->
+  <div class="table-block">
+      <div class="coverage" id="coverage">
+        <span class="c-title"><span class="cov-tip" tabindex="0" data-tip="Desirability: does the customer want it? Feasibility: can we build and operate it? Viability: does it sustain itself financially and organisationally?">Risk coverage &#9432;</span></span>
+        <span class="cov-chip" data-dim="Desirability">DES <b>0</b></span>
+        <span class="cov-chip" data-dim="Feasibility">FEA <b>0</b></span>
+        <span class="cov-chip" data-dim="Viability">VIA <b>0</b></span>
+        <span class="cov-msg" id="cov-msg"></span>
+      </div>
+
       <div class="toolbar">
+        <span class="viewtabs" role="tablist">
+          <button id="view-frame" class="on" role="tab">Frame &amp; prioritise</button>
+          <button id="view-test" role="tab">Test</button>
+        </span>
         <button class="primary" id="add-row">+ add assumption</button>
         <button id="load-sample">load sample</button>
         <button id="clear-all">clear all</button>
@@ -198,62 +354,59 @@
         <button id="export-csv">export CSV</button>
         <button id="export-pdf">export PDF</button>
       </div>
+      <div class="view-note" id="view-note"></div>
 
       <div class="table-wrap">
         <table>
-          <thead>
-            <tr>
-              <th style="width:30px">#</th>
-              <th style="min-width:200px">Assumption</th>
-              <th>Category</th>
-              <th style="min-width:120px">Value</th>
-              <th>Uncertainty</th>
-              <th>Impact</th>
-              <th>Risk</th>
-              <th style="min-width:180px">Experiment</th>
-              <th style="min-width:140px">Threshold</th>
-              <th>Cost (€)</th>
-              <th>Validate?</th>
-              <th>Result</th>
-              <th></th>
-            </tr>
-          </thead>
+          <thead id="thead"></thead>
           <tbody id="tbody"></tbody>
           <tfoot>
             <tr>
               <td colspan="9" style="text-align:right">Total cost of selected experiments:</td>
               <td id="foot-cost" style="text-align:right">€0</td>
-              <td colspan="3"></td>
+              <td colspan="4"></td>
             </tr>
           </tfoot>
         </table>
       </div>
       <p class="hint">Risk = uncertainty × impact (low 1 · medium 2 · high 3 — max 9). Resolved assumptions (confirmed or refuted) stop counting toward remaining uncertainty: a refuted assumption is still cleared knowledge. Export PDF uses your browser's print dialog — choose "Save as PDF".</p>
-    </div>
   </div>
 
 </div>
 
+<script src="projects.js"></script>
 <script>
 (function () {
+  var global = window;
   var KEY = 'ferrao-assumptions-v1';
   var W = { low: 1, medium: 2, high: 3 };
   var rows = [];
   var filter = null; // {u, i}
+  var view = 'frame';        // 'frame' | 'test'
+  var showAllInTest = false; // Test view defaults to selected-only
   var uid = function () { return 'a' + Math.random().toString(36).slice(2, 9); };
 
   var SAMPLE = [
-    { assumption: 'Operators will trust automated dosing recommendations', category: 'Desirability', value: '> 60% adoption in pilot', uncertainty: 'high', impact: 'high', experiment: 'Shadow-mode pilot in 1 plant, 4 weeks', threshold: '≥ 60% of recommendations accepted', cost: 2500, selected: true, result: 'pending' },
-    { assumption: 'Sensor data quality is sufficient for the model', category: 'Feasibility', value: '< 5% missing/invalid readings', uncertainty: 'medium', impact: 'high', experiment: 'Audit 6 months of historical sensor data', threshold: '< 5% gaps after cleaning', cost: 800, selected: true, result: 'pending' },
-    { assumption: 'Utilities will pay per-plant subscription', category: 'Viability', value: '€1.5k–3k / plant / month', uncertainty: 'high', impact: 'medium', experiment: '5 pricing interviews with plant directors', threshold: '≥ 3 of 5 accept the range', cost: 300, selected: false, result: 'pending' },
-    { assumption: 'Integration with existing SCADA is feasible', category: 'Feasibility', value: 'OPC-UA available on site', uncertainty: 'low', impact: 'medium', experiment: 'Technical survey of pilot plant', threshold: 'OPC-UA endpoint confirmed', cost: 0, selected: false, result: 'confirmed' }
+    { assumption: 'Operators will trust automated dosing recommendations', category: 'Desirability', value: '> 60% adoption in pilot', uncertainty: 'high', impact: 'high', experiment: 'Shadow-mode pilot in 1 plant, 4 weeks', threshold: '≥ 60% of recommendations accepted', measured: '', cost: 2500, selected: true, result: 'pending', evidence: 'opinion' },
+    { assumption: 'Sensor data quality is sufficient for the model', category: 'Feasibility', value: '< 5% missing/invalid readings', uncertainty: 'medium', impact: 'high', experiment: 'Audit 6 months of historical sensor data', threshold: '< 5% gaps after cleaning', measured: '', cost: 800, selected: true, result: 'pending', evidence: 'stated' },
+    { assumption: 'Utilities will pay per-plant subscription', category: 'Viability', value: '€1.5k–3k / plant / month', uncertainty: 'high', impact: 'medium', experiment: '5 pricing interviews with plant directors', threshold: '≥ 3 of 5 accept the range', measured: '', cost: 300, selected: false, result: 'pending', evidence: 'opinion' },
+    { assumption: 'Integration with existing SCADA is feasible', category: 'Feasibility', value: 'OPC-UA available on site', uncertainty: 'low', impact: 'medium', experiment: 'Technical survey of pilot plant', threshold: 'OPC-UA endpoint confirmed', measured: 'OPC-UA present on site PLCs', cost: 0, selected: false, result: 'confirmed', evidence: 'observed' }
   ];
 
-  function load() {
-    try { var d = JSON.parse(localStorage.getItem(KEY)); if (Array.isArray(d)) rows = d; } catch (e) {}
-    if (!rows.length) rows = [];
+  function activeKey() {
+    if (global.FerraoProjects) { var k = global.FerraoProjects.key(); if (k) return k; }
+    return KEY;
   }
-  function save() { localStorage.setItem(KEY, JSON.stringify(rows)); }
+  function load() {
+    rows = [];
+    try { var d = JSON.parse(localStorage.getItem(activeKey())); if (Array.isArray(d)) rows = d; } catch (e) {}
+  }
+  function save() {
+    try { localStorage.setItem(activeKey(), JSON.stringify(rows)); } catch (e) {}
+    if (global.FerraoProjects && global.FerraoProjects.activeId()) {
+      try { global.FerraoProjects.touch(global.FerraoProjects.activeId()); } catch (e) {}
+    }
+  }
   function score(r) { return W[r.uncertainty] * W[r.impact]; }
   function fmt(n) { return '€' + (n || 0).toLocaleString('en-US'); }
 
@@ -268,40 +421,140 @@
     return s + '</select>';
   }
 
-  function render() {
-    tbody.innerHTML = '';
-    var visible = rows.filter(function (r) {
+  /* ---------- cell builders (shared by both views) ---------- */
+  function cNum(r)   { return '<td style="font-family:var(--mono);color:var(--muted)">' + (rows.indexOf(r) + 1) + '</td>'; }
+  function cAssum(r) { return '<td><input type="text" data-f="assumption" value="' + esc(r.assumption) + '" placeholder="We believe that…"></td>'; }
+  function cAssumRO(r){ return '<td><span style="color:var(--muted)">' + (esc(r.assumption) || '<em>untitled</em>') + '</span></td>'; }
+  function cCat(r)   { return '<td>' + sel('category', r.category, [['Desirability','Desirability'],['Feasibility','Feasibility'],['Viability','Viability'],['Adaptability','Adaptability'],['Other','Other']]) + '</td>'; }
+  function cVal(r)   { return '<td><input type="text" data-f="value" value="' + esc(r.value) + '" placeholder="expected"></td>'; }
+  function cUnc(r)   { return '<td>' + sel('uncertainty', r.uncertainty, [['low','Low'],['medium','Medium'],['high','High']]) + '</td>'; }
+  function cImp(r)   { return '<td>' + sel('impact', r.impact, [['low','Low'],['medium','Medium'],['high','High']]) + '</td>'; }
+  function cRisk(r)  { var sc=score(r); var cls=sc>=6?'s-high':sc>=3?'s-med':'s-low'; return '<td><span class="score-badge '+cls+'">'+sc+'</span></td>'; }
+  function cEvid(r)  { return '<td class="ev-' + (r.evidence || 'opinion') + '">' + sel('evidence', r.evidence || 'opinion', [['opinion','Opinion'],['stated','Stated pref.'],['observed','Observed']]) + '</td>'; }
+  function cExp(r)   { return '<td><input type="text" data-f="experiment" value="' + esc(r.experiment) + '" placeholder="cheapest test that clears it"></td>'; }
+  function cThr(r)   { return '<td><input type="text" data-f="threshold" value="' + esc(r.threshold) + '" placeholder="pass / fail criterion"></td>'; }
+  function cMeas(r)  { return '<td><input type="text" data-f="measured" value="' + esc(r.measured) + '" placeholder="what the test recorded"></td>'; }
+  function cCost(r)  { return '<td><input type="number" data-f="cost" value="' + (r.cost || 0) + '" min="0" step="50"></td>'; }
+  function cSel(r)   { return '<td style="text-align:center"><input type="checkbox" data-f="selected"' + (r.selected ? ' checked' : '') + '></td>'; }
+  function cRes(r)   { return '<td>' + sel('result', r.result, [['pending','Pending'],['confirmed','Confirmed ✓'],['refuted','Refuted ✗']]) + '</td>'; }
+  function cDel()    { return '<td><button class="del" title="delete">✕</button></td>'; }
+
+  // column schema per view: [header HTML, cell fn]
+  // tooltip-wrapped header label
+  function th(label, tip) {
+    if (!tip) return label;
+    return '<span class="cov-tip" tabindex="0" data-tip="' + tip.replace(/"/g, '&quot;') + '">' + label + ' &#9432;</span>';
+  }
+  var TIP = {
+    assumption: 'What must be true for the idea to work? Write it as a statement: \'We believe that…\'. One assumption per row.',
+    category:   'Which kind of risk is this? Desirability = does the customer want it? · Feasibility = can we build and operate it? · Viability = does it sustain itself financially? · Adaptability = does it hold up as things change? · Other.',
+    value:      'The value you expect IF the assumption holds (e.g. \'> 60% adoption\'). It is the belief — the Threshold and Measured columns test it.',
+    uncertainty:'How sure are you this is true? Low = strong evidence already · High = mostly a guess. Drives the risk score.',
+    impact:     'If this turns out false, how badly does the idea break? Low = minor · High = kills it. Drives the risk score.',
+    risk:       'Uncertainty × Impact (low 1 · medium 2 · high 3 — max 9). Test the highest first.',
+    evidence:   'How strong is the proof behind it? Opinion = someone\'s guess · Stated = they said so · Observed = they actually did it.',
+    experiment: 'The cheapest, fastest test that could change your mind about this assumption.',
+    threshold:  'The pass/fail bar, set BEFORE you run — the number the experiment must hit to count as confirmed.',
+    measured:   'What the experiment actually recorded. Compare it to the Threshold, then set the Result.',
+    cost:       'What the experiment costs to run (€). The selected experiments are totalled at the bottom.',
+    validate:   'Tick the assumptions you will actually test. The Test view shows only these — many framed, few tested.',
+    result:     'Did it pass? Pending = not tested yet · Confirmed = met the threshold · Refuted = did not (still cleared knowledge).'
+  };
+  // [header, cellFn, width]
+  var COLS = {
+    frame: [
+      ['#', cNum, '34px'], [th('Assumption', TIP.assumption), cAssum, '26%'], [th('Category', TIP.category), cCat, '120px'], [th('Value', TIP.value), cVal, '12%'],
+      [th('Uncertainty', TIP.uncertainty), cUnc, '92px'], [th('Impact', TIP.impact), cImp, '96px'], [th('Risk', TIP.risk), cRisk, '60px'], [th('Evidence', TIP.evidence), cEvid, '112px'], ['', cDel, '40px']
+    ],
+    test: [
+      ['#', cNum, '34px'], [th('Assumption', TIP.assumption), cAssumRO, '20%'], [th('Experiment', TIP.experiment), cExp, '24%'], [th('Threshold', TIP.threshold), cThr, '18%'],
+      [th('Measured', TIP.measured), cMeas, '16%'], [th('Cost (€)', TIP.cost), cCost, '88px'], [th('Validate?', TIP.validate), cSel, '70px'], [th('Result', TIP.result), cRes, '112px'], ['', cDel, '40px']
+    ]
+  };
+
+  function buildThead(v) {
+    var ths = COLS[v].map(function (c) {
+      var w = c[2] ? ' style="width:' + c[2] + '"' : '';
+      return '<th' + w + '>' + c[0] + '</th>';
+    }).join('');
+    document.getElementById('thead').innerHTML = '<tr>' + ths + '</tr>';
+  }
+
+  function rowsForView() {
+    var base = rows.filter(function (r) {
       return !filter || (r.result === 'pending' && r.uncertainty === filter.u && r.impact === filter.i);
     });
+    if (view === 'test' && !showAllInTest) {
+      base = base.filter(function (r) { return r.selected; });
+    }
+    return base;
+  }
+
+  function render() {
+    buildThead(view);
+    tbody.innerHTML = '';
+    var cols = COLS[view];
+    var visible = rowsForView();
     var riskiestId = null, best = -1;
     rows.forEach(function (r) {
       if (r.result === 'pending' && score(r) > best) { best = score(r); riskiestId = r.id; }
     });
 
-    visible.forEach(function (r, idx) {
-      var sc = score(r);
-      var cls = sc >= 6 ? 's-high' : sc >= 3 ? 's-med' : 's-low';
+    visible.forEach(function (r) {
       var tr = document.createElement('tr');
       tr.dataset.id = r.id;
       if (r.result !== 'pending') tr.classList.add('resolved');
       if (r.id === riskiestId) tr.classList.add('riskiest-row');
-      tr.innerHTML =
-        '<td style="font-family:var(--mono);color:var(--muted)">' + (rows.indexOf(r) + 1) + '</td>' +
-        '<td><input type="text" data-f="assumption" value="' + esc(r.assumption) + '" placeholder="We believe that…"></td>' +
-        '<td>' + sel('category', r.category, [['Desirability','Desirability'],['Feasibility','Feasibility'],['Viability','Viability'],['Adaptability','Adaptability'],['Other','Other']]) + '</td>' +
-        '<td><input type="text" data-f="value" value="' + esc(r.value) + '" placeholder="expected value"></td>' +
-        '<td>' + sel('uncertainty', r.uncertainty, [['low','Low'],['medium','Medium'],['high','High']]) + '</td>' +
-        '<td>' + sel('impact', r.impact, [['low','Low'],['medium','Medium'],['high','High']]) + '</td>' +
-        '<td><span class="score-badge ' + cls + '">' + sc + '</span></td>' +
-        '<td><input type="text" data-f="experiment" value="' + esc(r.experiment) + '" placeholder="cheapest test that clears it"></td>' +
-        '<td><input type="text" data-f="threshold" value="' + esc(r.threshold) + '" placeholder="pass / fail criterion"></td>' +
-        '<td><input type="number" data-f="cost" value="' + (r.cost || 0) + '" min="0" step="50"></td>' +
-        '<td style="text-align:center"><input type="checkbox" data-f="selected"' + (r.selected ? ' checked' : '') + '></td>' +
-        '<td>' + sel('result', r.result, [['pending','Pending'],['confirmed','Confirmed ✓'],['refuted','Refuted ✗']]) + '</td>' +
-        '<td><button class="del" title="delete">✕</button></td>';
+      tr.innerHTML = cols.map(function (c) { return c[1](r); }).join('');
       tbody.appendChild(tr);
     });
+
+    // empty-state for Test view with nothing selected
+    var wrap = document.querySelector('.table-wrap');
+    var existing = document.getElementById('test-empty');
+    if (existing) existing.remove();
+    if (view === 'test' && !showAllInTest && !visible.length) {
+      var d = document.createElement('div');
+      d.className = 'test-empty'; d.id = 'test-empty';
+      d.innerHTML = rows.length
+        ? 'No assumptions selected to test yet. In <b>Frame &amp; prioritise</b>, tick <b>Validate?</b> on the ones worth a test — or <button id="show-all-test" class="btn" style="margin-left:6px">show all</button>'
+        : 'No assumptions yet. Add some in <b>Frame &amp; prioritise</b> first.';
+      wrap.parentNode.insertBefore(d, wrap.nextSibling);
+      var sa = document.getElementById('show-all-test');
+      if (sa) sa.addEventListener('click', function () { showAllInTest = true; updViewNote(); render(); });
+    }
+
+    updFootColspan(cols.length);
     summary();
+  }
+
+  function updFootColspan(n) {
+    var foot = document.querySelector('tfoot tr');
+    if (view !== 'test') { foot.style.display = 'none'; return; }
+    foot.style.display = '';
+    // find the Cost column index dynamically so the total always sits under it
+    var labels = COLS.test.map(function (c) { return c[0]; });
+    var costIdx = labels.indexOf('Cost (€)');
+    if (costIdx < 0) costIdx = 4;
+    var after = n - costIdx - 1;
+    foot.innerHTML = '<td colspan="' + costIdx + '" style="text-align:right">Total cost of selected experiments:</td>' +
+      '<td id="foot-cost" style="text-align:right">€0</td>' +
+      (after > 0 ? '<td colspan="' + after + '"></td>' : '');
+  }
+
+  function updViewNote() {
+    var note = document.getElementById('view-note');
+    if (view === 'frame') {
+      note.innerHTML = 'List every assumption and score it. Test the riskiest first — switch to <b>Test</b> for the ones you select.';
+    } else {
+      note.innerHTML = showAllInTest
+        ? 'Showing all assumptions. <button id="show-sel-test" class="btn" style="padding:4px 12px">show selected only</button>'
+        : 'Showing only assumptions ticked <b>Validate?</b> — the funnel from many framed to few tested. <button id="show-all-test2" class="btn" style="padding:4px 12px">show all</button>';
+      var b1 = document.getElementById('show-sel-test');
+      if (b1) b1.addEventListener('click', function () { showAllInTest = false; updViewNote(); render(); });
+      var b2 = document.getElementById('show-all-test2');
+      if (b2) b2.addEventListener('click', function () { showAllInTest = true; updViewNote(); render(); });
+    }
   }
 
   function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
@@ -317,7 +570,7 @@
     document.getElementById('sum-open').innerHTML = open.length + ' <small>/ ' + (total - open.length) + '</small>';
     document.getElementById('sum-selected').textContent = selected.length;
     document.getElementById('sum-cost').textContent = fmt(cost);
-    document.getElementById('foot-cost').textContent = fmt(cost);
+    var fc = document.getElementById('foot-cost'); if (fc) fc.textContent = fmt(cost);
 
     // uncertainty remaining: open risk weight / total risk weight
     var allW = rows.reduce(function (a, r) { return a + score(r); }, 0);
@@ -354,6 +607,36 @@
       box.querySelector('.r-label').textContent = 'All clear';
       txt.textContent = 'No open assumptions — every hypothesis has been confirmed or refuted.';
     }
+    renderCoverage(open);
+  }
+
+  /* ---------- dimension coverage (rec 12) ---------- */
+  function renderCoverage(open) {
+    var dims = ['Desirability', 'Feasibility', 'Viability'];
+    var counts = {};
+    dims.forEach(function (d) { counts[d] = 0; });
+    open.forEach(function (r) { if (counts.hasOwnProperty(r.category)) counts[r.category]++; });
+    document.querySelectorAll('.cov-chip').forEach(function (chip) {
+      var d = chip.dataset.dim;
+      chip.querySelector('b').textContent = counts[d];
+      chip.classList.toggle('zero', open.length >= 3 && counts[d] === 0);
+      chip.classList.toggle('warn', open.length >= 3 && counts[d] === 1);
+    });
+    var msg = document.getElementById('cov-msg');
+    msg.className = 'cov-msg';
+    if (open.length < 3) { msg.textContent = ''; return; }
+    var gaps = dims.filter(function (d) { return counts[d] === 0; });
+    var thin = dims.filter(function (d) { return counts[d] === 1; });
+    var name = { Desirability: 'desirability', Feasibility: 'feasibility', Viability: 'viability' };
+    if (gaps.length) {
+      msg.classList.add('warn');
+      msg.textContent = 'Blind spot: nothing testing ' + gaps.map(function (d) { return name[d]; }).join(' or ') + '. You may be assuming away the hardest risk.';
+    } else if (thin.length) {
+      msg.classList.add('warn');
+      msg.textContent = 'Thin on ' + thin.map(function (d) { return name[d]; }).join(' and ') + ' — one assumption each. Worth pressure-testing.';
+    } else {
+      msg.textContent = 'Balanced across desirability, feasibility and viability.';
+    }
   }
 
   /* ---------- events ---------- */
@@ -365,7 +648,7 @@
     else if (f === 'cost') r.cost = Number(e.target.value) || 0;
     else r[f] = e.target.value;
     save();
-    if (f === 'uncertainty' || f === 'impact' || f === 'result' || f === 'selected' || f === 'cost') render();
+    if (f === 'uncertainty' || f === 'impact' || f === 'result' || f === 'selected' || f === 'cost' || f === 'evidence') render();
     else summary();
   });
   tbody.addEventListener('click', function (e) {
@@ -376,7 +659,7 @@
   });
 
   document.getElementById('add-row').addEventListener('click', function () {
-    rows.push({ id: uid(), assumption: '', category: 'Desirability', value: '', uncertainty: 'medium', impact: 'medium', experiment: '', threshold: '', cost: 0, selected: false, result: 'pending' });
+    rows.push({ id: uid(), assumption: '', category: 'Desirability', value: '', uncertainty: 'medium', impact: 'medium', experiment: '', threshold: '', measured: '', cost: 0, selected: false, result: 'pending', evidence: 'opinion' });
     save(); render();
     var inputs = tbody.querySelectorAll('input[data-f="assumption"]');
     if (inputs.length) inputs[inputs.length - 1].focus();
@@ -401,12 +684,64 @@
     });
   });
 
-  document.getElementById('export-pdf').addEventListener('click', function () { window.print(); });
+  document.getElementById('export-pdf').addEventListener('click', function () {
+    // Build static print-only sections for BOTH views, then print, then clean up.
+    var host = document.querySelector('.table-wrap').parentNode;
+    function staticTable(v, title) {
+      var cols = COLS[v];
+      var ths = cols.map(function (c) {
+        // strip interactive tooltip wrapper for print header
+        var t = c[0].replace(/<span[^>]*>/,'').replace(/<\/span>/,'').replace(/&#9432;/,'');
+        return '<th>' + t + '</th>';
+      }).join('');
+      var body = '';
+      var src = rows.filter(function (r) {
+        if (!filter) return true;
+        return r.result === 'pending' && r.uncertainty === filter.u && r.impact === filter.i;
+      });
+      if (v === 'test') src = src.filter(function (r) { return r.selected; });
+      src.forEach(function (r) {
+        var tds = cols.map(function (c) {
+          // render values as plain text for print
+          return printCell(c[0], r);
+        }).join('');
+        body += '<tr>' + tds + '</tr>';
+      });
+      return '<div class="print-only"><div class="print-section-title">' + title + '</div>' +
+             '<div class="table-wrap print-' + v + '"><table><thead><tr>' + ths + '</tr></thead><tbody>' + body + '</tbody></table></div></div>';
+    }
+    function printCell(headerLabel, r) {
+      var L = headerLabel;
+      if (L === '#') return '<td>' + (rows.indexOf(r) + 1) + '</td>';
+      if (L === 'Assumption') return '<td>' + (esc(r.assumption) || '') + '</td>';
+      if (L === 'Category') return '<td>' + esc(r.category) + '</td>';
+      if (L === 'Value') return '<td>' + esc(r.value) + '</td>';
+      if (L === 'Uncertainty') return '<td>' + esc(r.uncertainty) + '</td>';
+      if (L === 'Impact') return '<td>' + esc(r.impact) + '</td>';
+      if (L === 'Risk') return '<td>' + score(r) + '</td>';
+      if (L.indexOf('Evidence') > -1) return '<td>' + (r.evidence || 'opinion') + '</td>';
+      if (L === 'Experiment') return '<td>' + esc(r.experiment) + '</td>';
+      if (L === 'Threshold') return '<td>' + esc(r.threshold) + '</td>';
+      if (L === 'Measured') return '<td>' + esc(r.measured || '') + '</td>';
+      if (L === 'Cost (€)') return '<td>' + fmt(r.cost || 0) + '</td>';
+      if (L === 'Validate?') return '<td>' + (r.selected ? '✓' : '') + '</td>';
+      if (L === 'Result') return '<td>' + esc(r.result) + '</td>';
+      return '<td></td>';
+    }
+    var holder = document.createElement('div');
+    holder.id = 'print-holder';
+    holder.innerHTML = staticTable('frame', 'Phase 1 — Frame & prioritise') + staticTable('test', 'Phase 2 — Test (selected assumptions)');
+    host.appendChild(holder);
+    function cleanup() { var p = document.getElementById('print-holder'); if (p) p.remove(); window.removeEventListener('afterprint', cleanup); }
+    window.addEventListener('afterprint', cleanup);
+    window.print();
+    setTimeout(cleanup, 1000);
+  });
   document.getElementById('export-csv').addEventListener('click', function () {
-    var head = ['Assumption','Category','Value','Uncertainty','Impact','Risk score','Experiment','Threshold','Cost (EUR)','Selected to validate','Result'];
+    var head = ['Assumption','Category','Value','Uncertainty','Impact','Risk score','Experiment','Threshold','Measured','Cost (EUR)','Selected to validate','Result','Evidence strength'];
     var lines = [head.join(';')];
     rows.forEach(function (r) {
-      lines.push([r.assumption, r.category, r.value, r.uncertainty, r.impact, score(r), r.experiment, r.threshold, r.cost || 0, r.selected ? 'yes' : 'no', r.result]
+      lines.push([r.assumption, r.category, r.value, r.uncertainty, r.impact, score(r), r.experiment, r.threshold, r.measured || '', r.cost || 0, r.selected ? 'yes' : 'no', r.result, r.evidence || 'opinion']
         .map(function (v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(';'));
     });
     var blob = new Blob(['\uFEFF' + lines.join('\n')], { type: 'text/csv;charset=utf-8' });
@@ -416,7 +751,82 @@
     a.click();
   });
 
-  load(); render();
+  /* ---------- view toggle (Frame / Test) ---------- */
+  function setView(v) {
+    view = v;
+    document.getElementById('view-frame').classList.toggle('on', v === 'frame');
+    document.getElementById('view-test').classList.toggle('on', v === 'test');
+    updViewNote();
+    render();
+  }
+  document.getElementById('view-frame').addEventListener('click', function () { setView('frame'); });
+  document.getElementById('view-test').addEventListener('click', function () { setView('test'); });
+
+  /* ---------- PR/FAQ import receiver (rec 14) ---------- */
+  (function () {
+    var QKEY = 'ferrao-prfaq-assumptions-queue';
+    var SEEN = 'ferrao-prfaq-queue-seen';
+    var data = null;
+    try { data = JSON.parse(localStorage.getItem(QKEY) || 'null'); } catch (e) {}
+    if (!data || !data.rows || !data.rows.length) return;
+    var seen = null;
+    try { seen = localStorage.getItem(SEEN); } catch (e) {}
+    if (seen === data.at) return;
+
+    var banner = document.getElementById('import-banner');
+    var txt = document.getElementById('import-text');
+    txt.textContent = data.rows.length + ' tricky issue' + (data.rows.length > 1 ? 's' : '') +
+      (data.headline ? ' from “' + data.headline + '”' : ' from the press release') +
+      ' — import as pressupostos to test?';
+    banner.hidden = false;
+
+    var dimMap = { desirability: 'Desirability', feasibility: 'Feasibility', viability: 'Viability' };
+    function lvl(x) { return (x === 'low' || x === 'medium' || x === 'high') ? x : 'medium'; }
+
+    document.getElementById('import-accept').addEventListener('click', function () {
+      data.rows.forEach(function (q) {
+        rows.push({
+          id: uid(),
+          assumption: q.assumption || '',
+          category: dimMap[q.dimension] || 'Desirability',
+          value: q.category || '',
+          uncertainty: lvl(q.uncertainty),
+          impact: lvl(q.impact),
+          experiment: q.experiment || '',
+          threshold: q.threshold || '',
+          measured: '',
+          cost: Number(q.cost_to_validate) || 0,
+          selected: false,
+          result: q.result === 'confirmed' || q.result === 'refuted' ? q.result : 'pending',
+          evidence: 'opinion'
+        });
+      });
+      try { localStorage.setItem(SEEN, data.at); } catch (e) {}
+      save(); render();
+      banner.hidden = true;
+    });
+    document.getElementById('import-dismiss').addEventListener('click', function () {
+      try { localStorage.setItem(SEEN, data.at); } catch (e) {}
+      banner.hidden = true;
+    });
+  })();
+
+  load(); updViewNote(); render();
+
+  /* ---------- shared business-case layer wiring ---------- */
+  if (global.FerraoProjects) {
+    var FP = global.FerraoProjects;
+    FP.init({
+      toolNamespace: 'assumptions-tracker',
+      migrateFrom: KEY,
+      migrateName: 'SAFE-Cycle',
+      createInitial: true,
+      initialName: 'Novo caso',
+      onActiveData: function () { load(); updViewNote(); render(); }
+    });
+    var bar = document.getElementById('project-bar');
+    if (bar) FP.mountBar(bar, { label: 'Business case' });
+  }
 })();
 </script>
 </body>
