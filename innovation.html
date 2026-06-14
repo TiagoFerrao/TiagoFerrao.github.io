@@ -1,803 +1,452 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="teal">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Innovation Process — ferrao.me</title>
-<meta name="theme-color" content="#001a20">
-<meta name="description" content="An interactive map of Tiago Ferrão's innovation process — from press release to pitch — with working tools for each stage.">
-<link rel="icon" href="img/bee.png">
-<link rel="apple-touch-icon" href="img/bee.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
-<!-- shared site styles (header/footer chrome) — page-specific styles below override where needed -->
-<link rel="stylesheet" href="css/variables.css?v=2">
-<link rel="stylesheet" href="css/base.css?v=2">
-<link rel="stylesheet" href="css/layout.css?v=2">
-<link rel="stylesheet" href="css/components.css?v=2">
-<link rel="stylesheet" href="css/responsive.css?v=2">
-<style>
-  /* ============================================================
-     THEME TOKENS — ferrao.me green-screen aesthetic
-     ============================================================ */
-  :root {
-    --bg: #001a20;
-    --panel: #042730;
-    --panel-2: #06303a;
-    --text: #e8f4ef;
-    --muted: #8fb3a8;
-    --mint: #7DE38D;
-    --mint-dim: rgba(125, 227, 141, 0.35);
-    --mint-faint: rgba(125, 227, 141, 0.12);
-    --radius: 14px;
-    --sans: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
-    --mono: "Inconsolata", ui-monospace, "SF Mono", Menlo, monospace;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#001a20">
+  <title>Bringing Ideas to Investors | Tiago Ferrão</title>
+  <meta name="description" content="From a raw idea to a board-ready pitch — a step-by-step process with the tools for each phase.">
+  <link rel="icon" href="img/bee.png">
+  <link rel="apple-touch-icon" href="img/bee.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/variables.css?v=2">
+  <link rel="stylesheet" href="css/base.css?v=2">
+  <link rel="stylesheet" href="css/layout.css?v=2">
+  <link rel="stylesheet" href="css/components.css?v=2">
+  <link rel="stylesheet" href="css/responsive.css?v=2">
+  <style>
+    /* ===== embedded design tokens (green-screen aesthetic, from innovation.html live) =====
+       so the page renders correctly standalone, independent of css/variables.css */
+    :root {
+      --bg-primary: #001a20;
+      --bg-surface: #042730;
+      --bg-surface-2: #06303a;
+      --text-primary: #e8f4ef;
+      --text-secondary: #cfe3db;
+      --text-muted: #8fb3a8;
+      --accent-primary: #7DE38D;
+      --accent-primary-rgb: 125, 227, 141;
+      --accent-secondary: #7DE38D;
+      --border-subtle: rgba(143, 179, 168, 0.16);
+      --border-medium: rgba(143, 179, 168, 0.30);
+      --border-strong: rgba(125, 227, 141, 0.35);
+      --font-display: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+      --font-body: "Inconsolata", ui-monospace, "SF Mono", Menlo, monospace;
+      --space-lg: 20px;
+      --space-xl: 28px;
+      --space-2xl: 40px;
+    }
+    body { background: var(--bg-primary); color: var(--text-primary); font-family: var(--font-display); }
 
-    /* duotone icon theming */
-    --icon-primary: var(--text);
-    --icon-secondary: var(--mint);
-    --icon-secondary-opacity: 0.55;
-  }
+    /* ===== hybrid innovation process (page-specific) ===== */
+    /* duotone FA icon theming (from the live diagram) */
+    .fa-ico { display: block; }
+    .fa-ico svg { width: 100%; height: 100%; display: block; }
+    .fa-ico .fa-primary   { fill: var(--text-primary); }
+    .fa-ico .fa-secondary { fill: var(--accent-primary); opacity: .55; }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+    /* ===== phase rail ===== */
+    .phaserail { position: relative; margin: 0 0 var(--space-2xl); }
+    .phasenav { position: relative; display: flex; align-items: stretch; gap: 8px; padding: 0; }
+    .pbox { flex: 1 1 0; min-width: 0; background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-strong); border-radius: 10px; padding: 8px 12px; cursor: pointer; text-align: left;
+      transition: border-color .2s ease, background .2s ease; }
+    .pbox .pn { font-family: var(--font-body); font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-primary); white-space: nowrap; }
+    .pbox .nm { font-family: var(--font-display); font-size: 0.8rem; color: var(--text-primary); margin-top: 2px; line-height: 1.2; }
+    .pbox:hover { border-color: var(--accent-primary); }
+    .pbox.on { background: var(--accent-primary); border-color: var(--accent-primary); }
+    .pbox.on .pn, .pbox.on .nm { color: var(--bg-primary); }
+    .pbox.ctx { border-style: dashed; opacity: .55; }
+    .pbox.ctx:hover { opacity: .9; }
+    .pbox.ctx.on { opacity: 1; }
 
-  body {
-    font-family: var(--sans);
-    background: var(--bg);
-    color: var(--text);
-  }
+    /* invisible wrapper for the standalone chips — mirrors disc-wrap geometry so every chip aligns */
+    .pwrap { position: relative; flex: 1 1 0; display: flex; flex-direction: column; gap: 5px;
+      border: 1px solid transparent; border-radius: 12px; padding: 16px 0 8px; }
+    .pwrap .pbox { flex: 1 1 auto; }
 
-  /* .container, main and .page-header spacing come from the shared site CSS (canonical) */
+    /* the wrapping bracket over the two discovery phases */
+    .disc-wrap { position: relative; flex: 2 1 0; display: flex; flex-direction: column; gap: 5px;
+      border: 1px solid var(--border-medium); border-radius: 12px; padding: 16px 8px 8px; }
+    .disc-wrap .dw-label { position: absolute; top: -9px; left: 50%; transform: translateX(-50%);
+      background: var(--bg-primary); padding: 1px 12px; font-family: var(--font-body); font-size: .58rem;
+      letter-spacing: .14em; text-transform: uppercase; color: var(--accent-primary); white-space: nowrap; border-radius: 6px; }
+    .disc-wrap .dw-row { display: flex; gap: 6px; align-items: flex-start; }
+    .disc-wrap .pbox { flex: 1 1 0; }
 
-  /* back-to-site link (matches the site's lowercase-mono nav language) */
-  .site-back { display: inline-block; font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.12em; color: var(--muted); text-decoration: none; }
-  .site-back:hover { color: var(--mint); }
+    @media (max-width: 760px) {
+      .phasenav { flex-wrap: wrap; }
+      .pbox { flex: 1 1 40%; }
+      .disc-wrap { flex: 1 1 100%; }
+    }
 
-  /* ============================================================
-     DIAGRAM BAND — landscape, horizontal scroll on narrow screens
-     ============================================================ */
-  .funnel-section {
-    width: 100%;
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: thin;
-    scrollbar-color: var(--mint-dim) transparent;
-  }
-  .funnel-canvas {
-    position: relative;
-    width: 1480px;
-    min-width: 1480px;
-    margin: 0 auto;
-    padding: 0 30px;
-  }
-  .scroll-hint {
-    display: none;
-    text-align: center;
-    font-family: var(--mono);
-    font-size: 0.68rem;
-    letter-spacing: 0.15em;
-    color: var(--muted);
-    margin-top: 8px;
-  }
-  @media (max-width: 1520px) { .scroll-hint { display: block; } }
+    /* ===== content panel: two columns (text | integrated flow) ===== */
+    .ppanel { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 16px;
+      padding: var(--space-xl) var(--space-2xl); transition: opacity .2s ease; }
+    .ppanel.swap { opacity: 0; }
+        .pp-grid { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-2xl); align-items: stretch; max-width: 880px; margin: 0; }
+    @media (max-width: 900px) { .pp-grid { grid-template-columns: 1fr; gap: var(--space-lg); } }
 
-  /* ============================================================
-     PHASE BAR — the 5-phase backbone (Phase 0–4)
-     ============================================================ */
-  .phase-bar { display: flex; gap: 8px; margin-bottom: 26px; flex-wrap: nowrap; }
-  .phase {
-    border: 1px solid var(--mint-dim); border-radius: 10px; padding: 8px 14px;
-    min-width: 132px; cursor: pointer; background: rgba(255, 255, 255, 0.02);
-    transition: border-color 0.2s ease, background 0.2s ease, opacity 0.2s ease;
-  }
-  .phase:hover { border-color: var(--mint); }
-  .phase .pn { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mint); }
-  .phase .pt { font-size: 0.8rem; color: var(--text); margin-top: 2px; line-height: 1.25; }
-  .phase .pd { font-family: var(--mono); font-size: 0.58rem; color: var(--muted); margin-top: 3px; }
-  .phase.ctx { opacity: 0.5; border-style: dashed; }
-  .phase.ctx:hover { opacity: 0.85; }
-  .phase.active { background: var(--mint); border-color: var(--mint); opacity: 1; }
-  .phase.active .pn, .phase.active .pt, .phase.active .pd { color: var(--bg); }
+    .pp-tag { font-family: var(--font-body); font-size: .66rem; letter-spacing: .16em; text-transform: uppercase; color: var(--text-muted); }
+    .pp-title { font-family: var(--font-display); font-size: 1.5rem; margin: 5px 0 12px; }
+    .pp-ctx { color: var(--text-secondary); line-height: 1.7; max-width: 64ch; margin-bottom: 14px; }
+    .pp-ctx strong { color: var(--text-primary); }
+    .io { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px; font-family: var(--font-body);
+      font-size: .8rem; background: rgba(0,0,0,.16); border: 1px solid var(--border-subtle); border-radius: 8px;
+      padding: 8px 12px; margin: 0 0 20px; }
+    .io .lbl { color: var(--text-muted); text-transform: uppercase; letter-spacing: .1em; font-size: .62rem; }
+    .io .in { color: var(--text-secondary); } .io .arrow { color: var(--accent-primary); } .io .out { color: var(--accent-primary); }
 
-  /* ============================================================
-     ASSUMPTIONS TRACK — the traveling companion
-     ============================================================ */
-  .assumptions-track {
-    position: relative;
-    height: 96px;
-    margin-bottom: 26px;
-  }
-  .assumptions-track .dash-line {
-    position: absolute;
-    top: 50%;
-    left: 10px;
-    right: 14px;
-    border-top: 2px dashed var(--mint-dim);
-  }
-  .assumptions-track .dash-line::after {
-    content: "";
-    position: absolute;
-    right: -2px;
-    top: -6px;
-    border: 5px solid transparent;
-    border-left: 9px solid var(--mint-dim);
-  }
-  .assumptions-node {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    background: var(--bg);
-    padding: 4px 16px;
-    text-align: center;
-    cursor: pointer;
-    transition: left 0.55s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s ease;
-    z-index: 3;
-  }
-  .assumptions-node:hover { transform: translate(-50%, -50%) scale(1.06); }
-  .assumptions-node.active .label { color: var(--mint); }
-  .assumptions-node .icon { width: 36px; height: 36px; margin: 0 auto 3px; }
-  .assumptions-node .label {
-    font-family: var(--mono);
-    font-size: 0.68rem;
-    letter-spacing: 0.06em;
-    color: var(--muted);
-    white-space: nowrap;
-  }
+    /* vertical mini-workflow (left column, words) */
+    .miniflow { margin: 4px 0 6px; }
+    .mini { position: relative; padding: 0 0 16px 30px; }
+    .mini::before { content: ""; position: absolute; left: 8px; top: 20px; bottom: -2px; width: 1px; background: var(--border-medium); }
+    .mini:last-child::before { display: none; }
+    .mini .mnode { position: absolute; left: 0; top: 4px; width: 17px; height: 17px; border-radius: 50%;
+      border: 1px solid var(--accent-secondary); background: var(--bg-primary); display: flex; align-items: center;
+      justify-content: center; font-family: var(--font-body); font-size: .6rem; color: var(--accent-primary); }
+    .mini .mt { font-weight: 600; color: var(--text-primary); font-size: .95rem; }
+    .mini .md { color: var(--text-secondary); font-size: .88rem; line-height: 1.6; margin-top: 2px; max-width: 60ch; }
 
-  /* ============================================================
-     MAIN FLOW
-     ============================================================ */
-  .flow {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    flex-wrap: nowrap;
-  }
+    .anote { font-size: .85rem; color: var(--text-secondary); border-left: 2px solid var(--accent-secondary);
+      padding: 4px 0 4px 12px; margin: 14px 0 2px; }
+    .anote b { color: var(--accent-primary); }
 
-  .stage {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    min-width: 92px;
-    max-width: 126px;
-    padding: 12px 6px 10px;
-    border-radius: var(--radius);
-    border: 1.5px solid transparent;
-    cursor: pointer;
-    transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease, opacity 0.5s ease;
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  .stage.revealed { opacity: 1; transform: translateY(0); }
-  .stage:hover, .stage:focus-visible {
-    background: var(--panel);
-    transform: translateY(-3px);
-    outline: none;
-  }
-  .stage.active {
-    background: var(--panel);
-    border-color: var(--mint);
-  }
-  .stage .icon { width: 48px; height: 48px; margin-bottom: 8px; }
-  .stage .label { font-size: 0.8rem; font-weight: 600; line-height: 1.3; }
+    /* ===== right column: the live flow, vertical, sliced per phase ===== */
+    .flowcol { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0;
+      background: rgba(0,0,0,.14); border: 1px solid var(--border-subtle); border-radius: 14px;
+      padding: 16px 12px; min-width: 124px; align-self: stretch; }
+    .flowcol .fc-lbl { font-family: var(--font-body); font-size: .52rem; letter-spacing: .12em;
+      text-transform: uppercase; font-weight: 700; color: var(--text-secondary); margin-bottom: 0;
+      padding-bottom: 12px; text-align: center; width: 100%; border-bottom: 1px solid var(--border-subtle); }
+    .flowcol .fc-stages { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 12px; }
+    .fstage { display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .fstage .fa-ico { width: 34px; height: 34px; margin-bottom: 5px; }
+    .fstage .fl { font-family: var(--font-body); font-size: .66rem; font-weight: 600; color: var(--text-primary); line-height: 1.2; max-width: 92px; }
+    .farrow { width: 18px; height: 18px; margin: 6px 0; display: flex; align-items: center; justify-content: center; opacity: .8; }
+    .farrow svg { width: 12px; height: 13px; }
+    .farrow path { stroke: var(--accent-primary); }
+    @media (max-width: 900px) {
+      .flowcol { min-width: 0; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 4px 0; }
+      .flowcol .fc-lbl { flex: 1 1 100%; }
+      .flowcol .fc-stages { display: contents; }
+      .farrow { transform: rotate(-90deg); margin: 0 4px; }
+    }
 
-  .icon svg { width: 100%; height: 100%; display: block; }
-  .icon .fa-primary   { fill: var(--icon-primary); }
-  .icon .fa-secondary { fill: var(--icon-secondary); opacity: var(--icon-secondary-opacity); }
+    /* tools-for-phase cards (left column, bottom) */
+    .tools-lbl { font-family: var(--font-body); font-size: .64rem; letter-spacing: .14em; text-transform: uppercase;
+      color: var(--text-muted); margin: 22px 0 8px; }
+    .tools { display: flex; flex-wrap: wrap; gap: 10px; }
+    .tools .tl { display: inline-flex; flex-direction: column; gap: 2px; min-width: 184px; text-decoration: none;
+      background: var(--bg-primary); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 10px 13px;
+      transition: border-color .2s ease, transform .2s ease; }
+    .tools .tl:hover { border-color: var(--accent-primary); transform: translateY(-2px); }
+    .tools .tl .nm { font-family: var(--font-body); font-size: .82rem; color: var(--accent-primary); }
+    .tools .tl .ds { font-size: .72rem; color: var(--text-muted); line-height: 1.4; }
+    .tools .tl.soon { opacity: .5; }  .tools .tl.soon .nm { color: var(--text-muted); }
+    /* tools strip below both columns (full width) */
+    .pp-tools { margin-top: var(--space-xl); padding-top: var(--space-lg); border-top: 1px solid var(--border-subtle); }
+    .pp-tools .tools-lbl { margin-top: 0; }
 
-  /* connector arrows */
-  .arrow {
-    flex: 0 0 auto;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background: var(--mint);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.4s ease;
-  }
-  .arrow.revealed { opacity: 1; }
-  .arrow svg { width: 14px; height: 14px; }
-  .arrow path { stroke: var(--bg); }
+    .pp-nav { display: flex; justify-content: space-between; margin-top: var(--space-xl); }
+    .pp-nav button { font-family: var(--font-body); font-size: .8rem; color: var(--text-secondary);
+      background: transparent; border: 1px solid var(--border-medium); border-radius: 8px; padding: 8px 14px; cursor: pointer; }
+    .pp-nav button:hover { color: var(--accent-primary); border-color: var(--accent-primary); }
+    .pp-nav button:disabled { opacity: .35; cursor: not-allowed; }
 
-  /* ============================================================
-     TECHNICAL & FINANCIAL DISCOVERY GROUP
-     ============================================================ */
-  .discovery {
-    position: relative;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2px 12px;
-    padding: 26px 16px 12px;
-    border: 1.5px solid var(--mint-dim);
-    border-radius: var(--radius);
-    opacity: 0;
-    transform: translateY(12px);
-    transition: opacity 0.5s ease, transform 0.5s ease;
-  }
-  .discovery.revealed { opacity: 1; transform: translateY(0); }
-  .discovery-label {
-    position: absolute;
-    top: -11px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--bg);
-    padding: 2px 12px;
-    font-family: var(--mono);
-    font-size: 0.66rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--mint);
-    white-space: nowrap;
-    cursor: pointer;
-    border-radius: 6px;
-  }
-  .discovery-label:hover { text-decoration: underline; }
-  .discovery .stage { min-width: 88px; padding: 8px 4px 6px; opacity: 1; transform: none; }
-  .discovery .stage .icon { width: 40px; height: 40px; margin-bottom: 5px; }
-  .discovery .stage .label { font-size: 0.74rem; }
+    /* ===== full toolbox at the bottom (live style) ===== */
+    .toolbox { margin-top: 64px; }
+    .toolbox .tb-head { font-family: var(--font-body); font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent-primary); margin-bottom: 6px; }
+    .toolbox .tb-sub { color: var(--text-muted); font-size: 0.88rem; margin-bottom: 22px; }
+    .tool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
+    .tool-card { background: var(--bg-surface); border: 1px solid transparent; border-radius: 12px; padding: 16px 18px; text-decoration: none; color: var(--text-primary); transition: border-color 0.2s ease, transform 0.2s ease; scroll-margin-top: 24px; }
+    .tool-card:hover { border-color: var(--border-medium); transform: translateY(-2px); }
+    .tool-card.highlight { border-color: var(--accent-primary); }
+    .tool-card .tc-name { font-family: var(--font-body); font-size: 0.82rem; color: var(--accent-primary); margin-bottom: 6px; }
+    .tool-card .tc-desc { font-size: 0.8rem; line-height: 1.5; color: var(--text-muted); }
 
-  /* ============================================================
-     DISCOVERY LOOP — the OST spanning companion (stages 02–07)
-     ============================================================ */
-  .loop-track {
-    position: relative;
-    height: 58px;
-    margin-top: 16px;
-    opacity: 0;
-    transition: opacity 0.6s ease;
-  }
-  .loop-track.revealed { opacity: 1; }
-  .loop-bracket {
-    position: absolute;
-    top: 0;
-    height: 22px;
-    border: 2px solid var(--mint-dim);
-    border-top: none;
-    border-radius: 0 0 14px 14px;
-  }
-  .loop-node {
-    position: absolute;
-    top: 22px;
-    transform: translate(-50%, -50%);
-    background: var(--bg);
-    padding: 3px 14px;
-    cursor: pointer;
-    z-index: 3;
-    white-space: nowrap;
-    font-family: var(--mono);
-    font-size: 0.68rem;
-    letter-spacing: 0.06em;
-    color: var(--muted);
-    transition: transform 0.25s ease;
-  }
-  .loop-node:hover, .loop-node:focus-visible { transform: translate(-50%, -50%) scale(1.06); outline: none; }
-  .loop-node .lg { color: var(--mint); font-size: 0.8rem; }
-  .loop-node.active .ll { color: var(--mint); }
-
-  /* ============================================================
-     DETAIL PANEL — opens below the diagram on click
-     ============================================================ */
-  .detail-panel {
-    margin: 40px auto 0;
-    max-width: 860px;
-    padding: 0 24px;
-  }
-  .detail-card {
-    background: var(--panel);
-    border-left: 3px solid var(--mint);
-    border-radius: 0 var(--radius) var(--radius) 0;
-    padding: 26px 30px;
-    opacity: 1;
-    transition: opacity 0.25s ease;
-  }
-  .detail-card.swapping { opacity: 0; }
-  .detail-card .eyebrow {
-    font-family: var(--mono);
-    font-size: 0.68rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--mint);
-    margin-bottom: 8px;
-  }
-  .detail-card h2 { font-size: 1.25rem; font-weight: 650; margin-bottom: 12px; }
-  .detail-card p { font-size: 0.93rem; line-height: 1.65; color: var(--text); }
-  .detail-card p + p { margin-top: 10px; }
-  .detail-card ul { margin: 10px 0 0 18px; font-size: 0.9rem; line-height: 1.7; color: var(--text); }
-  .detail-card li::marker { color: var(--mint); }
-
-  .detail-tools { margin-top: 18px; }
-  .detail-tools .dt-label {
-    font-family: var(--mono);
-    font-size: 0.66rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 8px;
-  }
-  .tool-chip {
-    display: inline-block;
-    font-family: var(--mono);
-    font-size: 0.74rem;
-    color: var(--mint);
-    border: 1px solid var(--mint-dim);
-    border-radius: 999px;
-    padding: 4px 14px;
-    margin: 0 8px 8px 0;
-    text-decoration: none;
-    transition: background 0.2s ease;
-  }
-  .tool-chip:hover { background: var(--mint-faint); }
-
-  /* ============================================================
-     TOOLBOX — small cards at the bottom
-     ============================================================ */
-  .toolbox { margin-top: 64px; }
-  .toolbox .tb-head {
-    font-family: var(--mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--mint);
-    margin-bottom: 6px;
-  }
-  .toolbox .tb-sub { color: var(--muted); font-size: 0.88rem; margin-bottom: 22px; }
-  .tool-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-    gap: 14px;
-  }
-  .tool-card {
-    background: var(--panel);
-    border: 1px solid transparent;
-    border-radius: 12px;
-    padding: 16px 18px;
-    text-decoration: none;
-    color: var(--text);
-    transition: border-color 0.2s ease, transform 0.2s ease;
-    scroll-margin-top: 24px;
-  }
-  .tool-card:hover { border-color: var(--mint-dim); transform: translateY(-2px); }
-  .tool-card.highlight { border-color: var(--mint); }
-  .tool-card .tc-name {
-    font-family: var(--mono);
-    font-size: 0.82rem;
-    color: var(--mint);
-    margin-bottom: 6px;
-  }
-  .tool-card .tc-desc { font-size: 0.8rem; line-height: 1.5; color: var(--muted); }
-
-  @media (prefers-reduced-motion: reduce) {
-    .stage, .arrow, .discovery, .assumptions-node, .detail-card, .loop-track, .loop-node { transition: none !important; }
-    .stage, .arrow, .discovery, .loop-track { opacity: 1 !important; }
-    .stage, .arrow, .discovery { transform: none !important; }
-  }
-</style>
+    @media (max-width: 760px) { .ppanel { padding: var(--space-lg); } }
+  </style>
 </head>
+
 <body>
-  <!-- shared header (brand + CLI section nav) — injected by js/header.js -->
   <header id="site-header"></header>
 
-<main>
-<!-- Hero — shared page-header pattern (icon + h2 + lead), matching Business / Education -->
-<div class="container">
-  <section class="page-header fade-in">
-    <!-- Icon: lightbulb -->
-    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:64px;height:64px;margin:0 auto var(--space-lg);color:var(--accent-primary);" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M9 18h6"/>
-      <path d="M10 22h4"/>
-      <path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V18h6v-1.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z"/>
-      <path d="M9.5 9.5 12 12l2.5-2.5" opacity="0.5"/>
-    </svg>
-    <h2>From idea to pitch — one process</h2>
-    <p>Click any stage to explore it. The assumptions table follows you above the flow, and the discovery loop runs beneath stages 02–07 — the method on top, the living tree underneath.</p>
-  </section>
-</div>
+  <main>
+    <div class="container">
 
-<!-- ============ DIAGRAM ============ -->
-<section class="funnel-section">
-  <div class="funnel-canvas" id="canvas">
+      <section class="page-header fade-in">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:64px;height:64px;margin:0 auto var(--space-lg);color:var(--accent-primary);" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 18h6"/><path d="M10 22h4"/>
+          <path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V18h6v-1.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z"/>
+          <path d="M9.5 9.5 12 12l2.5-2.5" opacity="0.5"/>
+        </svg>
+        <h2>Bringing Ideas to Investors</h2>
+        <p>From a raw idea to a board-ready pitch — pick a phase to see what it's for, the mini-workflow inside it, the slice of the process flow, and the tools for each.</p>
+      </section>
 
-    <!-- PHASE BAR — macro backbone; Phase 1 & 2 are detailed below, 0/3/4 are context -->
-    <div class="phase-bar">
-      <div class="phase ctx" data-stage="phase-0" tabindex="0" role="button"><div class="pn">Phase 0</div><div class="pt">Ideation</div></div>
-      <div class="phase" data-stage="phase-1" tabindex="0" role="button"><div class="pn">Phase 1</div><div class="pt">Problem Validation</div><div class="pd">~2 weeks</div></div>
-      <div class="phase" data-stage="phase-2" tabindex="0" role="button"><div class="pn">Phase 2</div><div class="pt">Project Setup</div><div class="pd">~6 weeks</div></div>
-      <div class="phase ctx" data-stage="phase-3" tabindex="0" role="button"><div class="pn">Phase 3</div><div class="pt">Prototype &amp; Research</div><div class="pd">~3 months</div></div>
-      <div class="phase ctx" data-stage="phase-4" tabindex="0" role="button"><div class="pn">Phase 4</div><div class="pt">MVP</div><div class="pd">~3 months</div></div>
+      <div class="phaserail">
+        <nav class="phasenav" id="phasenav" aria-label="Process phases"></nav>
+      </div>
+
+      <div class="ppanel" id="ppanel" aria-live="polite"></div>
+
+      <!-- full toolbox (live style) -->
+      <section class="toolbox">
+        <div class="tb-head">// toolbox</div>
+        <p class="tb-sub">Working tools designed for each step of the process.</p>
+        <div class="tool-grid" id="tool-grid"></div>
+      </section>
+
     </div>
+  </main>
 
-    <div class="assumptions-track">
-      <div class="dash-line"></div>
-      <div class="assumptions-node" id="assumptions" tabindex="0" role="button" aria-label="Assumptions Table">
-        <div class="icon"><!-- ICON: assumptions-table.svg --><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path class="fa-secondary" d="M16 64l0 384c0 26.5 21.5 48 48 48l256 0c26.5 0 48-21.5 48-48l0-384c0-26.5-21.5-48-48-48L64 16C37.5 16 16 37.5 16 64zm112 64a32 32 0 1 1 -64 0 32 32 0 1 1 64 0zm0 256a32 32 0 1 1 -64 0 32 32 0 1 1 64 0zM65.6 244.8c-2.7-3.5-1.9-8.5 1.6-11.2s8.5-1.9 11.2 1.6l17.6 23.5 41.6-55.5c2.7-3.5 7.7-4.3 11.2-1.6s4.3 7.7 1.6 11.2l-48 64c-1.5 2-3.9 3.2-6.4 3.2s-4.9-1.2-6.4-3.2l-24-32zM176 128c0-4.4 3.6-8 8-8l112 0c4.4 0 8 3.6 8 8s-3.6 8-8 8l-112 0c-4.4 0-8-3.6-8-8zm0 256c0-4.4 3.6-8 8-8l112 0c4.4 0 8 3.6 8 8s-3.6 8-8 8l-112 0c-4.4 0-8-3.6-8-8zm16-128c0-4.4 3.6-8 8-8l96 0c4.4 0 8 3.6 8 8s-3.6 8-8 8l-96 0c-4.4 0-8-3.6-8-8z"/><path class="fa-primary" d="M320 16c26.5 0 48 21.5 48 48l0 384c0 26.5-21.5 48-48 48L64 496c-26.5 0-48-21.5-48-48L16 64c0-26.5 21.5-48 48-48l256 0zM64 0C28.7 0 0 28.7 0 64L0 448c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-384c0-35.3-28.7-64-64-64L64 0zM176 128c0 4.4 3.6 8 8 8l112 0c4.4 0 8-3.6 8-8s-3.6-8-8-8l-112 0c-4.4 0-8 3.6-8 8zm16 128c0 4.4 3.6 8 8 8l96 0c4.4 0 8-3.6 8-8s-3.6-8-8-8l-96 0c-4.4 0-8 3.6-8 8zM176 384c0 4.4 3.6 8 8 8l112 0c4.4 0 8-3.6 8-8s-3.6-8-8-8l-112 0c-4.4 0-8 3.6-8 8zM96 368a16 16 0 1 1 0 32 16 16 0 1 1 0-32zM64 384a32 32 0 1 0 64 0 32 32 0 1 0 -64 0zm48-256a16 16 0 1 1 -32 0 16 16 0 1 1 32 0zM96 96a32 32 0 1 0 0 64 32 32 0 1 0 0-64zm54.4 116.8c2.7-3.5 1.9-8.5-1.6-11.2s-8.5-1.9-11.2 1.6L96 258.7 78.4 235.2c-2.7-3.5-7.7-4.3-11.2-1.6s-4.3 7.7-1.6 11.2l24 32c1.5 2 3.9 3.2 6.4 3.2s4.9-1.2 6.4-3.2l48-64z"/></svg></div>
-        <div class="label">Assumptions Table</div>
-      </div>
-    </div>
+  <footer id="site-footer"></footer>
+  <button id="theme-toggle"></button>
 
-    <div class="flow" id="flow">
-
-      <div class="stage" data-stage="press-release" tabindex="0">
-        <div class="icon"><!-- ICON: press-release.svg --><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path class="fa-secondary" d="M95.2 464L440 464c30.9 0 56-25.1 56-56l0-320c0-22.1-17.9-40-40-40L152 48c-22.1 0-40 17.9-40 40l0 336c0 15.7-6.4 29.8-16.8 40zM176 152c0-13.3 10.7-24 24-24l80 0c13.3 0 24 10.7 24 24l0 80c0 13.3-10.7 24-24 24l-80 0c-13.3 0-24-10.7-24-24l0-80zm0 160c0-4.4 3.6-8 8-8l240 0c4.4 0 8 3.6 8 8s-3.6 8-8 8l-240 0c-4.4 0-8-3.6-8-8zm0 64c0-4.4 3.6-8 8-8l240 0c4.4 0 8 3.6 8 8s-3.6 8-8 8l-240 0c-4.4 0-8-3.6-8-8zM352 184c0-4.4 3.6-8 8-8l64 0c4.4 0 8 3.6 8 8s-3.6 8-8 8l-64 0c-4.4 0-8-3.6-8-8zm0 64c0-4.4 3.6-8 8-8l64 0c4.4 0 8 3.6 8 8s-3.6 8-8 8l-64 0c-4.4 0-8-3.6-8-8z"/><path class="fa-primary" d="M152 48c-22.1 0-40 17.9-40 40l0 336c0 15.7-6.4 29.8-16.8 40L440 464c30.9 0 56-25.1 56-56l0-320c0-22.1-17.9-40-40-40L152 48zM56 464c22.1 0 40-17.9 40-40L96 88c0-30.9 25.1-56 56-56l304 0c30.9 0 56 25.1 56 56l0 320c0 39.8-32.2 72-72 72L56 480c-30.9 0-56-25.1-56-56L0 136c0-4.4 3.6-8 8-8s8 3.6 8 8l0 288c0 22.1 17.9 40 40 40zM352 184c0-4.4 3.6-8 8-8l64 0c4.4 0 8 3.6 8 8s-3.6 8-8 8l-64 0c-4.4 0-8-3.6-8-8zm0 64c0-4.4 3.6-8 8-8l64 0c4.4 0 8 3.6 8 8s-3.6 8-8 8l-64 0c-4.4 0-8-3.6-8-8zM176 312c0-4.4 3.6-8 8-8l240 0c4.4 0 8 3.6 8 8s-3.6 8-8 8l-240 0c-4.4 0-8-3.6-8-8zm0 64c0-4.4 3.6-8 8-8l240 0c4.4 0 8 3.6 8 8s-3.6 8-8 8l-240 0c-4.4 0-8-3.6-8-8zm24-232c-4.4 0-8 3.6-8 8l0 80c0 4.4 3.6 8 8 8l80 0c4.4 0 8-3.6 8-8l0-80c0-4.4-3.6-8-8-8l-80 0zm-24 8c0-13.3 10.7-24 24-24l80 0c13.3 0 24 10.7 24 24l0 80c0 13.3-10.7 24-24 24l-80 0c-13.3 0-24-10.7-24-24l0-80z"/></svg></div>
-        <div class="label">Press Release</div>
-      </div>
-
-      <div class="arrow"><svg viewBox="0 0 16 16"><path d="M2 8h9M8 3l5 5-5 5" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-
-      <div class="stage" data-stage="possible-user-pains" tabindex="0">
-        <div class="icon"><!-- ICON: possible-user-pains.svg --><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path class="fa-secondary" d="M320 16c-61.9 0-112 50.1-112 112s50.1 112 112 112 112-50.1 112-112-50.1-112-112-112zM224 128c0-53 43-96 96-96s96 43 96 96-43 96-96 96-96-43-96-96zM480 63.8c-4.3 0-8.7 .3-12.9 .9 2.1 5.1 4.1 10.2 5.7 15.5 2.4-.2 4.8-.3 7.2-.3 44.2 0 80 35.8 80 80s-35.8 80-80 80l0 0c-13.5 0-26.2-3.3-37.4-9.2-3.5 4.2-7.2 8.2-11.1 12 3.2 1.9 6.6 3.6 10.1 5.1 17.2-5.1 35.5-7.8 54.4-7.8 11 0 21.9 .9 32.4 2.7 28.5-16.7 47.6-47.6 47.6-82.9 0-53-43-96-96-96zM160 64l0 .2c-53 0-96 43-96 96s43 96 96 96c17.8 0 34.4-4.8 48.6-13.2-3.9-3.9-7.7-7.9-11.2-12.1-11.2 5.9-23.9 9.2-37.4 9.2-44.2 0-80-35.8-80-80s35.8-80 80-80c2.4 0 4.8 .1 7.2 .3 1.6-5.3 3.5-10.5 5.7-15.5-4.2-.6-8.5-.9-12.9-.9zM431.4 242.6l0 .2c0 0 .1-.1 .1-.1l0 0c0 0-.1-.1-.1-.1zM288 288c-79.5 0-144 64.5-144 144l0 40c0 4.4 3.6 8 8 8s8-3.6 8-8l0-40c0-70.7 57.3-128 128-128l64 0t0 0 0 0c.3 0 .6 0 .9 0 4.8-5.3 9.8-10.4 15.1-15.1l0 0c-5.3-.6-10.6-.9-16-.9l-64 0zM136 304C60.9 304 0 364.9 0 440l0 32c0 4.4 3.6 8 8 8s8-3.6 8-8l0-32c0-66.3 53.7-120 120-120l.1 0c3.9-5.5 8-10.9 12.3-16L136 304z"/><path class="fa-primary" d="M496 288c79.5 0 144 64.5 144 144s-64.5 144-144 144-144-64.5-144-144 64.5-144 144-144zm0 16c-70.7 0-128 57.3-128 128s57.3 128 128 128 128-57.3 128-128-57.3-128-128-128zm0 180c6.6 0 12 5.4 12 12s-5.4 12-12 12-12-5.4-12-12 5.4-12 12-12zm0-132c26.5 0 48 21.5 48 48l0 .3c0 16.5-9.7 31.4-24.7 38.1l-5.4 2.4c-6 2.7-9.9 8.6-9.9 15.2 0 4.4-3.6 8-8 8-4.4 0-8-3.6-8-8 0-12.9 7.6-24.6 19.4-29.8l5.4-2.4c9.3-4.1 15.2-13.3 15.3-23.5l0-.3c0-17.7-14.3-32-32-32-15.5 0-28.4 11-31.3 25.6-.9 4.3-5.1 7.1-9.4 6.2s-7.1-5.1-6.2-9.4c4.4-21.9 23.8-38.4 47-38.4z"/></svg></div>
-        <div class="label">Possible User Pains</div>
-      </div>
-
-      <div class="arrow"><svg viewBox="0 0 16 16"><path d="M2 8h9M8 3l5 5-5 5" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-
-      <div class="stage" data-stage="validated-user-pains" tabindex="0">
-        <div class="icon"><!-- ICON: validated-user-pains.svg --><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path class="fa-secondary" d="M320 16c-61.9 0-112 50.1-112 112s50.1 112 112 112 112-50.1 112-112-50.1-112-112-112zM224 128c0-53 43-96 96-96s96 43 96 96-43 96-96 96-96-43-96-96zM480 63.8c-4.3 0-8.7 .3-12.9 .9 2.1 5.1 4.1 10.2 5.7 15.5 2.4-.2 4.8-.3 7.2-.3 44.2 0 80 35.8 80 80s-35.8 80-80 80l0 0c-13.5 0-26.2-3.3-37.4-9.2-3.5 4.2-7.2 8.2-11.1 12 3.2 1.9 6.6 3.6 10.1 5.1 17.2-5.1 35.5-7.8 54.4-7.8 11 0 21.9 .9 32.4 2.7 28.5-16.7 47.6-47.6 47.6-82.9 0-53-43-96-96-96zM160 64l0 .2c-53 0-96 43-96 96s43 96 96 96c17.8 0 34.4-4.8 48.6-13.2-3.9-3.9-7.7-7.9-11.2-12.1-11.2 5.9-23.9 9.2-37.4 9.2-44.2 0-80-35.8-80-80s35.8-80 80-80c2.4 0 4.8 .1 7.2 .3 1.6-5.3 3.5-10.5 5.7-15.5-4.2-.6-8.5-.9-12.9-.9zM431.4 242.6l0 .2c0 0 .1-.1 .1-.1l0 0c0 0-.1-.1-.1-.1zM288 288c-79.5 0-144 64.5-144 144l0 40c0 4.4 3.6 8 8 8s8-3.6 8-8l0-40c0-70.7 57.3-128 128-128l64 0t0 0 0 0c.3 0 .6 0 .9 0 4.8-5.3 9.8-10.4 15.1-15.1l0 0c-5.3-.6-10.6-.9-16-.9l-64 0zM136 304C60.9 304 0 364.9 0 440l0 32c0 4.4 3.6 8 8 8s8-3.6 8-8l0-32c0-66.3 53.7-120 120-120l.1 0c3.9-5.5 8-10.9 12.3-16L136 304z"/><path class="fa-primary" d="M496 288c79.5 0 144 64.5 144 144s-64.5 144-144 144-144-64.5-144-144 64.5-144 144-144zm0 16c-70.7 0-128 57.3-128 128s57.3 128 128 128 128-57.3 128-128-57.3-128-128-128zm49.5 61.3c2.6-3.6 7.6-4.3 11.2-1.7s4.3 7.6 1.7 11.2l-80 110c-1.4 2-3.8 3.2-6.2 3.3s-4.8-1-6.4-2.9l-40-48c-2.8-3.4-2.4-8.5 1-11.3s8.5-2.4 11.3 1l33.4 40.1 74-101.7z"/></svg></div>
-        <div class="label">Validated User Pains</div>
-      </div>
-
-      <div class="arrow"><svg viewBox="0 0 16 16"><path d="M2 8h9M8 3l5 5-5 5" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-
-      <div class="stage" data-stage="concept-design" tabindex="0">
-        <div class="icon"><!-- ICON: concept-design.svg --><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path class="fa-secondary" d="M68.1 328.7l31.3 31.3 4.7 0 0 4.7 43.3 43.3 4.7 0 0 4.7 31.3 31.3c.8-.7 1.5-1.4 2.3-2.2L404 223.3 288.7 108 70.2 326.4c-.8 .8-1.5 1.5-2.2 2.3z"/><path class="fa-primary" d="M364.2 32.5C374.8 21.9 389.1 16 404 16s29.2 5.9 39.8 16.5l35.7 35.7C490.1 78.8 496 93.1 496 108s-5.9 29.2-16.5 39.8L415.3 212 300 96.7 364.2 32.5zM288.7 108L404 223.3 185.6 441.8c-.8 .7-1.5 1.5-2.3 2.2L68.1 328.7c.7-.8 1.4-1.5 2.2-2.3L288.7 108zM51.8 358.1c1.6-5.7 3.8-11.1 6.7-16.2L170.2 453.5c-5.1 2.9-10.5 5.2-16.2 6.7L26.1 495.7c-2.8 .8-5.8 0-7.8-2.1s-2.8-5-2.1-7.8L51.8 358.1zM404 0c-19.2 0-37.6 7.6-51.1 21.2l-294 294c-10.7 10.7-18.5 24.1-22.6 38.7L.9 481.6c-2.3 8.3 0 17.3 6.2 23.4s15.1 8.5 23.4 6.2l127.8-35.5c14.6-4.1 27.9-11.8 38.7-22.6l294-294C504.4 145.6 512 127.2 512 108s-7.6-37.6-21.2-51.1L455.1 21.2C441.6 7.6 423.2 0 404 0zM264 496c-4.4 0-8 3.6-8 8s3.6 8 8 8l304 0c4.4 0 8-3.6 8-8s-3.6-8-8-8l-304 0z"/></svg></div>
-        <div class="label">Concept Design</div>
-      </div>
-
-      <div class="arrow"><svg viewBox="0 0 16 16"><path d="M2 8h9M8 3l5 5-5 5" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-
-      <div class="discovery" id="discovery">
-        <div class="discovery-label" data-stage="discovery" tabindex="0" role="button">Technical &amp; Financial Discovery</div>
-        <div class="stage" data-stage="house-of-quality" tabindex="0">
-          <div class="icon"><!-- ICON: house-of-quality.svg --><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path class="fa-secondary" d="M160 32c-35.3 0-64 28.7-64 64l0 320c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-124.5c-4.9 3.3-10.3 6-16 8l0 20.5-128 0 0-43.3c-5.2-6.5-9.3-13.8-12-21.8-1.3 .3-2.7 .5-4 .6l0 64.5-128 0 0-128 40.5 0-7.3-13.1c-.5-1-1-1.9-1.5-2.9l-31.7 0 0-128 24.1 0c-.1-5.3 .5-10.7 1.6-16L160 32zM112 96c0-26.5 21.5-48 48-48l80 0 0 128-128 0 0-80zm0 224l0-128 128 0 0 128-128 0zm0 96l0-80 128 0 0 128-80 0c-26.5 0-48-21.5-48-48zm144 48l0-128 128 0 0 128-128 0zm144 0l0-128 128 0 0 80c0 26.5-21.5 48-48 48l-80 0z"/><path class="fa-primary" d="M456.1-64c-13.3 0-24 10.7-24 24l0 5.9c0 9.5-5.9 17.9-14.1 22.7s-18.4 5.6-26.6 .8l-4.8-2.8C375-20.1 360.2-16 353.7-4.3L331.2 35.9c-6.2 11.2-2.6 25.3 8.2 32.1l4.5 2.8c8 5 12.2 14.2 12.1 23.7 0 .2 0 .4 0 .6 0 .9 0 .8 0 1.6 0 .2 0 .4 0 .6 .1 9.5-4.1 18.7-12.1 23.7l-4.4 2.8c-10.9 6.8-14.6 20.9-8.3 32.1l22.5 40.4c6.5 11.7 21.4 15.8 33 9.1l4.8-2.8c8.2-4.8 18.4-3.9 26.6 .8s14.1 13.2 14.1 22.7l0 5.9c0 13.3 10.7 24 24 24l48 0c13.3 0 24-10.7 24-24l0-6.1c0-9.4 5.8-17.8 14-22.5s18.3-5.6 26.5-.8l5 2.9c11.6 6.7 26.5 2.6 33-9.2l22.4-40.4c6.2-11.2 2.6-25.2-8.3-32l-4.6-2.9c-8-5-12.2-14.2-12.1-23.7l0-2.7c-.1-9.4 4-18.6 12-23.7l4.7-2.9c10.8-6.8 14.5-20.8 8.2-32L606.6-4.2c-6.5-11.7-21.4-15.8-33-9.1l-5 2.9c-8.2 4.7-18.3 3.9-26.5-.8s-14-13.1-14-22.5l0-6.1c0-13.3-10.7-24-24-24l-48 0zm-8 24c0-4.4 3.6-8 8-8l48 0c4.4 0 8 3.6 8 8l0 6.1c0 16.2 9.9 29.4 22 36.4 12.2 7.1 28.4 9 42.5 .8l5-2.8c3.9-2.2 8.8-.9 11 3L615 43.8c2.1 3.7 .9 8.4-2.7 10.7l-4.7 2.9c-13.6 8.5-19.7 23.5-19.5 37.4l0 2.4c-.1 13.9 6 28.9 19.6 37.4l4.6 2.9c3.6 2.3 4.8 6.9 2.8 10.7l-22.4 40.4c-2.2 3.9-7.1 5.3-11 3l-5-2.8c-14.1-8.1-30.3-6.2-42.5 .8-12.1 7-22 20.1-22 36.4l0 6.1c0 4.4-3.6 8-8 8l-48 0c-4.4 0-8-3.6-8-8l0-5.9c0-16.3-10-29.5-22.1-36.5-12.2-7.1-28.5-8.9-42.6-.8l-4.8 2.8c-3.9 2.2-8.8 .9-11-3l-22.6-40.4c-2.1-3.7-.9-8.4 2.8-10.7l4.4-2.8c13.7-8.5 19.8-23.6 19.7-37.5 0-.2 0-.4 0-.5 0-.7 0-.6 0-1.4 0-.2 0-.4 0-.6 .2-13.9-5.9-29-19.6-37.5l-4.5-2.8c-3.6-2.3-4.8-7-2.7-10.7L367.7 3.5c2.2-3.9 7.1-5.2 11-3l4.8 2.8c14.1 8.1 30.4 6.2 42.6-.8 12.1-7 22.1-20.2 22.1-36.5l0-5.9zM480 39.9c-30.9 0-56 25.1-56 56s25.1 56 56 56 56-25.1 56-56-25.1-56-56-56zm40 56c0 22.1-17.9 40-40 40s-40-17.9-40-40 17.9-40 40-40 40 17.9 40 40z"/></svg></div>
-          <div class="label">House of Quality</div>
-        </div>
-        <div class="stage" data-stage="cost-breakdown" tabindex="0">
-          <div class="icon"><!-- ICON: cost-breakdown.svg --><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path class="fa-secondary" d="M48 272c0-109.5 78.6-200.6 182.4-220.1 .5-.1 1-.2 1.5-.3 1 0 1.9 0 2.8 .1 2.9 .8 5.3 3.5 5.3 7.3l0 205c0 22.1 17.9 40 40 40l49.7 0c-16.3 28.2-25.7 61-25.7 96 0 32.3 8 62.7 22.1 89.4-17.3 4.3-35.4 6.6-54.1 6.6-123.7 0-224-100.3-224-224z"/><path class="fa-primary" d="M333.8 18c99.8 13.3 179 92.4 192.2 192.2l0 .2c5.4 .9 10.8 1.9 16 3.2 .1-1.8 .1-3.6-.2-5.5-14.2-107-99-191.7-206-206-17.5-2.3-31.9 12.2-31.9 29.9l0 176c0 17.7 14.3 32 32 32l53.8 0c9.2-6.1 19-11.5 29.3-16L336 224c-8.8 0-16-7.2-16-16l0-176c0-9.5 7.3-14.9 13.8-14zM272 512c21.6 0 42.5-2.9 62.4-8.2-3-4.7-5.8-9.4-8.4-14.4-17.3 4.3-35.4 6.6-54.1 6.6-123.7 0-224-100.3-224-224 0-110 79.3-201.5 183.9-220.4 4-.7 8.1 2.4 8.1 7.4l0 205c0 22.1 17.9 40 40 40l49.7 0c3.2-5.5 6.6-10.9 10.3-16l-60 0c-13.3 0-24-10.7-24-24l0-205c0-14-12.3-25.8-27-23.1-112 20.3-197 118.3-197 236.2 0 132.5 107.5 240 240 240zM496 272a128 128 0 1 1 0 256 128 128 0 1 1 0-256zm0 272a144 144 0 1 0 0-288 144 144 0 1 0 0 288zm-8-224l0 16-5.8 0c-18.9 0-34.2 15.3-34.2 34.2 0 16.5 11.8 30.7 28.1 33.6l45 8.2c8.6 1.6 14.9 9.1 14.9 17.9 0 10-8.1 18.2-18.2 18.2L464 448c-4.4 0-8 3.6-8 8s3.6 8 8 8l24 0 0 16c0 4.4 3.6 8 8 8s8-3.6 8-8l0-16 13.8 0c18.9 0 34.2-15.3 34.2-34.2 0-16.5-11.8-30.7-28.1-33.6l-45-8.2c-8.6-1.6-14.9-9.1-14.9-17.9 0-10 8.1-18.2 18.2-18.2l45.8 0c4.4 0 8-3.6 8-8s-3.6-8-8-8l-24 0 0-16c0-4.4-3.6-8-8-8s-8 3.6-8 8z"/></svg></div>
-          <div class="label">Cost Breakdown</div>
-        </div>
-        <div class="stage" data-stage="revenue-streams" tabindex="0">
-          <div class="icon"><!-- ICON: revenue-streams.svg --><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path class="fa-secondary" d="M321.5-.1L224.1 0c-17.7 0-32.1 14.4-32.1 32.1 0 5.2 1.3 10.3 3.7 15l0-.1 45.4 86C155.1 212.1 80 288.9 80 416.8 80 469.4 122.6 512 175.2 512l289.6 0c52.6 0 95.2-42.6 95.2-95.2 0-57.5-15.2-104.7-39.6-146.3-5.9 .7-11.8 1.2-17.9 1.4 25.8 41.4 41.5 87.8 41.5 144.9 0 43.7-35.4 79.2-79.2 79.2l-289.6 0C131.4 496 96 460.6 96 416.8 96 296 166.4 223.4 252.8 144l62.1 0c-1.8-5.2-3.5-10.6-4.9-16l-53.5 0-46.7-88.4c-1.2-2.3-1.9-4.9-1.9-7.5 0-8.9 7.2-16.1 16.1-16.1l90.9 0c1.9-5.5 4.1-10.8 6.5-16.1zM320 232c-4.4 0-8 3.6-8 8l0 16-5.4 0c-23.6 0-42.6 19.1-42.6 42.6 0 20.8 15.1 38.6 35.6 42.1l38.1 6.3c12.9 2.1 22.3 13.3 22.3 26.3 0 14.7-11.9 26.6-26.6 26.6L280 400c-4.4 0-8 3.6-8 8s3.6 8 8 8l32 0 0 16c0 4.4 3.6 8 8 8s8-3.6 8-8l0-16 5.4 0c23.6 0 42.6-19.1 42.6-42.6 0-20.8-15.1-38.6-35.6-42.1L302.3 325c-12.8-2.1-22.3-13.3-22.3-26.3 0-14.7 11.9-26.6 26.6-26.6l45.4 0c4.4 0 8-3.6 8-8s-3.6-8-8-8l-24 0 0-16c0-4.4-3.6-8-8-8l0 0 0-.1z"/><path class="fa-primary" d="M496-64C575.5-64 640 .5 640 80S575.5 224 496 224 352 159.5 352 80 416.5-64 496-64zm0 16C425.3-48 368 9.3 368 80S425.3 208 496 208 624 150.7 624 80 566.7-48 496-48zm0 56c4.4 0 8 3.6 8 8l0 56 56 0c4.4 0 8 3.6 8 8s-3.6 8-8 8l-56 0 0 56c0 4.4-3.6 8-8 8s-8-3.6-8-8l0-56-56 0c-4.4 0-8-3.6-8-8s3.6-8 8-8l56 0 0-56c0-4.4 3.6-8 8-8z"/></svg></div>
-          <div class="label">Revenue Streams</div>
-        </div>
-        <div class="stage" data-stage="competitors-patents" tabindex="0">
-          <div class="icon"><!-- ICON: competitors-patents.svg --><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path class="fa-secondary" d="M16 104l0 184c0 26.1 11.3 49.5 29.3 65.6 1.7 1.5 2.7 3.7 2.7 6L48 464c0 17.7 14.3 32 32 32l224 0c17.7 0 32-14.3 32-32l0-64.4c0-12.1 4.5-23.7 12.7-32.5l64.2-69.5c12.3-13.3 19.1-30.7 19.1-48.8l0-48.7c0-30.9-25.1-56-56-56-.3 0-.7-.1-1-.1-.3 0-.7 .1-1 .1l-38 0c-35.3 0-64 28.7-64 64s28.7 64 64 64c4.4 0 8 3.6 8 8s-3.6 8-8 8c-44.2 0-80-35.8-80-80l-136 0c-30.9 0-56-25.1-56-56 0-4.4 3.6-8 8-8s8 3.6 8 8c0 22.1 17.9 40 40 40l137.6 0c7.4-36.5 39.7-64 78.4-64l32 0 0-24c0-48.6-39.4-88-88-88L104 16c-48.6 0-88 39.4-88 88zM129.5 339.3c2.6-3.6 7.6-4.4 11.2-1.8l51.3 36.7 51.3-36.7c3.6-2.6 8.6-1.7 11.2 1.8s1.7 8.6-1.8 11.2l-46.9 33.5 46.9 33.5c3.6 2.6 4.4 7.6 1.8 11.2s-7.6 4.4-11.2 1.8l-51.3-36.7-51.3 36.7c-3.6 2.6-8.6 1.7-11.2-1.8s-1.7-8.6 1.8-11.2l46.9-33.5-46.9-33.5c-3.6-2.6-4.4-7.6-1.8-11.2z"/><path class="fa-primary" d="M280 0c57.4 0 104 46.6 104 104l0 24.5c36 4 64 34.5 64 71.5l0 48.7c0 22.1-8.3 43.4-23.3 59.7l-64.2 69.5c-5.5 5.9-8.5 13.7-8.5 21.7l0 64.4c0 26.5-21.5 48-48 48L80 512c-26.5 0-48-21.5-48-48l0-101C12.3 344.1 0 317.5 0 288L0 104C0 46.6 46.6 0 104 0L280 0zM104 16c-48.6 0-88 39.4-88 88l0 184c0 26.1 11.3 49.5 29.3 65.6 1.7 1.5 2.7 3.7 2.7 6L48 464c0 17.7 14.3 32 32 32l224 0c17.7 0 32-14.3 32-32l0-64.4c0-12.1 4.5-23.7 12.7-32.5l64.2-69.5c12.3-13.3 19.1-30.7 19.1-48.8l0-48.7c0-30.9-25.1-56-56-56-.3 0-.7-.1-1-.1-.3 0-.7 .1-1 .1l-38 0c-35.3 0-64 28.7-64 64s28.7 64 64 64c4.4 0 8 3.6 8 8s-3.6 8-8 8c-44.2 0-80-35.8-80-80l-136 0c-30.9 0-56-25.1-56-56 0-4.4 3.6-8 8-8s8 3.6 8 8c0 22.1 17.9 40 40 40l137.6 0c7.4-36.5 39.7-64 78.4-64l32 0 0-24c0-48.6-39.4-88-88-88L104 16zM243.3 337.5c3.6-2.6 8.6-1.7 11.2 1.8s1.7 8.6-1.8 11.2l-46.9 33.5 46.9 33.5c3.6 2.6 4.4 7.6 1.8 11.2s-7.6 4.4-11.2 1.8l-51.3-36.7-51.3 36.7c-3.6 2.6-8.6 1.7-11.2-1.8s-1.7-8.6 1.8-11.2l46.9-33.5-46.9-33.5c-3.6-2.6-4.4-7.6-1.8-11.2s7.6-4.4 11.2-1.8l51.3 36.7 51.3-36.7z"/></svg></div>
-          <div class="label">Competitors &amp; Patents</div>
-        </div>
-      </div>
-
-      <div class="arrow"><svg viewBox="0 0 16 16"><path d="M2 8h9M8 3l5 5-5 5" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-
-      <div class="stage" data-stage="business-case" tabindex="0">
-        <div class="icon"><!-- ICON: business-case.svg --><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path class="fa-secondary" d="M144 128L144 512C144 538.5 165.5 560 192 560L448 560C474.5 560 496 538.5 496 512L496 250.5C496 246.9 495.6 243.4 494.8 240L392 240C361.1 240 336 214.9 336 184L336 81.2C332.6 80.4 329.1 80 325.5 80L192 80C165.5 80 144 101.5 144 128zM249.8 333C247 329.6 247.6 324.5 251 321.8C254.4 319.1 259.5 319.6 262.2 323L320 395.2L377.8 323C380.6 319.6 385.6 319 389 321.8C392.4 324.6 393 329.6 390.2 333L330.2 408L390.2 483C393 486.4 392.4 491.5 389 494.2C385.6 496.9 380.5 496.4 377.8 493L320 420.8L262.2 493C259.4 496.4 254.4 497 251 494.2C247.6 491.4 247 486.4 249.8 483L309.8 408L249.8 333z"/><path class="fa-primary" d="M325.5 80C329.1 80 332.6 80.4 336 81.2L336 184C336 214.9 361.1 240 392 240L494.8 240C495.6 243.4 496 246.9 496 250.5L496 512C496 538.5 474.5 560 448 560L192 560C165.5 560 144 538.5 144 512L144 128C144 101.5 165.5 80 192 80L325.5 80zM481.9 216.6C484.2 218.9 486.2 221.4 488 224L392 224C369.9 224 352 206.1 352 184L352 88C354.7 89.8 357.1 91.8 359.4 94.1L481.9 216.6zM192 64C156.7 64 128 92.7 128 128L128 512C128 547.3 156.7 576 192 576L448 576C483.3 576 512 547.3 512 512L512 250.5C512 233.5 505.3 217.2 493.3 205.2L370.7 82.7C358.7 70.7 342.5 64 325.5 64L192 64zM262.2 323C259.4 319.6 254.4 319 251 321.8C247.6 324.6 247 329.6 249.8 333L309.8 408L249.8 483C247 486.4 247.6 491.5 251 494.2C254.4 496.9 259.5 496.4 262.2 493L320 420.8L377.8 493C380.6 496.4 385.6 497 389 494.2C392.4 491.4 393 486.4 390.2 483L330.2 408L390.2 333C393 329.6 392.4 324.5 389 321.8C385.6 319.1 380.5 319.6 377.8 323L320 395.2L262.2 323z"/></svg></div>
-        <div class="label">360 Business Case</div>
-      </div>
-
-      <div class="arrow"><svg viewBox="0 0 16 16"><path d="M2 8h9M8 3l5 5-5 5" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-
-      <div class="stage" data-stage="validation-plan" tabindex="0">
-        <div class="icon"><!-- ICON: validation-plan.svg --><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path class="fa-secondary" d="M48 416a48 48 0 1 0 96 0 48 48 0 1 0 -96 0zm288 0a47.9 47.9 0 1 0 95.9 0 47.9 47.9 0 1 0 -95.9 0zM368 96a48 48 0 1 0 96 0 48 48 0 1 0 -96 0z"/><path class="fa-primary" d="M245.7 34.3c-3.1-3.1-8.2-3.1-11.3 0s-3.1 8.2 0 11.3L276.7 88 96 88C47.4 88 8 127.4 8 176s39.4 88 88 88l320 0c39.8 0 72 32.2 72 72 0 28.9-17.1 53.9-41.7 65.3-6.6-28.3-32-49.3-62.3-49.3-35.3 0-64 28.7-64 64s28.7 64 64 64c34.7 0 62.9-27.6 64-62 32.8-12.8 56-44.7 56-82 0-48.6-39.4-88-88-88L96 248c-39.8 0-72-32.2-72-72s32.2-72 72-72l180.7 0-42.3 42.3c-3.1 3.1-3.1 8.2 0 11.3s8.2 3.1 11.3 0l56-56c3.1-3.1 3.1-8.2 0-11.3l-56-56zM383.9 464a48 48 0 1 1 .1-96 48 48 0 1 1 -.1 96zM368 96a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm112 0a64 64 0 1 0 -128 0 64 64 0 1 0 128 0zM96 368a48 48 0 1 1 0 96 48 48 0 1 1 0-96zm63.5 40c-3.9-31.6-30.9-56-63.5-56-35.3 0-64 28.7-64 64s28.7 64 64 64c32.6 0 59.6-24.4 63.5-56l85.2 0-42.3 42.3c-3.1 3.1-3.1 8.2 0 11.3s8.2 3.1 11.3 0l56-56c3.1-3.1 3.1-8.2 0-11.3l-56-56c-3.1-3.1-8.2-3.1-11.3 0s-3.1 8.2 0 11.3l42.3 42.3-85.2 0z"/></svg></div>
-        <div class="label">Create a Validation Plan</div>
-      </div>
-
-      <div class="arrow"><svg viewBox="0 0 16 16"><path d="M2 8h9M8 3l5 5-5 5" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-
-      <div class="stage" data-stage="pitch" tabindex="0">
-        <div class="icon"><!-- ICON: pitch.svg --><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path class="fa-secondary" d="M34.8 176l24 276.2C61 477 81.8 496 106.7 496l170.6 0c24.9 0 45.7-19 47.8-43.8l24-276.2-314.3 0zM160 40c0 13.3 10.7 24 24 24l80 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-80 0c-13.3 0-24 10.7-24 24z"/><path class="fa-primary" d="M184 16c-13.3 0-24 10.7-24 24s10.7 24 24 24l80 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-80 0zM144.8 32C148.5 13.7 164.6 0 184 0l80 0c22.1 0 40 17.9 40 40s-17.9 40-40 40l-80 0c-19.4 0-35.5-13.7-39.2-32L136 48c-30.9 0-56 25.1-56 56l0 56 296 0c4.4 0 8 3.6 8 8s-3.6 8-8 8l-10.8 0-24.1 277.5c-2.9 33.1-30.6 58.5-63.8 58.5l-170.6 0c-33.2 0-60.9-25.4-63.8-58.5L18.8 176 8 176c-4.4 0-8-3.6-8-8s3.6-8 8-8l56 0 0-56c0-39.8 32.2-72 72-72l8.8 0zM349.2 176l-314.3 0 24 276.2C61 477 81.8 496 106.7 496l170.6 0c24.9 0 45.7-19 47.8-43.8l24-276.2z"/></svg></div>
-        <div class="label">Pitch</div>
-      </div>
-
-    </div><!-- /flow -->
-
-    <!-- DISCOVERY LOOP — spanning companion: bracket placed by JS under stages 02–07 -->
-    <div class="loop-track">
-      <div class="loop-bracket" id="loop-bracket"></div>
-      <div class="loop-node" id="discovery-loop" data-stage="discovery-loop" tabindex="0" role="button" aria-label="Discovery Loop — Opportunity Solution Tree">
-        <span class="lg">&#10227;</span> <span class="ll">Discovery Loop &mdash; Opportunity Solution Tree</span>
-      </div>
-    </div>
-  </div><!-- /funnel-canvas -->
-</section>
-<div class="scroll-hint">&larr; drag to explore &rarr;</div>
-
-<!-- ============ DETAIL PANEL ============ -->
-<section class="detail-panel">
-  <div class="detail-card" id="detail-card">
-    <div class="eyebrow" id="d-eyebrow">// the process</div>
-    <h2 id="d-title">An innovation process you can walk through</h2>
-    <div id="d-body">
-      <p>Every idea travels the same path: start from the story you want to tell the world, validate that someone actually has the problem, design the concept, stress-test it technically and financially, consolidate everything into a single business case, and plan how to validate the riskiest assumptions before the pitch.</p>
-      <p>Click any stage above to see what happens there — and watch the assumptions table follow you. It never leaves the process.</p>
-    </div>
-    <div class="detail-tools" id="d-tools" hidden>
-      <div class="dt-label">Related tools</div>
-      <div id="d-tool-chips"></div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ TOOLBOX ============ -->
-<section class="toolbox container">
-  <div class="tb-head">// toolbox</div>
-  <p class="tb-sub">Working tools designed for each step of the process. <!-- EDIT: rename, describe and link these cards as the tools go live. --></p>
-  <div class="tool-grid" id="tool-grid"></div>
-</section>
-</main>
-
-<!-- shared footer (terminal strip + copyright + mobile section nav) — injected by js/footer.js -->
-<footer id="site-footer"></footer>
-<button id="theme-toggle"></button>
-
-<script>
-(function () {
-  /* ============================================================
-     CONTENT DATA — edit freely
-     ============================================================ */
-  var TOOLS = {
-    'assumptions-tracker': { name: 'assumptions-tracker', desc: 'Score assumptions by uncertainty and impact, design experiments, track validation cost and remaining risk.', href: 'tools/assumptions-tracker.html' },
-    'value-proposition': { name: 'value-proposition', desc: 'Interactive Value Proposition Canvas: map customer jobs, pains and gains against your offer until they fit.', href: 'tools/value-proposition.html' },
-    'opportunity-solution-tree': { name: 'opportunity-solution-tree', desc: 'Living Opportunity Solution Tree: one measurable outcome, evidence-scored opportunities, competing solutions and the smallest experiments \u2014 with a guided five-step discovery path.', href: 'tools/opportunity-solution-tree.html' },
-    'press-release-canvas': { name: 'press-release', desc: 'Working backwards: write the launch announcement before the project exists — three freely-switchable levels, with handoffs to the OST and the Assumptions Tracker.', href: 'tools/press-release-canvas.html' },
-    'hoq-builder': { name: 'house-of-quality', desc: 'Guided House of Quality (QFD): rank customer needs, derive specs, score the matrix, and read your specs ordered by relevance.', href: 'tools/house-of-quality.html' },
-    'cost-revenue-model': { name: 'cost-revenue-model', desc: 'Cost structure and revenue stream modelling for early concepts.', href: '#' },
-    'bc-template': { name: 'business-case-builder', desc: 'Guided 7-step business case — from problem and market sizing (TAM/SOM) to a multi-year P&L ending in EBITDA.', href: 'business-case-builder/' },
-    'business-model-canvas': { name: 'business-model-canvas', desc: 'Guided walkthrough of Osterwalder\'s nine-block canvas — value-first, with prompts and an exportable one-pager.', href: 'business-model-canvas/' },
-    'platform-model-builder': { name: 'platform-model-builder', desc: 'Interactive Business Platform Canvas for two-sided / marketplace models, with an adoption-driven financial estimate.', href: 'business-model-app/' }
-  };
-
-  var STAGES = {
-    'phase-0': {
-      num: '0 — Ideation',
-      title: 'Phase 0 — Ideation',
-      body: '<p>Where raw ideas and opportunities are surfaced, captured and triaged — before any formal validation. The promising ones graduate into Problem Validation. This map focuses on what happens <em>after</em> that.</p>',
-      tools: []
-    },
-    'phase-1': {
-      num: '1 — Problem Validation',
-      title: 'Phase 1 — Problem Validation',
-      body: '<p>Prove the problem before designing anything. Work backwards from a press release, map every <em>possible</em> user pain, then validate which are real, frequent and currently unsolved.</p><p>This is where the assumptions table is born — every pain enters as a hypothesis. <em>≈ 2 weeks.</em></p>',
-      tools: ['press-release-canvas', 'assumptions-tracker', 'value-proposition']
-    },
-    'phase-2': {
-      num: '2 — Project Setup',
-      title: 'Phase 2 — Project Setup',
-      body: '<p>Turn a validated problem into a defensible, costed proposal — in three steps:</p><ul><li><strong>2.1 Concept</strong> — design the solution + House of Quality</li><li><strong>2.2 360 Business Case</strong> — opportunity size, cost breakdown, financial plan</li><li><strong>2.3 Planning &amp; Pitch</strong> — validation plan and the board pitch</li></ul><p><em>≈ 6 weeks.</em></p>',
-      tools: ['hoq-builder', 'business-model-canvas', 'platform-model-builder', 'cost-revenue-model', 'bc-template']
-    },
-    'phase-3': {
-      num: '3 — Prototype & Research',
-      title: 'Phase 3 — Prototype & Research',
-      body: '<p>If the pitch is approved, build a prototype and run the experiments from the validation plan to retire the riskiest assumptions before committing further. <em>≈ 3 months.</em></p>',
-      tools: []
-    },
-    'phase-4': {
-      num: '4 — MVP',
-      title: 'Phase 4 — MVP',
-      body: '<p>Ship the minimum viable product to real users and learn from real usage — the smallest thing that still kills the core pain while remaining a good deal for us. <em>≈ 3 months.</em></p>',
-      tools: []
-    },
-    'assumptions': {
-      num: '∞', title: 'Assumptions Table — the constant companion',
-      body: '<p>Every stage of the process generates assumptions: about the user, the technology, the costs, the market. The assumptions table is where they all live — explicitly written down, classified by risk, and updated as evidence arrives.</p><p>That is why it travels with you across the diagram: it is never "done". It is the connective tissue between discovery and validation, and the direct input to the validation plan.</p>',
-      tools: ['assumptions-tracker']
-    },
-    'discovery-loop': {
-      num: '\u27f3', title: 'Discovery Loop \u2014 where the tree runs',
-      body: '<p>The stages above are the <strong>method</strong>; the Opportunity Solution Tree is where one project <strong>runs</strong> it \u2014 a living instance of stages 02\u201307. The press release defines the <em>outcome</em>; possible and validated pains are <em>opportunities</em>, first hypothesised, then scored on evidence; the concept and its alternatives are competing <em>solutions</em>; and the validation plan is the tree\u2019s <em>experiments</em>, feeding the assumptions table.</p><p>The flow is linear because governance needs gates. Discovery is cyclical because learning is not: scores shift, solutions get killed, the target moves. The tree is the adapter between the two \u2014 the loop lives here and reports upward.</p>',
-      tools: ['opportunity-solution-tree', 'value-proposition', 'assumptions-tracker']
-    },
-    'press-release': {
-      num: '01', title: 'Press Release',
-      body: '<p>The process starts at the end: write the press release announcing the finished product. Working backwards forces clarity — who is this for, what pain does it kill, why would anyone care on launch day?</p><p>If the press release is not compelling, the idea is not ready. Rewrite it before writing a single line of anything else.</p>',
-      tools: ['press-release-canvas']
-    },
-    'possible-user-pains': {
-      num: '02', title: 'Possible User Pains',
-      body: '<p>Map every plausible pain the target users might have — broad, unfiltered, hypothesis-driven. At this stage everything is a question mark: who hurts, how often, how badly, and what they do about it today.</p><p>Each pain goes into the assumptions table as an unvalidated hypothesis.</p>',
-      tools: ['assumptions-tracker']
-    },
-    'validated-user-pains': {
-      num: '03', title: 'Validated User Pains',
-      body: '<p>Interviews, observation and evidence separate real pains from imagined ones. A pain is validated when real users confirm it is frequent, intense, and currently unsolved — not when it merely sounds plausible.</p><p>The assumptions table gets its first big update here: hypotheses become confirmed facts or get killed.</p>',
-      tools: ['assumptions-tracker', 'value-proposition', 'opportunity-solution-tree']
-    },
-    'concept-design': {
-      num: '04', title: 'Concept Design',
-      body: '<p>Design the concept that answers the validated pains: what it is, what it does, what it deliberately does not do. The concept is a hypothesis about the solution, just as the pains were hypotheses about the problem.</p>',
-      tools: ['value-proposition', 'platform-model-builder', 'opportunity-solution-tree']
-    },
-    'discovery': {
-      num: '05', title: 'Technical &amp; Financial Discovery',
-      body: '<p>Four analyses run in parallel to stress-test the concept from every angle before committing to a business case:</p><ul><li><strong>House of Quality</strong> — translate user needs into ranked technical requirements</li><li><strong>Cost Breakdown</strong> — what it costs to build and operate</li><li><strong>Revenue Streams</strong> — how it captures value</li><li><strong>Competitors &amp; Patents</strong> — who else plays here, and what freedom to operate exists</li></ul>',
-      tools: ['hoq-builder', 'cost-revenue-model', 'business-model-canvas']
-    },
-    'house-of-quality': {
-      num: '05a', title: 'House of Quality',
-      body: '<p>Quality Function Deployment: a structured matrix that crosses validated user needs with technical characteristics, scoring relationships to reveal which requirements actually matter — and where the engineering effort should go first.</p>',
-      tools: ['hoq-builder']
-    },
-    'cost-breakdown': {
-      num: '05b', title: 'Cost Breakdown',
-      body: '<p>CAPEX, OPEX and unit economics for the concept as designed. The goal is not accounting precision — it is discovering whether the cost structure is even compatible with the value the concept creates.</p>',
-      tools: ['cost-revenue-model']
-    },
-    'revenue-streams': {
-      num: '05c', title: 'Revenue Streams',
-      body: '<p>How the concept captures value: pricing model, channels, recurring versus one-off revenue, willingness to pay. Every revenue assumption goes straight into the assumptions table for later validation.</p>',
-      tools: ['cost-revenue-model', 'business-model-canvas']
-    },
-    'competitors-patents': {
-      num: '05d', title: 'Competitors &amp; Patents',
-      body: '<p>The fight check: who already solves this pain, how well, and at what price — plus a freedom-to-operate scan of the patent landscape. Knowing the competitive ring before stepping into it.</p>',
-      tools: []
-    },
-    'business-case': {
-      num: '06', title: '360 Business Case',
-      body: '<p>Everything converges into a single document — the full picture a decision-maker needs:</p><ul><li>Fundamentals &amp; Strategy</li><li>Assumptions</li><li>Stakeholders + Pains</li><li>Competitor</li><li>Size of the Opportunity</li><li>Concept &amp; Components</li><li>Technical Specifications</li><li>Cost Breakdown</li><li>Financial Plan</li></ul>',
-      tools: ['bc-template']
-    },
-    'validation-plan': {
-      num: '07', title: 'Create a Validation Plan',
-      body: '<p>The assumptions table becomes an experiment backlog: for each high-risk assumption, define the test, the metric, and the kill criterion. The riskiest assumptions get tested first — cheap experiments before expensive commitments.</p>',
-      tools: ['assumptions-tracker', 'opportunity-solution-tree']
-    },
-    'pitch': {
-      num: '08', title: 'Pitch',
-      body: '<p>Present the case to the decision board: the validated pains, the concept, the numbers, and the validation plan that de-risks what remains unknown. The ask is explicit — invest, pivot, or stop.</p>',
-      tools: []
+  <script src="js/header.js"></script>
+  <script src="js/theme-toggle.js"></script>
+  <script src="js/footer.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+  (function () {
+    /* ===== FA duotone icons (lifted from the live diagram) ===== */
+    var ICON = {
+      'press-release': { vb: '0 0 512 512', s: 'M95.2 464L440 464c30.9 0 56-25.1 56-56l0-320c0-22.1-17.9-40-40-40L152 48c-22.1 0-40 17.9-40 40l0 336c0 15.7-6.4 29.8-16.8 40zM176 152c0-13.3 10.7-24 24-24l80 0c13.3 0 24 10.7 24 24l0 80c0 13.3-10.7 24-24 24l-80 0c-13.3 0-24-10.7-24-24l0-80zm0 160c0-4.4 3.6-8 8-8l240 0c4.4 0 8 3.6 8 8s-3.6 8-8 8l-240 0c-4.4 0-8-3.6-8-8zm0 64c0-4.4 3.6-8 8-8l240 0c4.4 0 8 3.6 8 8s-3.6 8-8 8l-240 0c-4.4 0-8-3.6-8-8zM352 184c0-4.4 3.6-8 8-8l64 0c4.4 0 8 3.6 8 8s-3.6 8-8 8l-64 0c-4.4 0-8-3.6-8-8zm0 64c0-4.4 3.6-8 8-8l64 0c4.4 0 8 3.6 8 8s-3.6 8-8 8l-64 0c-4.4 0-8-3.6-8-8z', p: 'M152 48c-22.1 0-40 17.9-40 40l0 336c0 15.7-6.4 29.8-16.8 40L440 464c30.9 0 56-25.1 56-56l0-320c0-22.1-17.9-40-40-40L152 48zM56 464c22.1 0 40-17.9 40-40L96 88c0-30.9 25.1-56 56-56l304 0c30.9 0 56 25.1 56 56l0 320c0 39.8-32.2 72-72 72L56 480c-30.9 0-56-25.1-56-56L0 136c0-4.4 3.6-8 8-8s8 3.6 8 8l0 288c0 22.1 17.9 40 40 40zM352 184c0-4.4 3.6-8 8-8l64 0c4.4 0 8 3.6 8 8s-3.6 8-8 8l-64 0c-4.4 0-8-3.6-8-8zm0 64c0-4.4 3.6-8 8-8l64 0c4.4 0 8 3.6 8 8s-3.6 8-8 8l-64 0c-4.4 0-8-3.6-8-8zM176 312c0-4.4 3.6-8 8-8l240 0c4.4 0 8 3.6 8 8s-3.6 8-8 8l-240 0c-4.4 0-8-3.6-8-8zm0 64c0-4.4 3.6-8 8-8l240 0c4.4 0 8 3.6 8 8s-3.6 8-8 8l-240 0c-4.4 0-8-3.6-8-8zm24-232c-4.4 0-8 3.6-8 8l0 80c0 4.4 3.6 8 8 8l80 0c4.4 0 8-3.6 8-8l0-80c0-4.4-3.6-8-8-8l-80 0zm-24 8c0-13.3 10.7-24 24-24l80 0c13.3 0 24 10.7 24 24l0 80c0 13.3-10.7 24-24 24l-80 0c-13.3 0-24-10.7-24-24l0-80z' },
+      'possible-user-pains': { vb: '0 0 640 512', s: 'M320 16c-61.9 0-112 50.1-112 112s50.1 112 112 112 112-50.1 112-112-50.1-112-112-112zM224 128c0-53 43-96 96-96s96 43 96 96-43 96-96 96-96-43-96-96zM480 63.8c-4.3 0-8.7 .3-12.9 .9 2.1 5.1 4.1 10.2 5.7 15.5 2.4-.2 4.8-.3 7.2-.3 44.2 0 80 35.8 80 80s-35.8 80-80 80l0 0c-13.5 0-26.2-3.3-37.4-9.2-3.5 4.2-7.2 8.2-11.1 12 3.2 1.9 6.6 3.6 10.1 5.1 17.2-5.1 35.5-7.8 54.4-7.8 11 0 21.9 .9 32.4 2.7 28.5-16.7 47.6-47.6 47.6-82.9 0-53-43-96-96-96zM160 64l0 .2c-53 0-96 43-96 96s43 96 96 96c17.8 0 34.4-4.8 48.6-13.2-3.9-3.9-7.7-7.9-11.2-12.1-11.2 5.9-23.9 9.2-37.4 9.2-44.2 0-80-35.8-80-80s35.8-80 80-80c2.4 0 4.8 .1 7.2 .3 1.6-5.3 3.5-10.5 5.7-15.5-4.2-.6-8.5-.9-12.9-.9zM431.4 242.6l0 .2c0 0 .1-.1 .1-.1l0 0c0 0-.1-.1-.1-.1zM288 288c-79.5 0-144 64.5-144 144l0 40c0 4.4 3.6 8 8 8s8-3.6 8-8l0-40c0-70.7 57.3-128 128-128l64 0t0 0 0 0c.3 0 .6 0 .9 0 4.8-5.3 9.8-10.4 15.1-15.1l0 0c-5.3-.6-10.6-.9-16-.9l-64 0zM136 304C60.9 304 0 364.9 0 440l0 32c0 4.4 3.6 8 8 8s8-3.6 8-8l0-32c0-66.3 53.7-120 120-120l.1 0c3.9-5.5 8-10.9 12.3-16L136 304z', p: 'M496 288c79.5 0 144 64.5 144 144s-64.5 144-144 144-144-64.5-144-144 64.5-144 144-144zm0 16c-70.7 0-128 57.3-128 128s57.3 128 128 128 128-57.3 128-128-57.3-128-128-128zm0 180c6.6 0 12 5.4 12 12s-5.4 12-12 12-12-5.4-12-12 5.4-12 12-12zm0-132c26.5 0 48 21.5 48 48l0 .3c0 16.5-9.7 31.4-24.7 38.1l-5.4 2.4c-6 2.7-9.9 8.6-9.9 15.2 0 4.4-3.6 8-8 8-4.4 0-8-3.6-8-8 0-12.9 7.6-24.6 19.4-29.8l5.4-2.4c9.3-4.1 15.2-13.3 15.3-23.5l0-.3c0-17.7-14.3-32-32-32-15.5 0-28.4 11-31.3 25.6-.9 4.3-5.1 7.1-9.4 6.2s-7.1-5.1-6.2-9.4c4.4-21.9 23.8-38.4 47-38.4z' },
+      'validated-user-pains': { vb: '0 0 640 512', s: 'M320 16c-61.9 0-112 50.1-112 112s50.1 112 112 112 112-50.1 112-112-50.1-112-112-112zM224 128c0-53 43-96 96-96s96 43 96 96-43 96-96 96-96-43-96-96zM480 63.8c-4.3 0-8.7 .3-12.9 .9 2.1 5.1 4.1 10.2 5.7 15.5 2.4-.2 4.8-.3 7.2-.3 44.2 0 80 35.8 80 80s-35.8 80-80 80l0 0c-13.5 0-26.2-3.3-37.4-9.2-3.5 4.2-7.2 8.2-11.1 12 3.2 1.9 6.6 3.6 10.1 5.1 17.2-5.1 35.5-7.8 54.4-7.8 11 0 21.9 .9 32.4 2.7 28.5-16.7 47.6-47.6 47.6-82.9 0-53-43-96-96-96zM160 64l0 .2c-53 0-96 43-96 96s43 96 96 96c17.8 0 34.4-4.8 48.6-13.2-3.9-3.9-7.7-7.9-11.2-12.1-11.2 5.9-23.9 9.2-37.4 9.2-44.2 0-80-35.8-80-80s35.8-80 80-80c2.4 0 4.8 .1 7.2 .3 1.6-5.3 3.5-10.5 5.7-15.5-4.2-.6-8.5-.9-12.9-.9zM431.4 242.6l0 .2c0 0 .1-.1 .1-.1l0 0c0 0-.1-.1-.1-.1zM288 288c-79.5 0-144 64.5-144 144l0 40c0 4.4 3.6 8 8 8s8-3.6 8-8l0-40c0-70.7 57.3-128 128-128l64 0t0 0 0 0c.3 0 .6 0 .9 0 4.8-5.3 9.8-10.4 15.1-15.1l0 0c-5.3-.6-10.6-.9-16-.9l-64 0zM136 304C60.9 304 0 364.9 0 440l0 32c0 4.4 3.6 8 8 8s8-3.6 8-8l0-32c0-66.3 53.7-120 120-120l.1 0c3.9-5.5 8-10.9 12.3-16L136 304z', p: 'M496 288c79.5 0 144 64.5 144 144s-64.5 144-144 144-144-64.5-144-144 64.5-144 144-144zm0 16c-70.7 0-128 57.3-128 128s57.3 128 128 128 128-57.3 128-128-57.3-128-128-128zm49.5 61.3c2.6-3.6 7.6-4.3 11.2-1.7s4.3 7.6 1.7 11.2l-80 110c-1.4 2-3.8 3.2-6.2 3.3s-4.8-1-6.4-2.9l-40-48c-2.8-3.4-2.4-8.5 1-11.3s8.5-2.4 11.3 1l33.4 40.1 74-101.7z' },
+      'concept-design': { vb: '0 0 576 512', s: 'M68.1 328.7l31.3 31.3 4.7 0 0 4.7 43.3 43.3 4.7 0 0 4.7 31.3 31.3c.8-.7 1.5-1.4 2.3-2.2L404 223.3 288.7 108 70.2 326.4c-.8 .8-1.5 1.5-2.2 2.3z', p: 'M364.2 32.5C374.8 21.9 389.1 16 404 16s29.2 5.9 39.8 16.5l35.7 35.7C490.1 78.8 496 93.1 496 108s-5.9 29.2-16.5 39.8L415.3 212 300 96.7 364.2 32.5zM288.7 108L404 223.3 185.6 441.8c-.8 .7-1.5 1.5-2.3 2.2L68.1 328.7c.7-.8 1.4-1.5 2.2-2.3L288.7 108zM51.8 358.1c1.6-5.7 3.8-11.1 6.7-16.2L170.2 453.5c-5.1 2.9-10.5 5.2-16.2 6.7L26.1 495.7c-2.8 .8-5.8 0-7.8-2.1s-2.8-5-2.1-7.8L51.8 358.1zM404 0c-19.2 0-37.6 7.6-51.1 21.2l-294 294c-10.7 10.7-18.5 24.1-22.6 38.7L.9 481.6c-2.3 8.3 0 17.3 6.2 23.4s15.1 8.5 23.4 6.2l127.8-35.5c14.6-4.1 27.9-11.8 38.7-22.6l294-294C504.4 145.6 512 127.2 512 108s-7.6-37.6-21.2-51.1L455.1 21.2C441.6 7.6 423.2 0 404 0zM264 496c-4.4 0-8 3.6-8 8s3.6 8 8 8l304 0c4.4 0 8-3.6 8-8s-3.6-8-8-8l-304 0z' },
+      'competitors-patents': { vb: '0 0 448 512', s: 'M16 104l0 184c0 26.1 11.3 49.5 29.3 65.6 1.7 1.5 2.7 3.7 2.7 6L48 464c0 17.7 14.3 32 32 32l224 0c17.7 0 32-14.3 32-32l0-64.4c0-12.1 4.5-23.7 12.7-32.5l64.2-69.5c12.3-13.3 19.1-30.7 19.1-48.8l0-48.7c0-30.9-25.1-56-56-56-.3 0-.7-.1-1-.1-.3 0-.7 .1-1 .1l-38 0c-35.3 0-64 28.7-64 64s28.7 64 64 64c4.4 0 8 3.6 8 8s-3.6 8-8 8c-44.2 0-80-35.8-80-80l-136 0c-30.9 0-56-25.1-56-56 0-4.4 3.6-8 8-8s8 3.6 8 8c0 22.1 17.9 40 40 40l137.6 0c7.4-36.5 39.7-64 78.4-64l32 0 0-24c0-48.6-39.4-88-88-88L104 16c-48.6 0-88 39.4-88 88zM129.5 339.3c2.6-3.6 7.6-4.4 11.2-1.8l51.3 36.7 51.3-36.7c3.6-2.6 8.6-1.7 11.2 1.8s1.7 8.6-1.8 11.2l-46.9 33.5 46.9 33.5c3.6 2.6 4.4 7.6 1.8 11.2s-7.6 4.4-11.2 1.8l-51.3-36.7-51.3 36.7c-3.6 2.6-8.6 1.7-11.2-1.8s-1.7-8.6 1.8-11.2l46.9-33.5-46.9-33.5c-3.6-2.6-4.4-7.6-1.8-11.2z', p: 'M280 0c57.4 0 104 46.6 104 104l0 24.5c36 4 64 34.5 64 71.5l0 48.7c0 22.1-8.3 43.4-23.3 59.7l-64.2 69.5c-5.5 5.9-8.5 13.7-8.5 21.7l0 64.4c0 26.5-21.5 48-48 48L80 512c-26.5 0-48-21.5-48-48l0-101C12.3 344.1 0 317.5 0 288L0 104C0 46.6 46.6 0 104 0L280 0zM104 16c-48.6 0-88 39.4-88 88l0 184c0 26.1 11.3 49.5 29.3 65.6 1.7 1.5 2.7 3.7 2.7 6L48 464c0 17.7 14.3 32 32 32l224 0c17.7 0 32-14.3 32-32l0-64.4c0-12.1 4.5-23.7 12.7-32.5l64.2-69.5c12.3-13.3 19.1-30.7 19.1-48.8l0-48.7c0-30.9-25.1-56-56-56-.3 0-.7-.1-1-.1-.3 0-.7 .1-1 .1l-38 0c-35.3 0-64 28.7-64 64s28.7 64 64 64c4.4 0 8 3.6 8 8s-3.6 8-8 8c-44.2 0-80-35.8-80-80l-136 0c-30.9 0-56-25.1-56-56 0-4.4 3.6-8 8-8s8 3.6 8 8c0 22.1 17.9 40 40 40l137.6 0c7.4-36.5 39.7-64 78.4-64l32 0 0-24c0-48.6-39.4-88-88-88L104 16zM243.3 337.5c3.6-2.6 8.6-1.7 11.2 1.8s1.7 8.6-1.8 11.2l-46.9 33.5 46.9 33.5c3.6 2.6 4.4 7.6 1.8 11.2s-7.6 4.4-11.2 1.8l-51.3-36.7-51.3 36.7c-3.6 2.6-8.6 1.7-11.2-1.8s-1.7-8.6 1.8-11.2l46.9-33.5-46.9-33.5c-3.6-2.6-4.4-7.6-1.8-11.2s7.6-4.4 11.2-1.8l51.3 36.7 51.3-36.7z' },
+      'cost-breakdown': { vb: '0 0 640 512', s: 'M48 272c0-109.5 78.6-200.6 182.4-220.1 .5-.1 1-.2 1.5-.3 1 0 1.9 0 2.8 .1 2.9 .8 5.3 3.5 5.3 7.3l0 205c0 22.1 17.9 40 40 40l49.7 0c-16.3 28.2-25.7 61-25.7 96 0 32.3 8 62.7 22.1 89.4-17.3 4.3-35.4 6.6-54.1 6.6-123.7 0-224-100.3-224-224z', p: 'M333.8 18c99.8 13.3 179 92.4 192.2 192.2l0 .2c5.4 .9 10.8 1.9 16 3.2 .1-1.8 .1-3.6-.2-5.5-14.2-107-99-191.7-206-206-17.5-2.3-31.9 12.2-31.9 29.9l0 176c0 17.7 14.3 32 32 32l53.8 0c9.2-6.1 19-11.5 29.3-16L336 224c-8.8 0-16-7.2-16-16l0-176c0-9.5 7.3-14.9 13.8-14zM272 512c21.6 0 42.5-2.9 62.4-8.2-3-4.7-5.8-9.4-8.4-14.4-17.3 4.3-35.4 6.6-54.1 6.6-123.7 0-224-100.3-224-224 0-110 79.3-201.5 183.9-220.4 4-.7 8.1 2.4 8.1 7.4l0 205c0 22.1 17.9 40 40 40l49.7 0c3.2-5.5 6.6-10.9 10.3-16l-60 0c-13.3 0-24-10.7-24-24l0-205c0-14-12.3-25.8-27-23.1-112 20.3-197 118.3-197 236.2 0 132.5 107.5 240 240 240zM496 272a128 128 0 1 1 0 256 128 128 0 1 1 0-256zm0 272a144 144 0 1 0 0-288 144 144 0 1 0 0 288zm-8-224l0 16-5.8 0c-18.9 0-34.2 15.3-34.2 34.2 0 16.5 11.8 30.7 28.1 33.6l45 8.2c8.6 1.6 14.9 9.1 14.9 17.9 0 10-8.1 18.2-18.2 18.2L464 448c-4.4 0-8 3.6-8 8s3.6 8 8 8l24 0 0 16c0 4.4 3.6 8 8 8s8-3.6 8-8l0-16 13.8 0c18.9 0 34.2-15.3 34.2-34.2 0-16.5-11.8-30.7-28.1-33.6l-45-8.2c-8.6-1.6-14.9-9.1-14.9-17.9 0-10 8.1-18.2 18.2-18.2l45.8 0c4.4 0 8-3.6 8-8s-3.6-8-8-8l-24 0 0-16c0-4.4-3.6-8-8-8s-8 3.6-8 8z' },
+      'revenue-streams': { vb: '0 0 640 512', s: 'M321.5-.1L224.1 0c-17.7 0-32.1 14.4-32.1 32.1 0 5.2 1.3 10.3 3.7 15l0-.1 45.4 86C155.1 212.1 80 288.9 80 416.8 80 469.4 122.6 512 175.2 512l289.6 0c52.6 0 95.2-42.6 95.2-95.2 0-57.5-15.2-104.7-39.6-146.3-5.9 .7-11.8 1.2-17.9 1.4 25.8 41.4 41.5 87.8 41.5 144.9 0 43.7-35.4 79.2-79.2 79.2l-289.6 0C131.4 496 96 460.6 96 416.8 96 296 166.4 223.4 252.8 144l62.1 0c-1.8-5.2-3.5-10.6-4.9-16l-53.5 0-46.7-88.4c-1.2-2.3-1.9-4.9-1.9-7.5 0-8.9 7.2-16.1 16.1-16.1l90.9 0c1.9-5.5 4.1-10.8 6.5-16.1zM320 232c-4.4 0-8 3.6-8 8l0 16-5.4 0c-23.6 0-42.6 19.1-42.6 42.6 0 20.8 15.1 38.6 35.6 42.1l38.1 6.3c12.9 2.1 22.3 13.3 22.3 26.3 0 14.7-11.9 26.6-26.6 26.6L280 400c-4.4 0-8 3.6-8 8s3.6 8 8 8l32 0 0 16c0 4.4 3.6 8 8 8s8-3.6 8-8l0-16 5.4 0c23.6 0 42.6-19.1 42.6-42.6 0-20.8-15.1-38.6-35.6-42.1L302.3 325c-12.8-2.1-22.3-13.3-22.3-26.3 0-14.7 11.9-26.6 26.6-26.6l45.4 0c4.4 0 8-3.6 8-8s-3.6-8-8-8l-24 0 0-16c0-4.4-3.6-8-8-8l0 0 0-.1z', p: 'M496-64C575.5-64 640 .5 640 80S575.5 224 496 224 352 159.5 352 80 416.5-64 496-64zm0 16C425.3-48 368 9.3 368 80S425.3 208 496 208 624 150.7 624 80 566.7-48 496-48zm0 56c4.4 0 8 3.6 8 8l0 56 56 0c4.4 0 8 3.6 8 8s-3.6 8-8 8l-56 0 0 56c0 4.4-3.6 8-8 8s-8-3.6-8-8l0-56-56 0c-4.4 0-8-3.6-8-8s3.6-8 8-8l56 0 0-56c0-4.4 3.6-8 8-8z' },
+      'business-case': { vb: '0 0 640 640', s: 'M144 128L144 512C144 538.5 165.5 560 192 560L448 560C474.5 560 496 538.5 496 512L496 250.5C496 246.9 495.6 243.4 494.8 240L392 240C361.1 240 336 214.9 336 184L336 81.2C332.6 80.4 329.1 80 325.5 80L192 80C165.5 80 144 101.5 144 128zM249.8 333C247 329.6 247.6 324.5 251 321.8C254.4 319.1 259.5 319.6 262.2 323L320 395.2L377.8 323C380.6 319.6 385.6 319 389 321.8C392.4 324.6 393 329.6 390.2 333L330.2 408L390.2 483C393 486.4 392.4 491.5 389 494.2C385.6 496.9 380.5 496.4 377.8 493L320 420.8L262.2 493C259.4 496.4 254.4 497 251 494.2C247.6 491.4 247 486.4 249.8 483L309.8 408L249.8 333z', p: 'M325.5 80C329.1 80 332.6 80.4 336 81.2L336 184C336 214.9 361.1 240 392 240L494.8 240C495.6 243.4 496 246.9 496 250.5L496 512C496 538.5 474.5 560 448 560L192 560C165.5 560 144 538.5 144 512L144 128C144 101.5 165.5 80 192 80L325.5 80zM481.9 216.6C484.2 218.9 486.2 221.4 488 224L392 224C369.9 224 352 206.1 352 184L352 88C354.7 89.8 357.1 91.8 359.4 94.1L481.9 216.6zM192 64C156.7 64 128 92.7 128 128L128 512C128 547.3 156.7 576 192 576L448 576C483.3 576 512 547.3 512 512L512 250.5C512 233.5 505.3 217.2 493.3 205.2L370.7 82.7C358.7 70.7 342.5 64 325.5 64L192 64zM262.2 323C259.4 319.6 254.4 319 251 321.8C247.6 324.6 247 329.6 249.8 333L309.8 408L249.8 483C247 486.4 247.6 491.5 251 494.2C254.4 496.9 259.5 496.4 262.2 493L320 420.8L377.8 493C380.6 496.4 385.6 497 389 494.2C392.4 491.4 393 486.4 390.2 483L330.2 408L390.2 333C393 329.6 392.4 324.5 389 321.8C385.6 319.1 380.5 319.6 377.8 323L320 395.2L262.2 323z' },
+      'validation-plan': { vb: '0 0 512 512', s: 'M48 416a48 48 0 1 0 96 0 48 48 0 1 0 -96 0zm288 0a47.9 47.9 0 1 0 95.9 0 47.9 47.9 0 1 0 -95.9 0zM368 96a48 48 0 1 0 96 0 48 48 0 1 0 -96 0z', p: 'M245.7 34.3c-3.1-3.1-8.2-3.1-11.3 0s-3.1 8.2 0 11.3L276.7 88 96 88C47.4 88 8 127.4 8 176s39.4 88 88 88l320 0c39.8 0 72 32.2 72 72 0 28.9-17.1 53.9-41.7 65.3-6.6-28.3-32-49.3-62.3-49.3-35.3 0-64 28.7-64 64s28.7 64 64 64c34.7 0 62.9-27.6 64-62 32.8-12.8 56-44.7 56-82 0-48.6-39.4-88-88-88L96 248c-39.8 0-72-32.2-72-72s32.2-72 72-72l180.7 0-42.3 42.3c-3.1 3.1-3.1 8.2 0 11.3s8.2 3.1 11.3 0l56-56c3.1-3.1 3.1-8.2 0-11.3l-56-56zM383.9 464a48 48 0 1 1 .1-96 48 48 0 1 1 -.1 96zM368 96a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm112 0a64 64 0 1 0 -128 0 64 64 0 1 0 128 0zM96 368a48 48 0 1 1 0 96 48 48 0 1 1 0-96zm63.5 40c-3.9-31.6-30.9-56-63.5-56-35.3 0-64 28.7-64 64s28.7 64 64 64c32.6 0 59.6-24.4 63.5-56l85.2 0-42.3 42.3c-3.1 3.1-3.1 8.2 0 11.3s8.2 3.1 11.3 0l56-56c3.1-3.1 3.1-8.2 0-11.3l-56-56c-3.1-3.1-8.2-3.1-11.3 0s-3.1 8.2 0 11.3l42.3 42.3-85.2 0z' },
+      'pitch': { vb: '0 0 384 512', s: 'M34.8 176l24 276.2C61 477 81.8 496 106.7 496l170.6 0c24.9 0 45.7-19 47.8-43.8l24-276.2-314.3 0zM160 40c0 13.3 10.7 24 24 24l80 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-80 0c-13.3 0-24 10.7-24 24z', p: 'M184 16c-13.3 0-24 10.7-24 24s10.7 24 24 24l80 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-80 0zM144.8 32C148.5 13.7 164.6 0 184 0l80 0c22.1 0 40 17.9 40 40s-17.9 40-40 40l-80 0c-19.4 0-35.5-13.7-39.2-32L136 48c-30.9 0-56 25.1-56 56l0 56 296 0c4.4 0 8 3.6 8 8s-3.6 8-8 8l-10.8 0-24.1 277.5c-2.9 33.1-30.6 58.5-63.8 58.5l-170.6 0c-33.2 0-60.9-25.4-63.8-58.5L18.8 176 8 176c-4.4 0-8-3.6-8-8s3.6-8 8-8l56 0 0-56c0-39.8 32.2-72 72-72l8.8 0zM349.2 176l-314.3 0 24 276.2C61 477 81.8 496 106.7 496l170.6 0c24.9 0 45.7-19 47.8-43.8l24-276.2z' },
+      'house-of-quality': { vb: '0 0 640 512', s: 'M160 32c-35.3 0-64 28.7-64 64l0 320c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-124.5c-4.9 3.3-10.3 6-16 8l0 20.5-128 0 0-43.3c-5.2-6.5-9.3-13.8-12-21.8-1.3 .3-2.7 .5-4 .6l0 64.5-128 0 0-128 40.5 0-7.3-13.1c-.5-1-1-1.9-1.5-2.9l-31.7 0 0-128 24.1 0c-.1-5.3 .5-10.7 1.6-16L160 32zM112 96c0-26.5 21.5-48 48-48l80 0 0 128-128 0 0-80zm0 224l0-128 128 0 0 128-128 0zm0 96l0-80 128 0 0 128-80 0c-26.5 0-48-21.5-48-48zm144 48l0-128 128 0 0 128-128 0zm144 0l0-128 128 0 0 80c0 26.5-21.5 48-48 48l-80 0z', p: 'M456.1-64c-13.3 0-24 10.7-24 24l0 5.9c0 9.5-5.9 17.9-14.1 22.7s-18.4 5.6-26.6 .8l-4.8-2.8C375-20.1 360.2-16 353.7-4.3L331.2 35.9c-6.2 11.2-2.6 25.3 8.2 32.1l4.5 2.8c8 5 12.2 14.2 12.1 23.7 0 .2 0 .4 0 .6 0 .9 0 .8 0 1.6 0 .2 0 .4 0 .6 .1 9.5-4.1 18.7-12.1 23.7l-4.4 2.8c-10.9 6.8-14.6 20.9-8.3 32.1l22.5 40.4c6.5 11.7 21.4 15.8 33 9.1l4.8-2.8c8.2-4.8 18.4-3.9 26.6 .8s14.1 13.2 14.1 22.7l0 5.9c0 13.3 10.7 24 24 24l48 0c13.3 0 24-10.7 24-24l0-6.1c0-9.4 5.8-17.8 14-22.5s18.3-5.6 26.5-.8l5 2.9c11.6 6.7 26.5 2.6 33-9.2l22.4-40.4c6.2-11.2 2.6-25.2-8.3-32l-4.6-2.9c-8-5-12.2-14.2-12.1-23.7l0-2.7c-.1-9.4 4-18.6 12-23.7l4.7-2.9c10.8-6.8 14.5-20.8 8.2-32L606.6-4.2c-6.5-11.7-21.4-15.8-33-9.1l-5 2.9c-8.2 4.7-18.3 3.9-26.5-.8s-14-13.1-14-22.5l0-6.1c0-13.3-10.7-24-24-24l-48 0zm-8 24c0-4.4 3.6-8 8-8l48 0c4.4 0 8 3.6 8 8l0 6.1c0 16.2 9.9 29.4 22 36.4 12.2 7.1 28.4 9 42.5 .8l5-2.8c3.9-2.2 8.8-.9 11 3L615 43.8c2.1 3.7 .9 8.4-2.7 10.7l-4.7 2.9c-13.6 8.5-19.7 23.5-19.5 37.4l0 2.4c-.1 13.9 6 28.9 19.6 37.4l4.6 2.9c3.6 2.3 4.8 6.9 2.8 10.7l-22.4 40.4c-2.2 3.9-7.1 5.3-11 3l-5-2.8c-14.1-8.1-30.3-6.2-42.5 .8-12.1 7-22 20.1-22 36.4l0 6.1c0 4.4-3.6 8-8 8l-48 0c-4.4 0-8-3.6-8-8l0-5.9c0-16.3-10-29.5-22.1-36.5-12.2-7.1-28.5-8.9-42.6-.8l-4.8 2.8c-3.9 2.2-8.8 .9-11-3l-22.6-40.4c-2.1-3.7-.9-8.4 2.8-10.7l4.4-2.8c13.7-8.5 19.8-23.6 19.7-37.5 0-.2 0-.4 0-.5 0-.7 0-.6 0-1.4 0-.2 0-.4 0-.6 .2-13.9-5.9-29-19.6-37.5l-4.5-2.8c-3.6-2.3-4.8-7-2.7-10.7L367.7 3.5c2.2-3.9 7.1-5.2 11-3l4.8 2.8c14.1 8.1 30.4 6.2 42.6-.8 12.1-7 22.1-20.2 22.1-36.5l0-5.9zM480 39.9c-30.9 0-56 25.1-56 56s25.1 56 56 56 56-25.1 56-56-25.1-56-56-56zm40 56c0 22.1-17.9 40-40 40s-40-17.9-40-40 17.9-40 40-40 40 17.9 40 40z' },
+      'assumptions-table': { vb: '0 0 384 512', s: 'M16 64l0 384c0 26.5 21.5 48 48 48l256 0c26.5 0 48-21.5 48-48l0-384c0-26.5-21.5-48-48-48L64 16C37.5 16 16 37.5 16 64zm112 64a32 32 0 1 1 -64 0 32 32 0 1 1 64 0zm0 256a32 32 0 1 1 -64 0 32 32 0 1 1 64 0zM65.6 244.8c-2.7-3.5-1.9-8.5 1.6-11.2s8.5-1.9 11.2 1.6l17.6 23.5 41.6-55.5c2.7-3.5 7.7-4.3 11.2-1.6s4.3 7.7 1.6 11.2l-48 64c-1.5 2-3.9 3.2-6.4 3.2s-4.9-1.2-6.4-3.2l-24-32zM176 128c0-4.4 3.6-8 8-8l112 0c4.4 0 8 3.6 8 8s-3.6 8-8 8l-112 0c-4.4 0-8-3.6-8-8zm0 256c0-4.4 3.6-8 8-8l112 0c4.4 0 8 3.6 8 8s-3.6 8-8 8l-112 0c-4.4 0-8-3.6-8-8zm16-128c0-4.4 3.6-8 8-8l96 0c4.4 0 8 3.6 8 8s-3.6 8-8 8l-96 0c-4.4 0-8-3.6-8-8z', p: 'M320 16c26.5 0 48 21.5 48 48l0 384c0 26.5-21.5 48-48 48L64 496c-26.5 0-48-21.5-48-48L16 64c0-26.5 21.5-48 48-48l256 0zM64 0C28.7 0 0 28.7 0 64L0 448c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-384c0-35.3-28.7-64-64-64L64 0zM176 128c0 4.4 3.6 8 8 8l112 0c4.4 0 8-3.6 8-8s-3.6-8-8-8l-112 0c-4.4 0-8 3.6-8 8zm16 128c0 4.4 3.6 8 8 8l96 0c4.4 0 8-3.6 8-8s-3.6-8-8-8l-96 0c-4.4 0-8 3.6-8 8zM176 384c0 4.4 3.6 8 8 8l112 0c4.4 0 8-3.6 8-8s-3.6-8-8-8l-112 0c-4.4 0-8 3.6-8 8zM96 368a16 16 0 1 1 0 32 16 16 0 1 1 0-32zM64 384a32 32 0 1 0 64 0 32 32 0 1 0 -64 0zm48-256a16 16 0 1 1 -32 0 16 16 0 1 1 32 0zM96 96a32 32 0 1 0 0 64 32 32 0 1 0 0-64zm54.4 116.8c2.7-3.5 1.9-8.5-1.6-11.2s-8.5-1.9-11.2 1.6L96 258.7 78.4 235.2c-2.7-3.5-7.7-4.3-11.2-1.6s-4.3 7.7-1.6 11.2l24 32c1.5 2 3.9 3.2 6.4 3.2s4.9-1.2 6.4-3.2l48-64z' },    };
+    function faIcon(id) {
+      var i = ICON[id];
+      if (!i) return '';
+      return '<span class="fa-ico"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="' + i.vb + '">'
+        + '<path class="fa-secondary" d="' + i.s + '"/><path class="fa-primary" d="' + i.p + '"/></svg></span>';
     }
-  };
 
-  /* ============================================================
-     RENDER TOOLBOX
-     ============================================================ */
-  var grid = document.getElementById('tool-grid');
-  Object.keys(TOOLS).forEach(function (id) {
-    var t = TOOLS[id];
-    var a = document.createElement('a');
-    a.className = 'tool-card';
-    a.id = 'tool-' + id;
-    a.href = t.href;
-    a.innerHTML = '<div class="tc-name">' + t.name + '</div><div class="tc-desc">' + t.desc + '</div>';
-    grid.appendChild(a);
-  });
+    /* ===== toolbox (full set, live descriptions) ===== */
+    var TOOLS = {
+      'press-release-canvas': { nm: 'press-release', ds: 'Amazon working-backwards launch story', href: 'tools/press-release-canvas.html' },
+      'assumptions-tracker': { nm: 'assumptions-tracker', ds: 'score by impact × uncertainty, plan experiments', href: 'tools/assumptions-tracker.html' },
+      'value-proposition':   { nm: 'value-proposition',   ds: 'map customer jobs, pains & gains', href: 'tools/value-proposition.html' },
+      'opportunity-solution-tree': { nm: 'opportunity-solution-tree', ds: 'outcome → opportunities → solutions → experiments', href: 'tools/opportunity-solution-tree.html' },
+      'house-of-quality':    { nm: 'house-of-quality',    ds: 'needs → ranked technical specs', href: 'tools/house-of-quality.html' },
+      'cost-revenue-model':  { nm: 'cost-revenue-model',  ds: 'cost structure & revenue streams', href: '#' },
+      'business-case-builder':{ nm: 'business-case-builder', ds: 'TAM/SOM → multi-year P&L', href: 'business-case-builder/' },
+      'business-model-canvas':{ nm: 'business-model-canvas', ds: 'the nine building blocks', href: 'business-model-canvas/' },
+      'platform-model-builder':{ nm: 'platform-model-builder', ds: 'two-sided model + quick estimate', href: 'business-model-app/' }
+    };
 
-  /* ============================================================
-     STAGE SELECTION + TRAVELING ASSUMPTIONS NODE
-     ============================================================ */
-  var canvas = document.getElementById('canvas');
-  var node = document.getElementById('assumptions');
-  var card = document.getElementById('detail-card');
-  var activeEl = null;
-  var activeId = null;
+    /* ===== phases =====
+       flow[] = the live-flow slice for the right column (FA icon stages, vertical)
+       tools[] = the cards at the bottom of the left column
+       grp: '2' marks the two phases wrapped by the Technical & Financial Discovery bracket
+       ctx: dashed + context (still clickable) */
+    var PHASES = [
+      { id:'p0', pn:'Phase 0', lab:'Idea', tag:'Phase 0 · Ideation', title:'Collect & structure ideas',
+        ctx:'Ideas are the fuel of innovation — worth little alone, valuable once captured and shaped. Ideation never stops; it runs in the background of everything else.',
+        io:['a raw idea','a press release of the chosen idea'],
+        steps:[
+          {t:'Collect', d:'Anyone can submit ideas, continuously — no filter at the door.'},
+          {t:'Evaluate', d:'Ideas are reviewed periodically against strategy and feasibility.'},
+          {t:'Frame', d:'The promising ones are shaped into a clear, specific opportunity.'},
+          {t:'Press release', d:'Work backwards: write the press release announcing the finished product — who is it for, what pain does it kill, why would anyone care on launch day? It crystallises the chosen idea into a story worth validating; if it isn’t compelling, the idea isn’t ready — rewrite it before building anything.'}
+        ],
+        flow:[ {ic:'press-release', l:'Press Release'}, {ic:'assumptions-table', l:'Assumptions Tracker'} ],
+        tools:['press-release-canvas','assumptions-tracker'] },
 
-  function moveNodeAbove(el) {
-    var c = canvas.getBoundingClientRect();
-    var r = el.getBoundingClientRect();
-    var x = r.left + r.width / 2 - c.left;
-    var min = 90, max = c.width - 90;
-    node.style.left = Math.max(min, Math.min(max, x)) + 'px';
-  }
+      { id:'p1', pn:'Phase 1', lab:'Problem', tag:'Phase 1 · Problem validation', title:'Prove the problem is real',
+        ctx:'Most products fail because nobody wants them. So before designing anything, validate the pain — is it <strong>frequent, intense and unsolved today?</strong> Problem-first, not product-first; build painkillers, not vitamins.',
+        io:['a press release','a prioritised list of validated pains'],
+        steps:[
+          {t:'Possible user pains', d:'Map every plausible pain the target users might have — broad, unfiltered, hypothesis-driven: who hurts, how often, how badly, and what they do about it today. Each pain enters the assumptions table as an unvalidated hypothesis.'},
+          {t:'Validated user pains', d:'Interviews, observation and evidence separate real painkillers from nice-to-have vitamins — a pain is validated only when real users confirm it’s frequent, intense and currently unsolved, not when it merely sounds plausible. Hypotheses become confirmed facts or get killed.'}
+        ],
+        note:'This is where the <b>assumptions table</b> is born — every pain enters as a hypothesis, classified by impact and uncertainty, and travels every phase after this.',
+        flow:[ {ic:'possible-user-pains', l:'Possible User Pains'}, {ic:'assumptions-table', l:'Assumptions Tracker'}, {ic:'validated-user-pains', l:'Validated User Pains'} ],
+        tools:['possible-user-pains','assumptions-tracker','value-proposition'].filter(function(x){return TOOLS[x];}) },
 
-  function renderDetail(id) {
-    var s = STAGES[id];
-    card.classList.add('swapping');
-    setTimeout(function () {
-      document.getElementById('d-eyebrow').textContent = (id.indexOf('phase-') === 0 ? '// phase ' : id === 'discovery-loop' ? '// loop ' : '// stage ') + s.num;
-      document.getElementById('d-title').innerHTML = s.title;
-      document.getElementById('d-body').innerHTML = s.body;
-      var toolsWrap = document.getElementById('d-tools');
-      var chips = document.getElementById('d-tool-chips');
-      chips.innerHTML = '';
-      if (s.tools.length) {
-        s.tools.forEach(function (tid) {
-          var a = document.createElement('a');
-          a.className = 'tool-chip';
-          a.href = '#tool-' + tid;
-          a.textContent = TOOLS[tid].name;
-          a.addEventListener('click', function () { flashTool(tid); });
-          chips.appendChild(a);
-        });
-        toolsWrap.hidden = false;
-      } else {
-        toolsWrap.hidden = true;
+      { id:'p21', pn:'Phase 2.1', lab:'Concept', tag:'Phase 2.1 · Conceptualization', title:'Design the solution', grp:'2',
+        ctx:'Design the concept that answers the validated pains — and decide what it deliberately <strong>won’t</strong> do. A focused painkiller beats a sprawling multi-tool.',
+        io:['validated pains','a concept + ranked specifications'],
+        steps:[
+          {t:'Concept design', d:'Design the concept that answers the validated pains: what it is, what it does, and what it deliberately does not do — communicated simply. The concept is a hypothesis about the solution, just as the pains were hypotheses about the problem.'},
+          {t:'House of Quality', d:'Quality Function Deployment: a structured matrix crossing validated user needs with technical characteristics, scoring the relationships to reveal which requirements actually matter — so the engineering effort goes where it kills pain.'},
+          {t:'Competitors & patents', d:'The fight check: who already solves this pain, how well, at what price, and how alternatives score against the same needs — plus a freedom-to-operate scan of the patent landscape. Know the competitive ring before stepping into it.'}
+        ],
+        flow:[ {ic:'concept-design', l:'Concept Design'}, {ic:'house-of-quality', l:'House of Quality'}, {ic:'competitors-patents', l:'Competitors & Patents'}, {ic:'assumptions-table', l:'Assumptions Tracker'} ],
+        tools:['house-of-quality','value-proposition','assumptions-tracker'] },
+
+      { id:'p22', pn:'Phase 2.2', lab:'Business', tag:'Phase 2.2 · Business case', title:'Build the costed picture', grp:'2',
+        ctx:'Assemble the costed view a decision-maker needs — what it costs, how it earns, and whether the two are compatible.',
+        io:['a concept','a costed business case'],
+        steps:[
+          {t:'Cost breakdown', d:'CAPEX, OPEX and unit economics for the concept as designed. The goal isn’t accounting precision — it’s discovering whether the cost structure is even compatible with the value the concept creates.'},
+          {t:'Revenue streams', d:'How the concept captures value: pricing model, channels, recurring versus one-off revenue, willingness to pay. Every revenue assumption goes straight into the assumptions table for later validation.'},
+          {t:'Business case', d:'Everything converges into the single costed picture a decision-maker needs — fundamentals, stakeholders & pains, opportunity size, concept & components, specs, cost breakdown — ending in a multi-year financial plan.'}
+        ],
+        flow:[ {ic:'cost-breakdown', l:'Cost Breakdown'}, {ic:'revenue-streams', l:'Revenue Streams'}, {ic:'business-case', l:'Business Case'}, {ic:'assumptions-table', l:'Assumptions Tracker'} ],
+        tools:['cost-revenue-model','business-model-canvas','platform-model-builder','business-case-builder','assumptions-tracker'] },
+
+      { id:'p3', pn:'Phase 3', lab:'Investor Pitch', tag:'Phase 3 · Investor pitch', title:'Create the documentation, then pitch',
+        ctx:'This is where everything consolidates into board-ready documentation — the full business case and the pitch that asks for a decision. The validation plan, the press release and the discovery tree all feed it.',
+        io:['a costed business case','a green-lit decision'],
+        steps:[
+          {t:'Business case', d:'Consolidate every angle — validated pains, concept, specs, costs, financials — into one defensible document the decision-maker can act on.'},
+          {t:'Pitch', d:'Present the case to the decision board: the validated pains, the concept, the numbers, and the validation plan that de-risks what remains unknown. The four messages — opportunity, solution, business model, de-risking — and an explicit ask: invest, pivot, or stop.'}
+        ],
+        flow:[ {ic:'business-case', l:'Business Case'}, {ic:'pitch', l:'Pitch'} ],
+        tools:['business-case-builder','press-release-canvas','opportunity-solution-tree','house-of-quality','business-model-canvas','platform-model-builder'] },
+
+      { id:'p4', pn:'Phase 4', lab:'Prototype', tag:'Phase 4 · Prototype & validations', title:'Prototype and validate', ctxFlag:true,
+        ctx:'If the pitch is approved, build a prototype and run the experiments from the validation plan — retire the riskiest assumptions before committing further. <em>≈ 3 months.</em>',
+        io:['a green-lit plan','de-risked assumptions'],
+        steps:[
+          {t:'Validation plan', d:'The assumptions table becomes an experiment backlog: for each high-risk assumption, define the test, the metric and the kill criterion. The riskiest get tested first — cheap experiments before expensive commitments.'},
+          {t:'Assumptions tracker', d:'Results flow back in — each assumption confirmed or refuted. It’s the connective tissue between discovery and validation: written down explicitly, classified by risk, updated as evidence arrives, and never “done”.'}
+        ],
+        flow:[ {ic:'validation-plan', l:'Validation Plan'}, {ic:'assumptions-table', l:'Assumptions Tracker'} ],
+        tools:['assumptions-tracker','opportunity-solution-tree'] },
+
+      { id:'p5', pn:'Phase 5', lab:'MVP', tag:'Phase 5 · MVP', title:'Ship the MVP', ctxFlag:true,
+        ctx:'Ship the minimum viable product to real users and learn from real usage — the smallest thing that still kills the core pain while remaining a good deal for us. <em>≈ 3 months.</em>',
+        io:['a validated prototype','real-usage learning'],
+        steps:[
+          {t:'MVP', d:'Release to real users; let real usage replace assumptions with evidence.'},
+          {t:'Keep discovering', d:'The opportunity solution tree keeps running — new opportunities surface, the target keeps moving.'}
+        ],
+        flow:[ {ic:'assumptions-table', l:'Opportunity Solution Tree'} ],
+        tools:['opportunity-solution-tree'] }
+    ];
+
+    var nav = document.getElementById('phasenav');
+    var panel = document.getElementById('ppanel');
+    var active = 0;
+
+    /* ---- build the phase rail, wrapping the grp:'2' phases in a bracket ---- */
+    (function buildRail() {
+      var i = 0;
+      while (i < PHASES.length) {
+        var p = PHASES[i];
+        if (p.grp === '2') {
+          // collect the consecutive grp:'2' phases into a wrapping bracket
+          var wrap = document.createElement('div');
+          wrap.className = 'disc-wrap';
+          var lbl = document.createElement('div');
+          lbl.className = 'dw-label';
+          lbl.textContent = 'Technical & Financial Discovery';
+          wrap.appendChild(lbl);
+          var row = document.createElement('div');
+          row.className = 'dw-row';
+          while (i < PHASES.length && PHASES[i].grp === '2') {
+            row.appendChild(makeChip(PHASES[i], i));
+            i++;
+          }
+          wrap.appendChild(row);
+          nav.appendChild(wrap);
+        } else {
+          var pw = document.createElement('div');
+          pw.className = 'pwrap';
+          pw.appendChild(makeChip(p, i));
+          nav.appendChild(pw);
+          i++;
+        }
       }
-      card.classList.remove('swapping');
-    }, 220);
-  }
+    })();
 
-  function flashTool(tid) {
-    var el = document.getElementById('tool-' + tid);
-    if (!el) return;
-    el.classList.add('highlight');
-    setTimeout(function () { el.classList.remove('highlight'); }, 1800);
-  }
-
-  function select(id, el) {
-    if (activeEl) activeEl.classList.remove('active');
-    node.classList.remove('active');
-    activeId = id;
-    if (id === 'assumptions') {
-      node.classList.add('active');
-      activeEl = null;
-    } else if (id.indexOf('phase-') === 0) {
-      activeEl = el;
-      el.classList.add('active');
-      /* phase chips are the macro backbone — they don't move the assumptions node */
-    } else {
-      activeEl = el;
-      el.classList.add('active');
-      moveNodeAbove(el);
+    function makeChip(p, idx) {
+      var b = document.createElement('button');
+      b.className = 'pbox' + (p.ctxFlag ? ' ctx' : '');
+      b.setAttribute('data-i', idx);
+      b.innerHTML = '<div class="pn">' + p.pn + '</div><div class="nm">' + p.lab + '</div>';
+      b.addEventListener('click', function () { setActive(idx); });
+      return b;
     }
-    renderDetail(id);
-  }
 
-  document.querySelectorAll('[data-stage]').forEach(function (el) {
-    var id = el.getAttribute('data-stage');
-    el.addEventListener('click', function () { select(id, el); });
-    el.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(id, el); }
+    function toolCard(id) {
+      var t = TOOLS[id]; if (!t) return '';
+      if (t.soon) return '<span class="tl soon"><span class="nm">' + t.nm + '</span><span class="ds">' + t.ds + '</span></span>';
+      return '<a class="tl" href="' + t.href + '" target="_blank" rel="noopener"><span class="nm">' + t.nm + '</span><span class="ds">' + t.ds + '</span></a>';
+    }
+
+    var ARROW = '<div class="farrow"><svg viewBox="0 0 16 16"><path d="M8 2v9M3 8l5 5 5-5" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>';
+
+    function flowColumn(p) {
+      if (!p.flow || !p.flow.length) return '';
+      var inner = p.flow.map(function (f, k) {
+        var stage = '<div class="fstage">' + faIcon(f.ic) + '<div class="fl">' + f.l + '</div></div>';
+        return stage + (k < p.flow.length - 1 ? ARROW : '');
+      }).join('');
+      return '<div class="flowcol"><div class="fc-lbl">process flow · this phase</div><div class="fc-stages">' + inner + '</div></div>';
+    }
+
+    function render(i) {
+      var p = PHASES[i];
+      var left = '<div class="pp-col-left">'
+        + '<div class="pp-tag">' + p.tag + '</div>'
+        + '<div class="pp-title">' + p.title + '</div>'
+        + '<p class="pp-ctx">' + p.ctx + '</p>'
+        + '<div class="io"><span class="lbl">in</span><span class="in">' + p.io[0] + '</span><span class="arrow">→</span><span class="lbl">out</span><span class="out">' + p.io[1] + '</span></div>'
+        + '<div class="miniflow">' + p.steps.map(function (s, k) {
+            return '<div class="mini"><span class="mnode">' + (k + 1) + '</span><div class="mt">' + s.t + '</div><div class="md">' + s.d + '</div></div>';
+          }).join('') + '</div>';
+      if (p.note) left += '<div class="anote">' + p.note + '</div>';
+      left += '</div>';
+
+      var tools = '';
+      if (p.tools && p.tools.length) tools = '<div class="pp-tools"><div class="tools-lbl">tools for this phase</div><div class="tools">' + p.tools.map(toolCard).join('') + '</div></div>';
+
+      var html = '<div class="pp-grid">' + left + flowColumn(p) + '</div>'
+        + tools
+        + '<div class="pp-nav">'
+        + '<button id="pp-prev"' + (i === 0 ? ' disabled' : '') + '>‹ ' + (i > 0 ? PHASES[i-1].lab : '') + '</button>'
+        + '<button id="pp-next"' + (i === PHASES.length - 1 ? ' disabled' : '') + '>' + (i < PHASES.length - 1 ? PHASES[i+1].lab : '') + ' ›</button>'
+        + '</div>';
+      panel.innerHTML = html;
+      var prev = document.getElementById('pp-prev'), next = document.getElementById('pp-next');
+      if (prev) prev.addEventListener('click', function () { setActive(i - 1); });
+      if (next) next.addEventListener('click', function () { setActive(i + 1); });
+    }
+
+    function setActive(i) {
+      if (i < 0 || i >= PHASES.length) return;
+      active = i;
+      Array.prototype.forEach.call(nav.querySelectorAll('.pbox'), function (b) {
+        b.classList.toggle('on', +b.getAttribute('data-i') === i);
+      });
+      panel.classList.add('swap');
+      setTimeout(function () { render(i); panel.classList.remove('swap'); }, 160);
+    }
+
+    /* ---- full toolbox at the bottom ---- */
+    var grid = document.getElementById('tool-grid');
+    Object.keys(TOOLS).forEach(function (id) {
+      var t = TOOLS[id];
+      var a = document.createElement('a');
+      a.className = 'tool-card';
+      a.id = 'tool-' + id;
+      a.href = t.href;
+      if (t.href !== '#') { a.target = '_blank'; a.rel = 'noopener'; }
+      a.innerHTML = '<div class="tc-name">' + t.nm + '</div><div class="tc-desc">' + t.ds + '</div>';
+      grid.appendChild(a);
     });
-  });
-  node.addEventListener('click', function () { select('assumptions', node); });
-  node.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select('assumptions', node); }
-  });
 
-  window.addEventListener('resize', function () {
-    if (activeEl) moveNodeAbove(activeEl);
-  });
-
-  /* ============================================================
-     DISCOVERY LOOP GEOMETRY — bracket hugs stages 02–07
-     ============================================================ */
-  var loopBracket = document.getElementById('loop-bracket');
-  var loopNode = document.getElementById('discovery-loop');
-  function placeLoop() {
-    /* measure against the track itself: the bracket is absolutely positioned
-       inside .loop-track, so the canvas padding must not enter the math */
-    var c = loopBracket.parentNode.getBoundingClientRect();
-    var a = document.querySelector('.stage[data-stage="possible-user-pains"]').getBoundingClientRect();
-    var b = document.querySelector('.stage[data-stage="validation-plan"]').getBoundingClientRect();
-    var left = a.left - c.left + 4;
-    var right = b.right - c.left - 4;
-    loopBracket.style.left = left + 'px';
-    loopBracket.style.width = (right - left) + 'px';
-    loopNode.style.left = (left + (right - left) / 2) + 'px';
-  }
-  placeLoop();
-  window.addEventListener('load', placeLoop);
-  window.addEventListener('resize', placeLoop);
-
-  /* ============================================================
-     REVEAL ON SCROLL
-     ============================================================ */
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (e) {
-      if (e.isIntersecting) {
-        var nodes = document.querySelectorAll('#flow > .stage, #flow > .arrow, #flow > .discovery');
-        nodes.forEach(function (n, i) {
-          setTimeout(function () { n.classList.add('revealed'); }, i * 90);
-        });
-        var lt = document.querySelector('.loop-track');
-        if (lt) setTimeout(function () { lt.classList.add('revealed'); }, nodes.length * 90);
-        io.disconnect();
-      }
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight') setActive(active + 1);
+      else if (e.key === 'ArrowLeft') setActive(active - 1);
     });
-  }, { threshold: 0.2 });
-  io.observe(document.getElementById('flow'));
-})();
-</script>
-<script src="js/header.js"></script>
-<script src="js/theme-toggle.js"></script>
-<script src="js/footer.js"></script>
-<script src="js/main.js"></script>
 
+    setActive(0);
+  })();
+  </script>
 </body>
 </html>
