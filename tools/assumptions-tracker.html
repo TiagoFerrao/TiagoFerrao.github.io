@@ -239,6 +239,24 @@
     .table-wrap.print-frame, .table-wrap.print-test { page-break-inside: auto; margin-bottom: 8px; }
     a { color: #111; text-decoration: none; }
   }
+  /* tool intro — toolbox convention */
+  .intro{background:var(--panel);border:1px solid rgba(125,227,141,.18);border-radius:var(--radius);margin-bottom:14px;}
+  .intro-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;cursor:pointer;user-select:none;}
+  .intro-head:hover{background:var(--panel-2);border-radius:var(--radius);}
+  .intro-head .t{font-family:var(--mono);font-weight:700;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--mint);}
+  .intro-head .chev{font-family:var(--mono);font-size:12px;color:var(--muted);}
+  .intro-body{padding:0 16px 16px;display:none;}
+  .intro.open .intro-body{display:block;}
+  .intro-body p{font-size:13px;color:var(--muted);line-height:1.65;max-width:900px;margin:8px 0 0;}
+  .intro-body strong{color:var(--text);font-weight:600;}
+  .intro-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:11px;margin-top:14px;}
+  .intro-col{background:var(--panel-2);border:1px solid rgba(125,227,141,.18);border-radius:9px;padding:11px 13px;}
+  .intro-col h3{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;margin:0 0 6px;font-weight:700;}
+  .intro-col.use h3{color:var(--mint);}
+  .intro-col.notuse h3{color:var(--amber);}
+  .intro-col.fits h3{color:#4ecdc4;}
+  .intro-col p{font-size:12px;margin:0;line-height:1.55;color:var(--muted);}
+  .intro-col a{color:var(--mint);}
 </style>
 </head>
 <body>
@@ -252,6 +270,21 @@
   </header>
 
   <div id="project-bar"></div>
+
+  <div class="intro" id="intro">
+    <div class="intro-head" id="introHead" role="button" tabindex="0" aria-expanded="true">
+      <span class="t">What is this &amp; when to use it</span>
+      <span class="chev" id="introChev">&#9662;</span>
+    </div>
+    <div class="intro-body">
+      <p>The <strong>Assumptions Tracker</strong> turns every belief your idea depends on into a testable hypothesis, scored by <strong>impact × uncertainty</strong> so you test the riskiest first. For each you plan an experiment, a pass/fail threshold and a cost — making validation a managed pipeline, not a guess.</p>
+      <div class="intro-cols">
+        <div class="intro-col use"><h3>Use it when</h3><p>You have assumptions to de-risk (desirability, feasibility, viability) and want to prioritise experiments by risk and manage validation cost across a project.</p></div>
+        <div class="intro-col notuse"><h3>Don't use it when</h3><p>You have nothing to test yet — surface assumptions first via the <a href="value-proposition.html">Value Proposition Canvas</a>, <a href="press-release-canvas.html">Press Release</a> or <a href="opportunity-solution-tree.html">Opportunity Solution Tree</a>.</p></div>
+        <div class="intro-col fits"><h3>How it fits the toolbox</h3><p>It is the spine of the toolbox: pains, press-release tricky issues and OST experiments all flow in here as assumptions to validate.</p></div>
+      </div>
+    </div>
+  </div>
 
   <details class="howto">
     <summary>How to use this &amp; what each column means</summary>
@@ -853,6 +886,21 @@
     var bar = document.getElementById('project-bar');
     if (bar) FP.mountBar(bar, { label: 'Business case' });
   }
+
+  /* ---------- intro (collapsible "what is this") ---------- */
+  (function () {
+    var introEl = document.getElementById('intro'); if (!introEl) return;
+    var KEY = 'ferrao-assumptions-intro';
+    function setIntro(open, persist) {
+      introEl.classList.toggle('open', open);
+      var head = document.getElementById('introHead'); if (head) head.setAttribute('aria-expanded', open ? 'true' : 'false');
+      var ch = document.getElementById('introChev'); if (ch) ch.innerHTML = open ? '&#9662;' : '&#9656;';
+      if (persist) { try { localStorage.setItem(KEY, open ? 'open' : 'closed'); } catch (e) {} }
+    }
+    var st = null; try { st = localStorage.getItem(KEY); } catch (e) {}
+    setIntro(st !== 'closed', false);
+    document.getElementById('introHead').addEventListener('click', function () { setIntro(!introEl.classList.contains('open'), true); });
+  })();
 })();
 </script>
 </body>

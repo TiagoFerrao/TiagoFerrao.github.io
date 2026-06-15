@@ -173,6 +173,23 @@
   .fp-di-check{color:var(--accent);}
   .fp-dd-new{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:11px 14px;color:var(--accent);font-family:var(--mono);font-size:.64rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;background:rgba(125,227,141,.05);border:none;}
   .fp-dd-new:hover{background:rgba(125,227,141,.1);}
+  /* tool intro — toolbox convention */
+  .intro{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:14px;}
+  .intro-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;cursor:pointer;user-select:none;}
+  .intro-head:hover{background:var(--panel-2);border-radius:var(--radius);}
+  .intro-head .t{font-family:var(--mono);font-weight:700;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);}
+  .intro-head .chev{font-family:var(--mono);font-size:12px;color:var(--dim);}
+  .intro-body{padding:0 16px 16px;}
+  .intro-body p{font-size:13px;color:var(--dim);line-height:1.65;max-width:900px;margin:8px 0 0;}
+  .intro-body strong{color:var(--text);font-weight:600;}
+  .intro-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:11px;margin-top:14px;}
+  .intro-col{background:var(--panel-2);border:1px solid var(--border);border-radius:9px;padding:11px 13px;}
+  .intro-col h3{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;margin:0 0 6px;font-weight:700;}
+  .intro-col.use h3{color:var(--accent);}
+  .intro-col.notuse h3{color:var(--amber);}
+  .intro-col.fits h3{color:var(--info);}
+  .intro-col p{font-size:12px;margin:0;line-height:1.55;color:var(--dim);}
+  .intro-col a{color:var(--accent);}
 </style>
 </head>
 <body>
@@ -256,6 +273,8 @@ function App(){
   const [m,setM]=useState(loadActiveModel);
   const [sel,setSel]=useState("jobs");
   const [vpOpen,setVpOpen]=useState(false);
+  const [introOpen,setIntroOpen]=useState(()=>{try{return localStorage.getItem("valueprop-intro")!=="closed";}catch(e){return true;}});
+  const toggleIntro=()=>setIntroOpen(o=>{const n=!o;try{localStorage.setItem("valueprop-intro",n?"open":"closed");}catch(e){}return n;});
   const barRef=useRef(null);
   useEffect(()=>{
     var FP=window.FerraoProjects; if(!FP) return;
@@ -341,6 +360,21 @@ function App(){
         <small>fit your offer to the customer — then see why it's valuable</small></div>
     </div>
     <div id="project-bar" ref={barRef}></div>
+
+    <div className={"intro"+(introOpen?" open":"")}>
+      <div className="intro-head" onClick={toggleIntro}>
+        <span className="t">What is this &amp; when to use it</span>
+        <span className="chev">{introOpen?"▾":"▸"}</span>
+      </div>
+      {introOpen && <div className="intro-body">
+        <p>The <strong>Value Proposition Canvas</strong> (Osterwalder) zooms into the fit between one customer segment and your offer — the customer's <strong>jobs</strong>, <strong>pains</strong> and <strong>gains</strong> on one side; your <strong>products</strong>, <strong>pain relievers</strong> and <strong>gain creators</strong> on the other. Map the customer first, then design the offer to address what matters most.</p>
+        <div className="intro-cols">
+          <div className="intro-col use"><h3>Use it when</h3><p>You are shaping or sharpening an offer for one specific segment and want it to target real, important jobs, pains and gains — not features nobody asked for.</p></div>
+          <div className="intro-col notuse"><h3>Don't use it when</h3><p>You have not picked a single segment yet, or you need the whole business model — use the <a href="../business-model-canvas/">Business Model Canvas</a> / <a href="../business-model-app/">Platform Canvas</a>; to decide what to build next, the <a href="opportunity-solution-tree.html">Opportunity Solution Tree</a>.</p></div>
+          <div className="intro-col fits"><h3>How it fits the toolbox</h3><p>Validated jobs &amp; pains become opportunities in the <a href="opportunity-solution-tree.html">OST</a> and ranked needs in the <a href="house-of-quality.html">House of Quality</a>; the segment and value carry into the business-case tools.</p></div>
+        </div>
+      </div>}
+    </div>
 
     <div className="seg">
       <div className="l">Customer segment</div>
