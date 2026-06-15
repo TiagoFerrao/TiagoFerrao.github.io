@@ -58,8 +58,8 @@ do NOT reinvent it per page, and do NOT override the spacing tokens inline:
   tools as cards. Nav activated everywhere (header.js, footer.js, index.html browse row, terminal.js `ls`)
   — no longer a `soon`/`lp-soon` stub.
 - **Tools live in-repo as self-contained static apps** (single `index.html`, React+Babel via unpkg CDN):
-  - `business-model-app/` — interactive Business Platform Canvas (thesis Fig. 28 layout) + adoption-driven
-    financial estimate. localStorage key `platform-model-v2`. Seeded with SportSpots.
+  - `business-model-app/` — interactive **Platform Canvas** (thesis Fig. 28 layout, "Platform Canvas") + adoption-driven
+    financial estimate. localStorage key `platform-model-v2`. Seeded with SportSpots. (Folder/URL stays `business-model-app/`.)
   - `business-case-builder/` — 7-step wizard replicating the 360 business-case template
     (Fundamentals → Stakeholders → Opportunity Size TAM/SOM → Concept & Costs → Product Spec → Financial Plan
     → Results), multi-year P&L to EBITDA, floating Assumptions drawer. localStorage key `business-case-builder-v1`.

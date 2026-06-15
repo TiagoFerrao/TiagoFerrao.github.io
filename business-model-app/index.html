@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Platform Model Builder — interactive business model + financial estimate</title>
-<meta name="description" content="Interactive Business Platform Canvas + first financial estimate — part of Tiago Ferrão's innovation toolbox.">
+<title>Platform Canvas — interactive business model + financial estimate</title>
+<meta name="description" content="Interactive Platform Canvas + first financial estimate — part of Tiago Ferrão's innovation toolbox.">
 <meta name="theme-color" content="#001a20">
 <link rel="icon" href="../img/bee.png">
 <link rel="apple-touch-icon" href="../img/bee.png">
 
 <!-- Open Graph -->
-<meta property="og:title" content="Platform Model Builder | Tiago Ferrão">
-<meta property="og:description" content="Interactive Business Platform Canvas + first financial estimate — part of Tiago Ferrão's innovation toolbox.">
+<meta property="og:title" content="Platform Canvas | Tiago Ferrão">
+<meta property="og:description" content="Interactive Platform Canvas + first financial estimate — part of Tiago Ferrão's innovation toolbox.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://ferrao.me/business-model-app/">
 <meta property="og:image" content="https://ferrao.me/img/social_banner.jpg">
@@ -20,8 +20,8 @@
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Platform Model Builder | Tiago Ferrão">
-<meta name="twitter:description" content="Interactive Business Platform Canvas + first financial estimate — part of Tiago Ferrão's innovation toolbox.">
+<meta name="twitter:title" content="Platform Canvas | Tiago Ferrão">
+<meta name="twitter:description" content="Interactive Platform Canvas + first financial estimate — part of Tiago Ferrão's innovation toolbox.">
 <meta name="twitter:image" content="https://ferrao.me/img/social_banner.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -71,7 +71,7 @@
   .idea input.tag{font-family:var(--mono);font-size:14px;color:var(--text-dim);background:transparent;border:none;width:100%;padding:3px 0;}
   .idea input.tag:hover,.idea input.tag:focus{outline:none;color:var(--text);}
 
-  /* canvas grid — mirrors Figure 28 (Business Platform Canvas) layout */
+  /* canvas grid — mirrors Figure 28 (Platform Canvas) layout */
   .canvas{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;
     grid-template-areas:
       "feat    problem net     users"
@@ -234,7 +234,7 @@
 const {useState,useEffect,useMemo} = React;
 const LS_KEY = "platform-model-v2";
 
-/* ---------- SportSpots seed (Business Platform Canvas, Figure 28 — 2018 ISCTE thesis) ---------- */
+/* ---------- SportSpots seed (Platform Canvas, Figure 28 — 2018 ISCTE thesis) ---------- */
 const SEED = {
   meta:{
     name:"SportSpots",
@@ -397,7 +397,7 @@ function App(){
    <div className="wrap">
     <a className="back" href="../innovation.html">← back to the innovation process</a>
     <div className="topbar">
-      <div className="brand"><span className="pp">~/</span> platform model builder
+      <div className="brand"><span className="pp">~/</span> platform canvas
         <small>interactive business model + first financial estimate</small></div>
       <div className="spacer"></div>
       <label className="btn" style={{cursor:"pointer"}}>import
@@ -412,10 +412,10 @@ function App(){
         <span className="chev">{introOpen?"▾":"▸"}</span>
       </div>
       {introOpen && <div className="intro-body">
-        <p>The <strong>Business Platform Canvas</strong> maps a multi-sided platform from two angles — the <strong>product perspective</strong> (what you build) and the <strong>business perspective</strong> (the market it serves) — bridged by a single value proposition. Fill the canvas, list your revenue segments, then switch to the <strong>financial estimate</strong> tab to turn adoption assumptions into a first revenue and EBITDA projection. It is the platform-specific cousin of the classic Business Model Canvas (2018 ISCTE thesis, Fig. 28).</p>
+        <p>The <strong>Platform Canvas</strong> maps a multi-sided platform from two angles — the <strong>product perspective</strong> (what you build) and the <strong>business perspective</strong> (the market it serves) — bridged by a single value proposition. Fill the canvas, list your revenue segments, then switch to the <strong>financial estimate</strong> tab to turn adoption assumptions into a first revenue and EBITDA projection. It is the platform-specific cousin of the classic Business Model Canvas (2018 ISCTE thesis, Fig. 28).</p>
         <div className="intro-cols">
           <div className="intro-col use"><h3>Use it when</h3><p>You are designing a platform or marketplace — value comes from connecting two or more groups (buyers &amp; sellers, users &amp; producers) and network effects matter.</p></div>
-          <div className="intro-col notuse"><h3>Don't use it when</h3><p>You are modelling a simple linear, single-sided business (a standard Business Model Canvas fits better), or you only need to sharpen the offer — start with the <a href="../tools/value-proposition.html">Value Proposition Designer</a>.</p></div>
+          <div className="intro-col notuse"><h3>Don't use it when</h3><p>You are modelling a simple linear, single-sided business (a standard <a href="../business-model-canvas/">Business Model Canvas</a> fits better), or you only need to sharpen the offer — start with the <a href="../tools/value-proposition.html">Value Proposition Canvas</a>.</p></div>
           <div className="intro-col fits"><h3>How it fits the toolbox</h3><p>Validated pains and the value proposition feed the canvas; the <strong>Value Capture</strong> box feeds the financial estimate, turning the model into numbers you can pressure-test.</p></div>
         </div>
       </div>}
@@ -593,7 +593,7 @@ function App(){
     </div>}
 
     <div className="note">
-      MVP — seeded with the <b style={{color:"var(--accent-2)"}}>SportSpots</b> Business Platform Canvas from the 2018 ISCTE thesis.
+      MVP — seeded with the <b style={{color:"var(--accent-2)"}}>SportSpots</b> Platform Canvas from the 2018 ISCTE thesis.
       Everything is editable and auto-saved in your browser. The financial estimate is a simplified directional model
       (adoption-driven, not a full P&amp;L) meant for early-stage sense-checking. Export your model as JSON to share or version it.
     </div>
