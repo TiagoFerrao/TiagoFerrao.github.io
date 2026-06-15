@@ -170,16 +170,44 @@
     #bmc-export .bcell.s-money{border-top-color:#c79100;}
     .noprint{display:none !important;}
   }
+  /* shared business-case selector bar (projects.js) */
+  #project-bar:empty{display:none}
+  .fp-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:18px;position:relative;}
+  .fp-label{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);}
+  .fp-select{display:inline-flex;align-items:center;gap:8px;background:var(--bg-surface-2);border:1px solid var(--border-strong);border-radius:8px;padding:7px 12px;cursor:pointer;color:var(--text);}
+  .fp-name{font-weight:650;font-size:.9rem;color:var(--accent);}
+  .fp-chev{color:var(--text-dim);font-family:var(--mono);font-size:.7rem;}
+  .fp-actions{display:flex;gap:7px;margin-left:auto;flex-wrap:wrap;}
+  .fp-btn{font-family:var(--mono);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;padding:6px 11px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer;}
+  .fp-btn:hover{color:var(--text);background:var(--bg-surface-2);}
+  .fp-btn.fp-danger{border-color:rgba(255,107,107,.4);color:var(--danger);}
+  .fp-btn.fp-danger:hover{background:rgba(255,107,107,.08);}
+  .fp-btn[disabled]{opacity:.4;cursor:not-allowed;}
+  .fp-ex-tag{font-family:var(--mono);font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);border:1px solid var(--border-strong);border-radius:5px;padding:1px 5px;}
+  .fp-dd{position:absolute;top:calc(100% - 6px);left:14px;z-index:40;margin-top:8px;min-width:280px;max-width:380px;background:var(--bg-surface-2);border:1px solid var(--border-strong);border-radius:10px;overflow:hidden;box-shadow:0 8px 28px rgba(0,0,0,.5);}
+  .fp-dd-item{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;padding:10px 14px;border:none;border-bottom:1px solid var(--border);background:transparent;cursor:pointer;}
+  .fp-dd-item:hover{background:rgba(125,227,141,.06);}
+  .fp-dd-item.fp-on{background:rgba(125,227,141,.10);}
+  .fp-di-name{font-size:.86rem;color:var(--text);}
+  .fp-dd-item.fp-on .fp-di-name{color:var(--accent);font-weight:650;}
+  .fp-di-ex{font-family:var(--mono);font-size:.52rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);border:1px solid var(--border-strong);border-radius:5px;padding:1px 5px;margin-left:6px;vertical-align:middle;}
+  .fp-di-meta{font-family:var(--mono);font-size:.62rem;color:var(--text-dim);white-space:nowrap;}
+  .fp-di-check{color:var(--accent);}
+  .fp-dd-new{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:11px 14px;color:var(--accent);font-family:var(--mono);font-size:.64rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;background:rgba(125,227,141,.05);border:none;}
+  .fp-dd-new:hover{background:rgba(125,227,141,.1);}
+  @media print { #project-bar{display:none !important;}
+  }
 </style>
 </head>
 <body>
 <div id="root"></div>
 
+<script src="../tools/projects.js"></script>
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <script type="text/babel">
-const {useState,useEffect} = React;
+const {useState,useEffect,useRef} = React;
 const LS_KEY = "bmc-builder-v1";
 
 /* nine blocks, in Osterwalder fill order */
@@ -246,11 +274,34 @@ const EXAMPLE = {
     cost:["Platform dev & hosting","Customer acquisition","Support & operations","Partnerships"]
   }
 };
+const SAFE_EXAMPLE = {
+  meta:{name:"SAFE-Cycle", tagline:"A platform turning water-network telemetry into located leaks and dispatched repairs."},
+  blocks:{
+    cs:["Municipal water operators (buyers)","Leak-repair crews & contractors (sellers)","Utility groups (e.g. AdP)"],
+    vp:["Locate leaks to ~50 m before a resident calls","Cut non-revenue water & defer capital works","Well-scoped, geolocated jobs for crews"],
+    ch:["Per-DMA SaaS","Utility-group framework deals","Water-loss programmes & industry bodies"],
+    cr:["Self-service alerts dashboard","Dedicated onboarding per DMA","Benchmark & advisory"],
+    rs:["Per-DMA monthly subscription","Success fee on water recovered","Marketplace fee on dispatched jobs"],
+    kr:["Correlation models & benchmark data","Telemetry / SCADA integrations","Repair-crew network"],
+    ka:["Anomaly detection & leak localisation","Crew dispatch & job scoping","Per-DMA model tuning"],
+    kp:["Acoustic-logger & sensor vendors","Repair contractors","Utility groups & municipalities","SCADA / telemetry providers"],
+    cost:["Platform dev & hosting","Data integration & model tuning","Field-ops support","Sales to utilities"]
+  }
+};
 const BLANK = {
   meta:{name:"My venture", tagline:""},
   blocks:Object.fromEntries(ORDER.map(k=>[k,[""]]))
 };
 const clone=o=>JSON.parse(JSON.stringify(o));
+// load the model for the active business case (or fall back to single-state)
+function loadActiveModel(){
+  try{
+    var FP = window.FerraoProjects;
+    if(FP){ var k = FP.key(); if(k){ var s = localStorage.getItem(k); return s ? JSON.parse(s) : clone(BLANK); } }
+    var s2 = localStorage.getItem(LS_KEY); if(s2) return JSON.parse(s2);
+  }catch(e){}
+  return clone(BLANK);
+}
 
 function MiniMap({activeKey,filled}){
   // 10-col map mirroring the final canvas
@@ -272,9 +323,30 @@ function MiniMap({activeKey,filled}){
 }
 
 function App(){
-  const [model,setModel]=useState(()=>{try{const s=localStorage.getItem(LS_KEY);if(s)return JSON.parse(s);}catch(e){}return clone(BLANK);});
+  const [model,setModel]=useState(loadActiveModel);
   const [step,setStep]=useState(0); // 0 = intro, 1..9 = blocks, 10 = canvas
-  useEffect(()=>{try{localStorage.setItem(LS_KEY,JSON.stringify(model));}catch(e){}},[model]);
+  const barRef=useRef(null);
+
+  // wire the shared business-case layer (graceful: standalone if projects.js is absent)
+  useEffect(()=>{
+    var FP=window.FerraoProjects; if(!FP) return;
+    FP.init({
+      toolNamespace:"business-model-canvas",
+      migrateFrom: LS_KEY, migrateName:"Importado",
+      exampleSeeds:{ "ex-sportspots": EXAMPLE, "ex-safe-cycle": SAFE_EXAMPLE },
+      onActiveData:function(){ setModel(loadActiveModel()); }
+    });
+    if(barRef.current) FP.mountBar(barRef.current, { label:"Business case" });
+    setModel(loadActiveModel());
+  },[]);
+  // persist edits to the active case (or single-state without the shared layer)
+  useEffect(()=>{
+    try{
+      var FP=window.FerraoProjects, k=FP&&FP.key();
+      if(k){ localStorage.setItem(k, JSON.stringify(model)); FP.touch(FP.activeId()); }
+      else { localStorage.setItem(LS_KEY, JSON.stringify(model)); }
+    }catch(e){}
+  },[model]);
 
   const TOTAL=ORDER.length+2; // intro + 9 + canvas
   const isIntro=step===0, isCanvas=step===TOTAL-1;
@@ -319,6 +391,8 @@ function App(){
       <button className="btn" onClick={exportJSON}>export json</button>
       <button className="btn" onClick={reset}>reset</button>
     </div>
+
+    <div id="project-bar" className="noprint" ref={barRef}></div>
 
     <div className="idea noprint">
       <input className="name" value={model.meta.name} onChange={e=>setMeta("name",e.target.value)} placeholder="Venture / idea name"/>
