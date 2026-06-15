@@ -222,16 +222,43 @@
     .fin{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}
     .help .tip{right:auto;left:-6px;width:220px}
     .help .tip::before{right:auto;left:9px}}
+
+  /* shared business-case selector bar (projects.js) */
+  #project-bar:empty{display:none}
+  .fp-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:18px;position:relative;}
+  .fp-label{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);}
+  .fp-select{display:inline-flex;align-items:center;gap:8px;background:var(--bg-surface-2);border:1px solid var(--border-strong);border-radius:8px;padding:7px 12px;cursor:pointer;color:var(--text);}
+  .fp-name{font-weight:650;font-size:.9rem;color:var(--accent);}
+  .fp-chev{color:var(--text-dim);font-family:var(--mono);font-size:.7rem;}
+  .fp-actions{display:flex;gap:7px;margin-left:auto;flex-wrap:wrap;}
+  .fp-btn{font-family:var(--mono);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;padding:6px 11px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer;}
+  .fp-btn:hover{color:var(--text);background:var(--bg-surface-2);}
+  .fp-btn.fp-danger{border-color:rgba(255,107,107,.4);color:var(--danger);}
+  .fp-btn.fp-danger:hover{background:rgba(255,107,107,.08);}
+  .fp-btn[disabled]{opacity:.4;cursor:not-allowed;}
+  .fp-ex-tag{font-family:var(--mono);font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);border:1px solid var(--border-strong);border-radius:5px;padding:1px 5px;}
+  .fp-dd{position:absolute;top:calc(100% - 6px);left:14px;z-index:40;margin-top:8px;min-width:280px;max-width:380px;background:var(--bg-surface-2);border:1px solid var(--border-strong);border-radius:10px;overflow:hidden;box-shadow:0 8px 28px rgba(0,0,0,.5);}
+  .fp-dd-item{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;padding:10px 14px;border:none;border-bottom:1px solid var(--border);background:transparent;cursor:pointer;}
+  .fp-dd-item:hover{background:rgba(125,227,141,.06);}
+  .fp-dd-item.fp-on{background:rgba(125,227,141,.10);}
+  .fp-di-name{font-size:.86rem;color:var(--text);}
+  .fp-dd-item.fp-on .fp-di-name{color:var(--accent);font-weight:650;}
+  .fp-di-ex{font-family:var(--mono);font-size:.52rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);border:1px solid var(--border-strong);border-radius:5px;padding:1px 5px;margin-left:6px;vertical-align:middle;}
+  .fp-di-meta{font-family:var(--mono);font-size:.62rem;color:var(--text-dim);white-space:nowrap;}
+  .fp-di-check{color:var(--accent);}
+  .fp-dd-new{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:11px 14px;color:var(--accent);font-family:var(--mono);font-size:.64rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;background:rgba(125,227,141,.05);border:none;}
+  .fp-dd-new:hover{background:rgba(125,227,141,.1);}
 </style>
 </head>
 <body>
 <div id="root"></div>
 
+<script src="../tools/projects.js"></script>
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <script type="text/babel">
-const {useState,useEffect,useMemo} = React;
+const {useState,useEffect,useMemo,useRef} = React;
 const LS_KEY = "platform-model-v2";
 
 /* ---------- SportSpots seed (Platform Canvas, Figure 28 — 2018 ISCTE thesis) ---------- */
@@ -264,7 +291,54 @@ const SEED = {
   }
 };
 
+/* ---------- SAFE-Cycle seed (municipal non-revenue-water leak detection) ---------- */
+const SAFE_SEED = {
+  meta:{
+    name:"SAFE-Cycle",
+    tagline:"A platform that turns water-network telemetry into located leaks — and dispatches the right crew before the street floods."
+  },
+  canvas:{
+    feat:"Correlate acoustic and pressure telemetry across DMAs to localise a leak to a ~50 m radius. Auto-dispatch the nearest qualified crew with the search area attached. Track time-to-locate and water recovered per cluster. Listens to existing SCADA — it does not replace it.",
+    value:"Operators see the leak, the crew and the cost before a resident calls. Crews receive geolocated jobs with a tight search radius. Utilities recover non-revenue water and defer capital works.",
+    problem:"Locating a leak takes ~11 days on average; almost a third of treated water never reaches a paying customer. Night-flow anomalies are caught late and crews chase vague areas.",
+    users:"Municipal water operators and their night-shift ops teams — reached through utility groups (e.g. AdP) and the DMA managers accountable for water-loss targets.",
+    diff:"Correlation across DMAs, not single-sensor thresholds. Runs on existing telemetry — minimal new hardware. A repair-crew network, not just an alert dashboard.",
+    net:"More DMAs sharpen the correlation models; more crews shorten response times; a benchmark that grows with every operator makes each new cluster faster to tune.",
+    sellers:"Field leak-repair crews and contractors wanting steady, well-scoped jobs; acoustic-logger and sensor vendors integrating their feeds into the platform.",
+    rep:"Every located-and-fixed leak feeds the model and the benchmark; operators renew per-DMA as recovered water compounds; crews stay for the predictable, pre-scoped dispatch.",
+    metrics:"Non-revenue water (%). Mean time-to-locate. Field-confirmed leaks / month. Water recovered (€ / cluster). DMAs covered. Crew response time.",
+    capture:"Per-DMA monthly subscription. Success fee on water recovered. Marketplace fee on dispatched repair jobs."
+  },
+  segments:[
+    {id:1,name:"DMAs under subscription", side:"buyer",  units:300, usersPerUnit:1, price:120,  freq:1, on:true},
+    {id:2,name:"Utility groups (enterprise)", side:"buyer", units:6, usersPerUnit:1, price:2500, freq:1, on:true},
+    {id:3,name:"Repair crews / contractors", side:"seller", units:120, usersPerUnit:1, price:40, freq:4, on:true},
+    {id:4,name:"Sensor / logger vendors", side:"seller", units:15, usersPerUnit:1, price:200, freq:1, on:true},
+  ],
+  finance:{
+    horizon:36, initialCash:300000, fixedMonthly:30000, variablePct:15,
+    startAdoption:0.15, monthlyGrowth:14, maxAdoption:5
+  }
+};
+
+/* a blank model for the user's own new cases */
+const BLANK = {
+  meta:{name:"",tagline:""},
+  canvas:{feat:"",value:"",problem:"",users:"",diff:"",net:"",sellers:"",rep:"",metrics:"",capture:""},
+  segments:[],
+  finance:{ horizon:36, initialCash:0, fixedMonthly:0, variablePct:10, startAdoption:0.2, monthlyGrowth:10, maxAdoption:5 }
+};
+
 const clone = o => JSON.parse(JSON.stringify(o));
+// load the model for the active business case (or fall back to single-state)
+function loadActiveModel(){
+  try{
+    var FP = window.FerraoProjects;
+    if(FP){ var k = FP.key(); if(k){ var s = localStorage.getItem(k); return s ? JSON.parse(s) : clone(BLANK); } }
+    var s2 = localStorage.getItem(LS_KEY); if(s2) return JSON.parse(s2);
+  }catch(e){}
+  return clone(SEED);
+}
 const eur = (n)=> {
   if(!isFinite(n)) return "—";
   const a=Math.abs(n);
@@ -358,18 +432,36 @@ function Cell({cls,icon,title,hint,value,onChange,ph,tip,eg}){
 }
 
 function App(){
-  // ?example=sportspots (or ?demo) force-loads the seeded SportSpots model and
-  // does NOT persist — so opening the example never clobbers your own saved work.
+  // ?example=sportspots (or ?demo) from the digital/business cards -> open the SportSpots case
   const exampleMode = (()=>{try{const p=new URLSearchParams(location.search);return p.get("example")==="sportspots"||p.has("demo");}catch(e){return false;}})();
-  const [model,setModel]=useState(()=>{
-    if(exampleMode) return clone(SEED);
-    try{const s=localStorage.getItem(LS_KEY); if(s) return JSON.parse(s);}catch(e){}
-    return clone(SEED);
-  });
+  const [model,setModel]=useState(loadActiveModel);
   const [tab,setTab]=useState("canvas");
   const [introOpen,setIntroOpen]=useState(()=>{try{return localStorage.getItem("platform-model-intro")!=="closed";}catch(e){return true;}});
   const toggleIntro=()=>setIntroOpen(o=>{const n=!o;try{localStorage.setItem("platform-model-intro",n?"open":"closed");}catch(e){}return n;});
-  useEffect(()=>{ if(exampleMode) return; try{localStorage.setItem(LS_KEY,JSON.stringify(model));}catch(e){} },[model]);
+  const barRef = useRef(null);
+
+  // wire the shared business-case layer (graceful: standalone if projects.js is absent)
+  useEffect(()=>{
+    var FP = window.FerraoProjects; if(!FP) return;
+    FP.init({
+      toolNamespace:"platform-canvas",
+      migrateFrom: LS_KEY, migrateName:"Importado",
+      exampleSeeds:{ "ex-sportspots": SEED, "ex-safe-cycle": SAFE_SEED },
+      onActiveData: function(){ setModel(loadActiveModel()); }
+    });
+    if(exampleMode) FP.setActive(FP.EXAMPLE_IDS.sportspots);
+    if(barRef.current) FP.mountBar(barRef.current, { label:"Business case" });
+    setModel(loadActiveModel());
+  }, []);
+
+  // persist edits to the active case (or single-state when there's no shared layer)
+  useEffect(()=>{
+    try{
+      var FP = window.FerraoProjects, k = FP && FP.key();
+      if(k){ localStorage.setItem(k, JSON.stringify(model)); FP.touch(FP.activeId()); }
+      else { localStorage.setItem(LS_KEY, JSON.stringify(model)); }
+    }catch(e){}
+  }, [model]);
 
   const setMeta=(k,v)=>setModel(m=>({...m,meta:{...m.meta,[k]:v}}));
   const setCanvas=(k,v)=>setModel(m=>({...m,canvas:{...m.canvas,[k]:v}}));
@@ -381,7 +473,7 @@ function App(){
   const r = useMemo(()=>compute(model),[model]);
   const maxPot = Math.max(...r.segCalc.map(s=>s.potential),1);
 
-  const reset=()=>{ if(confirm("Reset everything to the SportSpots example?")) setModel(clone(SEED)); };
+  const reset=()=>{ if(confirm("Clear this case to a blank canvas? (Example cases can be restored with “repor exemplo”.)")) setModel(clone(BLANK)); };
   const exportJSON=()=>{
     const blob=new Blob([JSON.stringify(model,null,2)],{type:"application/json"});
     const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
@@ -420,6 +512,8 @@ function App(){
         </div>
       </div>}
     </div>
+
+    <div id="project-bar" ref={barRef}></div>
 
     <div className="idea">
       <input className="name" value={model.meta.name} onChange={e=>setMeta("name",e.target.value)} placeholder="Venture name"/>
