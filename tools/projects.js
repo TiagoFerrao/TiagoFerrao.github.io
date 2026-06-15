@@ -228,12 +228,27 @@
       node.addEventListener('click', function (e) {
         e.stopPropagation();
         var act = node.getAttribute('data-act');
-        if (act === 'toggle') { el.setAttribute('data-open', openId ? '0' : '1'); renderBar(el, opts); return; }
-        if (act === 'pick') { setActive(node.getAttribute('data-id')); el.setAttribute('data-open', '0'); return; }
+        // read the live data-open at click time (not the captured render-time
+        // openId): pick/create re-render before the attribute settles, so the
+        // closure value can be stale.
+        if (act === 'toggle') {
+          el.setAttribute('data-open', el.getAttribute('data-open') === '1' ? '0' : '1');
+          renderBar(el, opts);
+          return;
+        }
+        // close BEFORE the op: setActive/create emit() -> renderBars(), so the
+        // attribute must already be '0' for that re-render to draw the bar closed.
+        if (act === 'pick') {
+          el.setAttribute('data-open', '0');
+          setActive(node.getAttribute('data-id'));
+          renderBar(el, opts);
+          return;
+        }
         if (act === 'create') {
+          el.setAttribute('data-open', '0');
           var n = prompt('Nome do novo business case:', '');
           if (n && n.trim()) create(n.trim());
-          el.setAttribute('data-open', '0');
+          renderBar(el, opts);
           return;
         }
         if (act === 'rename') {
