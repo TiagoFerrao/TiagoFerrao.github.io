@@ -49,7 +49,7 @@
 
     /* ===== phase rail ===== */
     .phaserail { position: relative; margin: 0 0 var(--space-2xl); }
-    .phasenav { position: relative; display: flex; align-items: stretch; gap: 8px; padding: 0; }
+    .phasenav { position: relative; display: flex; align-items: stretch; gap: 8px; padding: 0; max-width: 960px; margin-left: auto; margin-right: auto; }
     .pbox { flex: 1 1 0; min-width: 0; background: rgba(255, 255, 255, 0.02);
       border: 1px solid var(--border-strong); border-radius: 10px; padding: 8px 12px; cursor: pointer; text-align: left;
       transition: border-color .2s ease, background .2s ease; }
@@ -95,9 +95,10 @@
 
     /* ===== content panel: two columns (text | integrated flow) ===== */
     .ppanel { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 16px;
-      padding: var(--space-xl) var(--space-2xl); transition: opacity .2s ease; }
+      padding: var(--space-xl) var(--space-2xl); transition: opacity .2s ease;
+      max-width: 960px; margin-left: auto; margin-right: auto; }
     .ppanel.swap { opacity: 0; }
-        .pp-grid { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-2xl); align-items: stretch; max-width: 880px; margin: 0; }
+        .pp-grid { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-2xl); align-items: stretch; max-width: none; margin: 0; }
     @media (max-width: 900px) { .pp-grid { grid-template-columns: 1fr; gap: var(--space-lg); } }
 
     .pp-tag { font-family: var(--font-body); font-size: .66rem; letter-spacing: .16em; text-transform: uppercase; color: var(--text-muted); }
@@ -132,7 +133,7 @@
     .flowcol .fc-lbl { font-family: var(--font-body); font-size: .52rem; letter-spacing: .12em;
       text-transform: uppercase; font-weight: 700; color: var(--text-secondary); margin-bottom: 0;
       padding-bottom: 12px; text-align: center; width: 100%; border-bottom: 1px solid var(--border-subtle); }
-    .flowcol .fc-stages { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 12px; }
+    .flowcol .fc-stages { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 16px; }
     .fstage { display: flex; flex-direction: column; align-items: center; text-align: center; }
     .fstage .fa-ico { width: 34px; height: 34px; margin-bottom: 5px; }
     .fstage .fl { font-family: var(--font-body); font-size: .66rem; font-weight: 600; color: var(--text-primary); line-height: 1.2; max-width: 92px; }
