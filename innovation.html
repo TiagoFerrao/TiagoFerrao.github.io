@@ -157,7 +157,12 @@
     .tools .tl:hover { border-color: var(--accent-primary); transform: translateY(-2px); }
     .tools .tl .nm { font-family: var(--font-body); font-size: .82rem; color: var(--accent-primary); }
     .tools .tl .ds { font-size: .72rem; color: var(--text-muted); line-height: 1.4; }
-    .tools .tl.soon { opacity: .5; }  .tools .tl.soon .nm { color: var(--text-muted); }
+    .tools .tl.soon { opacity: .65; border-style: dashed; cursor: default; }
+    .tools .tl.soon:hover { border-color: var(--border-subtle); transform: none; }
+    .tools .tl.soon .nm { color: var(--text-muted); }
+    .soon-tag { display: inline-block; align-self: flex-start; margin-top: 5px; font-family: var(--font-body);
+      font-size: .58rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-muted);
+      border: 1px dashed var(--border-medium); border-radius: 4px; padding: 1px 6px; }
 
     /* click a flow icon -> highlight its step circle + matching tool */
     .fstage { cursor: pointer; border-radius: 10px; padding: 4px 4px; transition: background .15s; }
@@ -190,6 +195,9 @@
     .tool-card.highlight { border-color: var(--accent-primary); }
     .tool-card .tc-name { font-family: var(--font-body); font-size: 0.82rem; color: var(--accent-primary); margin-bottom: 6px; }
     .tool-card .tc-desc { font-size: 0.8rem; line-height: 1.5; color: var(--text-muted); }
+    .tool-card.soon { border: 1px dashed var(--border-medium); cursor: default; opacity: .7; }
+    .tool-card.soon:hover { transform: none; border-color: var(--border-medium); }
+    .tool-card .soon-tag { margin-top: 9px; }
 
     @media (max-width: 760px) { .ppanel { padding: var(--space-lg); } }
   </style>
@@ -270,7 +278,7 @@
       'value-proposition':   { nm: 'value-proposition-canvas',   ds: 'map customer jobs, pains & gains', href: 'tools/value-proposition.html' },
       'opportunity-solution-tree': { nm: 'opportunity-solution-tree', ds: 'outcome → opportunities → solutions → experiments', href: 'tools/opportunity-solution-tree.html' },
       'house-of-quality':    { nm: 'house-of-quality',    ds: 'needs → ranked technical specs', href: 'tools/house-of-quality.html' },
-      'cost-revenue-model':  { nm: 'cost-revenue-model',  ds: 'cost structure & revenue streams', href: '#' },
+      'cost-revenue-model':  { nm: 'cost-revenue-model',  ds: 'cost structure & revenue streams', soon: true },
       'business-case-builder':{ nm: 'business-case-builder', ds: 'TAM/SOM → multi-year P&L', href: 'business-case-builder/' },
       'business-model-canvas':{ nm: 'business-model-canvas', ds: 'the nine building blocks', href: 'business-model-canvas/' },
       'platform-model-builder':{ nm: 'platform-canvas', ds: 'two-sided model + quick estimate', href: 'business-model-app/' }
@@ -456,7 +464,7 @@
 
     function toolCard(id) {
       var t = TOOLS[id]; if (!t) return '';
-      if (t.soon) return '<span class="tl soon" data-tool="' + id + '"><span class="nm">' + t.nm + '</span><span class="ds">' + t.ds + '</span></span>';
+      if (t.soon) return '<span class="tl soon" data-tool="' + id + '"><span class="nm">' + t.nm + '</span><span class="ds">' + t.ds + '</span><span class="soon-tag">coming soon</span></span>';
       return '<a class="tl" data-tool="' + id + '" href="' + t.href + '" target="_blank" rel="noopener"><span class="nm">' + t.nm + '</span><span class="ds">' + t.ds + '</span></a>';
     }
 
@@ -535,13 +543,20 @@
     var grid = document.getElementById('tool-grid');
     Object.keys(TOOLS).forEach(function (id) {
       var t = TOOLS[id];
-      var a = document.createElement('a');
-      a.className = 'tool-card';
-      a.id = 'tool-' + id;
-      a.href = t.href;
-      if (t.href !== '#') { a.target = '_blank'; a.rel = 'noopener'; }
-      a.innerHTML = '<div class="tc-name">' + t.nm + '</div><div class="tc-desc">' + t.ds + '</div>';
-      grid.appendChild(a);
+      var el, body = '<div class="tc-name">' + t.nm + '</div><div class="tc-desc">' + t.ds + '</div>';
+      if (t.soon) {
+        el = document.createElement('span');
+        el.className = 'tool-card soon';
+        el.innerHTML = body + '<div class="soon-tag">coming soon</div>';
+      } else {
+        el = document.createElement('a');
+        el.className = 'tool-card';
+        el.href = t.href;
+        el.target = '_blank'; el.rel = 'noopener';
+        el.innerHTML = body;
+      }
+      el.id = 'tool-' + id;
+      grid.appendChild(el);
     });
 
     document.addEventListener('keydown', function (e) {
