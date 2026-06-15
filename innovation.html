@@ -76,10 +76,21 @@
     .disc-wrap .dw-row { display: flex; gap: 6px; align-items: flex-start; }
     .disc-wrap .pbox { flex: 1 1 0; }
 
+    /* iteration loop: directional arrows on the bracket + a comet that sweeps
+       once around when you click either discovery phase (2.1 ⇄ 2.2) */
+    .disc-wrap .dw-label { z-index: 2; }
+    .dw-loop { position: absolute; inset: 0; overflow: visible; pointer-events: none; z-index: 1; }
+    .dw-loop .dw-arrow { fill: var(--accent-primary); opacity: .6; }
+    .dw-loop .dw-comet { fill: none; stroke: var(--accent-primary); stroke-width: 2.4; stroke-linecap: round;
+      opacity: 0; filter: drop-shadow(0 0 4px rgba(125,227,141,.55)); }
+    .dw-loop.sweep .dw-comet { opacity: 1; animation: dwSweep 1.15s ease-in-out; }
+    @keyframes dwSweep { from { stroke-dashoffset: 0; } to { stroke-dashoffset: calc(var(--dw-len, 1200) * -1px); } }
+
     @media (max-width: 760px) {
       .phasenav { flex-wrap: wrap; }
       .pbox { flex: 1 1 40%; }
       .disc-wrap { flex: 1 1 100%; }
+      .dw-loop { display: none; }
     }
 
     /* ===== content panel: two columns (text | integrated flow) ===== */
@@ -352,6 +363,8 @@
             i++;
           }
           wrap.appendChild(row);
+          wrap.insertAdjacentHTML('beforeend', '<svg class="dw-loop" preserveAspectRatio="none" aria-hidden="true"><polygon class="dw-arrow" points="0,-4 8,0 0,4"></polygon><polygon class="dw-arrow" points="0,-4 8,0 0,4"></polygon><path class="dw-comet"></path></svg>');
+          wrap.addEventListener('click', function () { sweepLoop(wrap.querySelector('.dw-loop')); });
           nav.appendChild(wrap);
         } else {
           var pw = document.createElement('div');
@@ -362,6 +375,46 @@
         }
       }
     })();
+
+    /* ---- discovery iteration loop (2.1 ⇄ 2.2): arrows + on-click comet ---- */
+    function dwPath(W, H, r) {
+      var cx = W / 2;
+      return 'M ' + cx + ' 0 L ' + (W - r) + ' 0 A ' + r + ' ' + r + ' 0 0 1 ' + W + ' ' + r +
+             ' L ' + W + ' ' + (H - r) + ' A ' + r + ' ' + r + ' 0 0 1 ' + (W - r) + ' ' + H +
+             ' L ' + r + ' ' + H + ' A ' + r + ' ' + r + ' 0 0 1 0 ' + (H - r) +
+             ' L 0 ' + r + ' A ' + r + ' ' + r + ' 0 0 1 ' + r + ' 0 L ' + cx + ' 0 Z';
+    }
+    function drawLoop() {
+      var wrap = document.querySelector('.disc-wrap'); if (!wrap) return;
+      var svg = wrap.querySelector('.dw-loop'); if (!svg) return;
+      var W = wrap.offsetWidth, H = wrap.offsetHeight; if (W < 20 || H < 20) return;
+      var d = dwPath(W, H, 12);
+      svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+      svg.setAttribute('width', W); svg.setAttribute('height', H);
+      var comet = svg.querySelector('.dw-comet'); comet.setAttribute('d', d);
+      var L = comet.getTotalLength(); svg.style.setProperty('--dw-len', L);
+      var cl = Math.max(48, L * 0.12);
+      comet.style.strokeDasharray = cl + ' ' + (L - cl); comet.style.strokeDashoffset = 0;
+      var arrows = svg.querySelectorAll('.dw-arrow');
+      [0.14, 0.62].forEach(function (f, k) {
+        if (!arrows[k]) return;
+        var p = comet.getPointAtLength(L * f), q = comet.getPointAtLength(L * f + 1);
+        var a = Math.atan2(q.y - p.y, q.x - p.x) * 180 / Math.PI;
+        arrows[k].setAttribute('transform', 'translate(' + p.x + ' ' + p.y + ') rotate(' + a + ')');
+      });
+    }
+    function sweepLoop(svg) {
+      if (!svg) return;
+      svg.classList.remove('sweep'); void svg.getBoundingClientRect(); svg.classList.add('sweep');
+    }
+    requestAnimationFrame(function () { requestAnimationFrame(drawLoop); });
+    window.addEventListener('load', drawLoop);
+    window.addEventListener('resize', function () { clearTimeout(window.__dwT); window.__dwT = setTimeout(drawLoop, 150); });
+    document.addEventListener('animationend', function (e) {
+      if (e.target && e.target.classList && e.target.classList.contains('dw-comet')) {
+        var s = e.target.parentNode; if (s && s.classList) s.classList.remove('sweep');
+      }
+    });
 
     function makeChip(p, idx) {
       var b = document.createElement('button');
