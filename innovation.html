@@ -82,7 +82,8 @@
     .dw-loop { position: absolute; inset: 0; overflow: visible; pointer-events: none; z-index: 1; }
     .dw-loop .dw-arrow { fill: var(--accent-primary); opacity: .55; }
     .dw-loop .dw-comet { fill: none; stroke: none; }   /* invisible motion path (geometry only) */
-    .dw-loop .dw-mover { fill: var(--accent-primary); opacity: 0; filter: drop-shadow(0 0 5px rgba(125,227,141,.75)); }
+    .dw-loop .dw-mover { fill: var(--accent-primary); stroke: var(--bg-primary); stroke-width: 1; stroke-linejoin: round;
+      opacity: 0; filter: drop-shadow(0 0 2px rgba(125,227,141,.5)); }
 
     @media (max-width: 760px) {
       .phasenav { flex-wrap: wrap; }
@@ -361,7 +362,7 @@
             i++;
           }
           wrap.appendChild(row);
-          wrap.insertAdjacentHTML('beforeend', '<svg class="dw-loop" preserveAspectRatio="none" aria-hidden="true"><polygon class="dw-arrow" points="0,-4 8,0 0,4"></polygon><polygon class="dw-arrow" points="0,-4 8,0 0,4"></polygon><path class="dw-comet"></path><polygon class="dw-mover" points="0,-5 11,0 0,5"></polygon></svg>');
+          wrap.insertAdjacentHTML('beforeend', '<svg class="dw-loop" preserveAspectRatio="none" aria-hidden="true"><polygon class="dw-arrow" points="0,-4 8,0 0,4"></polygon><polygon class="dw-arrow" points="0,-4 8,0 0,4"></polygon><path class="dw-comet"></path><polygon class="dw-mover" points="-6,-8 12,0 -6,8 -2,0"></polygon></svg>');
           wrap.addEventListener('click', function () { sweepLoop(wrap.querySelector('.dw-loop')); });
           nav.appendChild(wrap);
         } else {
@@ -405,7 +406,7 @@
       if (!path || !mover) return;
       var L = path.getTotalLength(); if (!L) return;
       if (svg.__dwRaf) cancelAnimationFrame(svg.__dwRaf);
-      var dur = 1150, start = performance.now();
+      var dur = 1600, start = performance.now();
       function frame(now) {
         var t = (now - start) / dur;
         if (t >= 1) { mover.style.opacity = 0; svg.__dwRaf = null; return; }
