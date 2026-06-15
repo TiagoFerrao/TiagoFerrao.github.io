@@ -158,6 +158,18 @@
     .tools .tl .nm { font-family: var(--font-body); font-size: .82rem; color: var(--accent-primary); }
     .tools .tl .ds { font-size: .72rem; color: var(--text-muted); line-height: 1.4; }
     .tools .tl.soon { opacity: .5; }  .tools .tl.soon .nm { color: var(--text-muted); }
+
+    /* click a flow icon -> highlight its step circle + matching tool */
+    .fstage { cursor: pointer; border-radius: 10px; padding: 4px 4px; transition: background .15s; }
+    .fstage:hover { background: rgba(125,227,141,.06); }
+    .fstage.hl { background: rgba(125,227,141,.10); }
+    .mini .mnode { transition: background .2s, color .2s, border-color .2s, box-shadow .2s; }
+    .mini.hl .mnode { background: var(--accent-primary); color: var(--bg-primary); border-color: var(--accent-primary);
+      box-shadow: 0 0 0 4px rgba(125,227,141,.18); animation: hlPulse .5s ease; }
+    .mini.hl .mt { color: var(--accent-primary); }
+    .tools .tl.hl { border-color: var(--accent-primary); background: rgba(125,227,141,.08);
+      box-shadow: 0 0 0 1px var(--accent-primary) inset, 0 0 14px rgba(125,227,141,.12); animation: hlPulse .5s ease; }
+    @keyframes hlPulse { 0% { transform: scale(1); } 45% { transform: scale(1.07); } 100% { transform: scale(1); } }
     /* tools strip below both columns (full width) */
     .pp-tools { margin-top: var(--space-xl); padding-top: var(--space-lg); border-top: 1px solid var(--border-subtle); }
     .pp-tools .tools-lbl { margin-top: 0; }
@@ -438,19 +450,37 @@
 
     function toolCard(id) {
       var t = TOOLS[id]; if (!t) return '';
-      if (t.soon) return '<span class="tl soon"><span class="nm">' + t.nm + '</span><span class="ds">' + t.ds + '</span></span>';
-      return '<a class="tl" href="' + t.href + '" target="_blank" rel="noopener"><span class="nm">' + t.nm + '</span><span class="ds">' + t.ds + '</span></a>';
+      if (t.soon) return '<span class="tl soon" data-tool="' + id + '"><span class="nm">' + t.nm + '</span><span class="ds">' + t.ds + '</span></span>';
+      return '<a class="tl" data-tool="' + id + '" href="' + t.href + '" target="_blank" rel="noopener"><span class="nm">' + t.nm + '</span><span class="ds">' + t.ds + '</span></a>';
     }
 
     var ARROW = '<div class="farrow"><svg viewBox="0 0 16 16"><path d="M8 2v9M3 8l5 5 5-5" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>';
 
+    // flow-icon → tool-card key (icon ids differ from tool keys)
+    var IC_TOOL = { 'press-release':'press-release-canvas', 'assumptions-table':'assumptions-tracker',
+      'house-of-quality':'house-of-quality', 'business-case':'business-case-builder',
+      'cost-breakdown':'cost-revenue-model', 'revenue-streams':'cost-revenue-model',
+      'opportunity-solution-tree':'opportunity-solution-tree', 'value-proposition':'value-proposition' };
+    function norm(s) { return String(s || '').toLowerCase().replace(/\s+/g, ' ').trim(); }
+    function stepIndexFor(p, label) { var n = norm(label); for (var k = 0; k < p.steps.length; k++) { if (norm(p.steps[k].t) === n) return k; } return -1; }
+
     function flowColumn(p) {
       if (!p.flow || !p.flow.length) return '';
       var inner = p.flow.map(function (f, k) {
-        var stage = '<div class="fstage">' + faIcon(f.ic) + '<div class="fl">' + f.l + '</div></div>';
+        var si = stepIndexFor(p, f.l), tool = IC_TOOL[f.ic] || '';
+        var stage = '<div class="fstage" role="button" tabindex="0" data-step="' + si + '" data-tool="' + tool + '">' + faIcon(f.ic) + '<div class="fl">' + f.l + '</div></div>';
         return stage + (k < p.flow.length - 1 ? ARROW : '');
       }).join('');
       return '<div class="flowcol"><div class="fc-lbl">process flow · this phase</div><div class="fc-stages">' + inner + '</div></div>';
+    }
+
+    function pulse(el) { if (!el) return; el.classList.remove('hl'); void el.offsetWidth; el.classList.add('hl'); }
+    function highlightFromStage(st) {
+      Array.prototype.forEach.call(panel.querySelectorAll('.fstage.hl, .mini.hl, .tl.hl'), function (el) { el.classList.remove('hl'); });
+      pulse(st);
+      var si = st.getAttribute('data-step'), tool = st.getAttribute('data-tool');
+      if (si && si !== '-1') pulse(panel.querySelector('.mini[data-step="' + si + '"]'));
+      if (tool) pulse(panel.querySelector('.tl[data-tool="' + tool + '"]'));
     }
 
     function render(i) {
@@ -461,7 +491,7 @@
         + '<p class="pp-ctx">' + p.ctx + '</p>'
         + '<div class="io"><span class="lbl">in</span><span class="in">' + p.io[0] + '</span><span class="arrow">→</span><span class="lbl">out</span><span class="out">' + p.io[1] + '</span></div>'
         + '<div class="miniflow">' + p.steps.map(function (s, k) {
-            return '<div class="mini"><span class="mnode">' + (k + 1) + '</span><div class="mt">' + s.t + '</div><div class="md">' + s.d + '</div></div>';
+            return '<div class="mini" data-step="' + k + '"><span class="mnode">' + (k + 1) + '</span><div class="mt">' + s.t + '</div><div class="md">' + s.d + '</div></div>';
           }).join('') + '</div>';
       if (p.note) left += '<div class="anote">' + p.note + '</div>';
       left += '</div>';
@@ -479,6 +509,10 @@
       var prev = document.getElementById('pp-prev'), next = document.getElementById('pp-next');
       if (prev) prev.addEventListener('click', function () { setActive(i - 1); });
       if (next) next.addEventListener('click', function () { setActive(i + 1); });
+      Array.prototype.forEach.call(panel.querySelectorAll('.fstage'), function (st) {
+        st.addEventListener('click', function () { highlightFromStage(st); });
+        st.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); highlightFromStage(st); } });
+      });
     }
 
     function setActive(i) {
