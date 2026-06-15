@@ -112,6 +112,15 @@
   color: var(--text-secondary);
   margin: 0;
 }
+.tl-links {
+  margin: var(--space-sm) 0 0;
+  font-size: var(--text-sm);
+  line-height: 1.9;
+}
+.tl-links a { color: var(--accent-primary); text-decoration: none; white-space: nowrap; }
+.tl-links a:hover { text-decoration: underline; }
+.tl-links a svg { display: inline; vertical-align: -2px; }   /* override global svg{display:block} */
+.tl-links .sep { color: var(--text-muted); margin: 0 8px; }
 .tl-panel .accent, .biz-detail .accent { color: var(--accent-primary); font-weight: 600; }
 
 /* ---------- Map (mirrors contacts world map) ---------- */

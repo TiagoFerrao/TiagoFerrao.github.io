@@ -96,7 +96,11 @@ const businessData = [
     dates: '2018 – 2020',
     location: 'Lisbon',
     cities: ['lisboa'],
-    blurb: 'SportSpots was a digital platform to manage sport activities — and my entrepreneurial deep-dive. Its business plan was my ISCTE Master\'s dissertation, applying lean startup, Quality Function Deployment and the platform canvas. I co-founded and ran it for two years: it was selected by the KickUP Sports Accelerator — the first European sports accelerator launched within a major sports club, in partnership with SL Benfica — and won recognition across several startup competitions, before I sold my stake to my business partner.'
+    blurb: 'SportSpots was a digital platform to manage sport activities — and my entrepreneurial deep-dive. Its business plan was my ISCTE Master\'s dissertation, applying lean startup, Quality Function Deployment and the platform canvas. I co-founded and ran it for two years: it was selected by the KickUP Sports Accelerator — the first European sports accelerator launched within a major sports club, in partnership with SL Benfica — and won recognition across several startup competitions, before I sold my stake to my business partner.',
+    links: [
+      { href: 'https://sportspots-prototype.vercel.app', label: 'try the live prototype', ext: true },
+      { href: 'business-model-app/?example=sportspots', label: 'explore its platform model', ext: true }
+    ]
   },
   {
     company: 'Ready2innov',

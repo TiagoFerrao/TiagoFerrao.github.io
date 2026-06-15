@@ -21,6 +21,15 @@
     { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]
   ));
 
+  // optional per-role action links (e.g. live prototype, platform builder case)
+  const EXT_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;"><path d="M10 14 21 3M21 3h-6M21 3v6"/><path d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"/></svg>';
+  function linksHtml(e) {
+    if (!e.links || !e.links.length) return '';
+    return '<p class="tl-links">' + e.links.map(l =>
+      `<a href="${esc(l.href)}"${l.ext ? ' target="_blank" rel="noopener"' : ''}>&rsaquo; ${EXT_ICON} ${esc(l.label)}</a>`
+    ).join('<span class="sep">&middot;</span>') + '</p>';
+  }
+
   // ---------- Timeline (vertical: year | dot | company) ----------
   tlMount.classList.add('timeline');
   tlMount.innerHTML = '<ol class="timeline-items">' + data.map((e, i) => `
@@ -34,6 +43,7 @@
         <p class="tl-role"><span class="accent">${esc(e.role)}</span></p>
         <p class="tl-meta">${esc(e.dates)} &middot; ${esc(e.location)}</p>
         <p class="tl-blurb">${esc(e.blurb)}</p>
+        ${linksHtml(e)}
       </div>
     </li>`).join('') + '</ol>';
 
@@ -84,7 +94,8 @@
     return `<h4>${esc(e.company)}</h4>
       <p class="tl-role"><span class="accent">${esc(e.role)}</span></p>
       <p class="tl-meta">${esc(e.dates)} &middot; ${esc(e.location)}</p>
-      <p class="tl-blurb">${esc(e.blurb)}</p>`;
+      <p class="tl-blurb">${esc(e.blurb)}</p>
+      ${linksHtml(e)}`;
   }
 
   function markRow(li) {
