@@ -29,12 +29,20 @@
   'use strict';
 
   var REGISTRY_KEY = 'ferrao-projects-v1';      // {cases:[...], activeId}
+  // Permanent, undeletable example cases — always present as reference. Each
+  // tool supplies its OWN seed for these via init({ exampleSeeds: {id: data} }),
+  // so this layer stays neutral about any tool's data shape.
+  var EXAMPLES = [
+    { id: 'ex-sportspots', name: 'SportSpots' },
+    { id: 'ex-safe-cycle', name: 'SAFE-Cycle' }
+  ];
   var listeners = [];
   var cfg = {
     toolNamespace: null,   // e.g. 'assumptions-tracker'
     onActiveData: null,    // fn(id) -> the tool re-loads its data for id
     getToolData: null,     // fn() -> serialisable snapshot of current tool data (for duplicate)
-    setToolData: null      // fn(id, data) -> write a tool-data snapshot under a case id
+    setToolData: null,     // fn(id, data) -> write a tool-data snapshot under a case id
+    exampleSeeds: {}       // { exampleCaseId: toolData } -> seed for the locked examples
   };
 
   /* ---------- registry persistence ---------- */
@@ -79,7 +87,10 @@
   }
   function rename(id, name) {
     var reg = loadRegistry();
-    for (var i = 0; i < reg.cases.length; i++) if (reg.cases[i].id === id) { reg.cases[i].name = name; reg.cases[i].updated = now(); }
+    for (var i = 0; i < reg.cases.length; i++) if (reg.cases[i].id === id) {
+      if (reg.cases[i].locked) return;            // example names are canonical
+      reg.cases[i].name = name; reg.cases[i].updated = now();
+    }
     saveRegistry(reg);
     emit();
   }
@@ -104,6 +115,7 @@
   }
   function remove(id) {
     var reg = loadRegistry();
+    for (var k = 0; k < reg.cases.length; k++) if (reg.cases[k].id === id && reg.cases[k].locked) return; // examples are permanent
     reg.cases = reg.cases.filter(function (c) { return c.id !== id; });
     if (reg.activeId === id) reg.activeId = reg.cases.length ? reg.cases[0].id : null;
     saveRegistry(reg);
@@ -117,6 +129,48 @@
     reg.activeId = id;
     saveRegistry(reg);
     emit();
+  }
+
+  /* ---------- permanent example cases ---------- */
+  function caseById(id) {
+    var reg = loadRegistry();
+    for (var i = 0; i < reg.cases.length; i++) if (reg.cases[i].id === id) return reg.cases[i];
+    return null;
+  }
+  function isLocked(id) { var c = caseById(id); return !!(c && c.locked); }
+
+  // Make sure the locked example cases exist in the registry. Non-destructive:
+  // never touches cases the user already has. Adds them at the front so the
+  // examples read as the canonical reference set.
+  function ensureExamples() {
+    var reg = loadRegistry();
+    var have = {};
+    reg.cases.forEach(function (c) { have[c.id] = true; });
+    var missing = EXAMPLES.filter(function (ex) { return !have[ex.id]; })
+      .map(function (ex) { return { id: ex.id, name: ex.name, created: now(), updated: now(), locked: true }; });
+    if (missing.length) reg.cases = missing.concat(reg.cases);
+    if (!reg.activeId && reg.cases.length) reg.activeId = reg.cases[0].id;
+    if (missing.length || !loadRegistry().activeId) saveRegistry(reg);
+  }
+  // Write this tool's seed for each example case, but only if that case+tool
+  // has no data yet — we must never clobber the user's own edits.
+  function seedExampleData() {
+    if (!cfg.toolNamespace) return;
+    Object.keys(cfg.exampleSeeds || {}).forEach(function (id) {
+      try {
+        if (localStorage.getItem(dataKey(id)) == null) {
+          localStorage.setItem(dataKey(id), JSON.stringify(cfg.exampleSeeds[id]));
+        }
+      } catch (e) {}
+    });
+  }
+  // Restore an example case's data for THIS tool from its registered seed.
+  function resetExample(id) {
+    if (!isLocked(id) || !cfg.exampleSeeds || cfg.exampleSeeds[id] == null) return false;
+    try { localStorage.setItem(dataKey(id), JSON.stringify(cfg.exampleSeeds[id])); } catch (e) {}
+    touch(id);
+    emit();
+    return true;
   }
 
   /* ---------- per-tool data keys ---------- */
@@ -145,26 +199,29 @@
     cfg.onActiveData = opts.onActiveData || null;
     cfg.getToolData = opts.getToolData || null;
     cfg.setToolData = opts.setToolData || null;
+    cfg.exampleSeeds = opts.exampleSeeds || {};
 
-    var reg = loadRegistry();
+    // the permanent example cases are always present and pre-seeded for this tool
+    ensureExamples();
+    seedExampleData();
 
-    // first run with migration: adopt an existing single-state blob as case #1
-    if (!reg.cases.length && opts.migrateFrom) {
-      var legacy = null;
-      try { legacy = localStorage.getItem(opts.migrateFrom); } catch (e) {}
-      if (legacy != null) {
-        var id = create(opts.migrateName || 'Imported case', true); // silent: no emit yet
-        try { localStorage.setItem(dataKey(id), legacy); } catch (e) {} // write data FIRST
-        emit(); // now emit — the tool loads the already-populated per-case key
-        // leave the legacy key in place (non-destructive); tool now reads per-case
-        return { migrated: true, id: id };
+    // one-time: adopt a pre-existing single-state blob as the user's OWN case
+    // (only if they have no editable case yet — the locked examples don't count).
+    if (opts.migrateFrom) {
+      var reg = loadRegistry();
+      var hasUserCase = reg.cases.some(function (c) { return !c.locked; });
+      if (!hasUserCase) {
+        var legacy = null;
+        try { legacy = localStorage.getItem(opts.migrateFrom); } catch (e) {}
+        if (legacy != null) {
+          var id = create(opts.migrateName || 'Imported case', true); // silent: sets active
+          try { localStorage.setItem(dataKey(id), legacy); } catch (e) {}
+          emit(); // tool loads the migrated per-case data, now active
+          return { migrated: true, id: id };
+        }
       }
     }
-    // no cases yet and nothing to migrate -> create a starter case so the tool always has one
-    if (!reg.cases.length && opts.createInitial) {
-      var sid = create(opts.initialName || 'New case');
-      return { migrated: false, id: sid };
-    }
+    emit(); // sync the tool to the active case (an example, by default)
     return { migrated: false, id: activeId() };
   }
 
@@ -196,17 +253,23 @@
     var a = active();
     var cases = list();
     var openId = el.getAttribute('data-open') === '1';
+    var locked = !!(a && a.locked);
 
     var html = '<div class="fp-bar">' +
       '<span class="fp-label">' + esc(label) + '</span>' +
       '<button class="fp-select" data-act="toggle">' +
         '<span class="fp-name">' + esc(a ? a.name : 'Sem caso') + '</span>' +
+        (locked ? '<span class="fp-ex-tag">exemplo</span>' : '') +
         '<span class="fp-chev">' + (openId ? '\u25b4' : '\u25be') + '</span>' +
       '</button>' +
       '<span class="fp-actions">' +
-        '<button class="fp-btn" data-act="rename" title="Renomear">renomear</button>' +
-        '<button class="fp-btn" data-act="duplicate" title="Duplicar">duplicar</button>' +
-        '<button class="fp-btn fp-danger" data-act="remove" title="Apagar">apagar</button>' +
+        (locked
+          ? '<button class="fp-btn" data-act="reset" title="Repor os dados originais do exemplo">repor exemplo</button>'
+          : '<button class="fp-btn" data-act="rename" title="Renomear">renomear</button>') +
+        '<button class="fp-btn" data-act="duplicate" title="' + (locked ? 'Duplicar este exemplo para um caso edit\u00e1vel' : 'Duplicar') + '">duplicar</button>' +
+        (locked
+          ? '<button class="fp-btn" data-act="remove" title="Exemplo permanente \u2014 n\u00e3o pode ser apagado" disabled>apagar</button>'
+          : '<button class="fp-btn fp-danger" data-act="remove" title="Apagar">apagar</button>') +
       '</span>';
 
     if (openId) {
@@ -214,7 +277,7 @@
       cases.forEach(function (c) {
         var on = a && c.id === a.id;
         html += '<button class="fp-dd-item' + (on ? ' fp-on' : '') + '" data-act="pick" data-id="' + c.id + '">' +
-          '<span class="fp-di-name">' + esc(c.name) + '</span>' +
+          '<span class="fp-di-name">' + esc(c.name) + (c.locked ? ' <span class="fp-di-ex">exemplo</span>' : '') + '</span>' +
           '<span class="fp-di-meta">' + fmtAgo(c.updated) + (on ? ' \u00b7 <span class="fp-di-check">\u2713 ativo</span>' : '') + '</span>' +
         '</button>';
       });
@@ -249,6 +312,16 @@
           var n = prompt('Nome do novo business case:', '');
           if (n && n.trim()) create(n.trim());
           renderBar(el, opts);
+          return;
+        }
+        if (act === 'reset') {
+          if (!a || !a.locked) return;
+          el.setAttribute('data-open', '0');
+          if (confirm('Repor o exemplo «' + a.name + '»?\n\nAs tuas edições a este caso NESTA ferramenta serão substituídas pelos dados originais do exemplo. Outras ferramentas não são afetadas.')) {
+            resetExample(a.id);
+          } else {
+            renderBar(el, opts);
+          }
           return;
         }
         if (act === 'rename') {
@@ -286,6 +359,7 @@
     init: init, list: list, activeId: activeId, active: active,
     create: create, rename: rename, duplicate: duplicate, remove: remove,
     setActive: setActive, key: key, onChange: onChange, mountBar: mountBar,
-    touch: touch
+    touch: touch, resetExample: resetExample, isLocked: isLocked,
+    EXAMPLE_IDS: { sportspots: 'ex-sportspots', safeCycle: 'ex-safe-cycle' }
   };
 })(window);

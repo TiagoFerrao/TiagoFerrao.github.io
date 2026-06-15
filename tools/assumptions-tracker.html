@@ -81,6 +81,9 @@
   .fp-di-check { color: var(--mint); }
   .fp-dd-new { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; padding: 11px 14px; color: var(--mint); font-family: var(--mono); font-size: .64rem; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; background: rgba(125,227,141,.05); border: none; }
   .fp-dd-new:hover { background: rgba(125,227,141,.1); }
+  .fp-ex-tag { font-family: var(--mono); font-size: .5rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--mint-dim); border-radius: 5px; padding: 1px 5px; }
+  .fp-di-ex { font-family: var(--mono); font-size: .52rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--mint-dim); border-radius: 5px; padding: 1px 5px; margin-left: 6px; vertical-align: middle; }
+  .fp-btn[disabled] { opacity: .4; cursor: not-allowed; }
 
   /* ===== how-to block ===== */
   .howto { background: var(--panel); border-radius: var(--radius); margin: 0 0 22px; }
@@ -391,6 +394,15 @@
     { assumption: 'Sensor data quality is sufficient for the model', category: 'Feasibility', value: '< 5% missing/invalid readings', uncertainty: 'medium', impact: 'high', experiment: 'Audit 6 months of historical sensor data', threshold: '< 5% gaps after cleaning', measured: '', cost: 800, selected: true, result: 'pending', evidence: 'stated' },
     { assumption: 'Utilities will pay per-plant subscription', category: 'Viability', value: '€1.5k–3k / plant / month', uncertainty: 'high', impact: 'medium', experiment: '5 pricing interviews with plant directors', threshold: '≥ 3 of 5 accept the range', measured: '', cost: 300, selected: false, result: 'pending', evidence: 'opinion' },
     { assumption: 'Integration with existing SCADA is feasible', category: 'Feasibility', value: 'OPC-UA available on site', uncertainty: 'low', impact: 'medium', experiment: 'Technical survey of pilot plant', threshold: 'OPC-UA endpoint confirmed', measured: 'OPC-UA present on site PLCs', cost: 0, selected: false, result: 'confirmed', evidence: 'observed' }
+  ];
+
+  // SportSpots example (sports-activity marketplace — corporate wellness angle)
+  var SAMPLE_SPORTSPOTS = [
+    { id: 'ss1', assumption: 'Corporate employees will book a sports session through the app', category: 'Desirability', value: '> 40% of pilot employees book within 30 days', uncertainty: 'high', impact: 'high', experiment: '4-week pilot with 2 companies (~200 employees)', threshold: '≥ 40% book at least one session', measured: '', cost: 3000, selected: true, result: 'pending', evidence: 'opinion' },
+    { id: 'ss2', assumption: 'Employers will pay a per-employee wellness subscription', category: 'Viability', value: '€4–8 / employee / month', uncertainty: 'high', impact: 'high', experiment: 'Pricing interviews with 8 HR leads', threshold: '≥ 5 of 8 accept the range', measured: '', cost: 500, selected: true, result: 'pending', evidence: 'opinion' },
+    { id: 'ss3', assumption: 'Gyms & trainers will list and keep their empty slots updated', category: 'Feasibility', value: '≥ 30 venues live in Lisbon in 8 weeks', uncertainty: 'medium', impact: 'high', experiment: 'Manual onboarding sprint with sales calls', threshold: '≥ 30 venues with bookable slots', measured: '', cost: 1200, selected: false, result: 'pending', evidence: 'stated' },
+    { id: 'ss4', assumption: 'One-minute booking removes the “too much effort” drop-off', category: 'Desirability', value: 'booking < 60s, abandon < 20%', uncertainty: 'medium', impact: 'medium', experiment: 'Usability test of the booking flow with 10 users', threshold: 'median < 60s and abandon < 20%', measured: 'median 48s, 12% abandon', cost: 0, selected: false, result: 'confirmed', evidence: 'observed' },
+    { id: 'ss5', assumption: 'Filling otherwise-empty slots makes venue economics work', category: 'Viability', value: '≥ 25% of bookings are off-peak/empty slots', uncertainty: 'medium', impact: 'medium', experiment: 'Analyse 4 weeks of pilot bookings by slot', threshold: '≥ 25% off-peak', measured: '', cost: 0, selected: false, result: 'pending', evidence: 'stated' }
   ];
 
   function activeKey() {
@@ -819,9 +831,11 @@
     FP.init({
       toolNamespace: 'assumptions-tracker',
       migrateFrom: KEY,
-      migrateName: 'SAFE-Cycle',
-      createInitial: true,
-      initialName: 'Novo caso',
+      migrateName: 'Importado',
+      exampleSeeds: {
+        'ex-safe-cycle': SAMPLE.map(function (s, i) { return Object.assign({ id: 'sc' + i }, s); }),
+        'ex-sportspots': SAMPLE_SPORTSPOTS
+      },
       onActiveData: function () { load(); updViewNote(); render(); }
     });
     var bar = document.getElementById('project-bar');

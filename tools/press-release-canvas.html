@@ -142,6 +142,31 @@
     .badge { background: #f2f2f2; color: #555; }
     .arch { display: none; }
   }
+  /* ---- shared business-case selector bar (projects.js) ---- */
+  #project-bar:empty { display: none; }
+  .fp-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; background: var(--panel); border: 1px solid var(--line2); border-radius: var(--radius); padding: 10px 16px; margin-bottom: 18px; position: relative; }
+  .fp-label { font-family: var(--mono); font-size: .58rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .fp-select { display: inline-flex; align-items: center; gap: 8px; background: var(--panel-2); border: 1px solid var(--mint-dim); border-radius: 8px; padding: 7px 12px; cursor: pointer; }
+  .fp-name { font-weight: 650; font-size: .9rem; color: var(--mint); }
+  .fp-chev { color: var(--muted); font-family: var(--mono); font-size: .7rem; }
+  .fp-actions { display: flex; gap: 7px; margin-left: auto; flex-wrap: wrap; }
+  .fp-btn { font-family: var(--mono); font-size: .58rem; letter-spacing: .08em; text-transform: uppercase; padding: 6px 11px; border-radius: 8px; border: 1px solid var(--line2); background: transparent; color: var(--muted); cursor: pointer; }
+  .fp-btn:hover { color: var(--text); background: var(--panel-2); }
+  .fp-btn.fp-danger { border-color: rgba(224,122,107,.4); color: var(--red); }
+  .fp-btn.fp-danger:hover { background: rgba(224,122,107,.08); }
+  .fp-btn[disabled] { opacity: .4; cursor: not-allowed; }
+  .fp-ex-tag { font-family: var(--mono); font-size: .5rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--mint-dim); border-radius: 5px; padding: 1px 5px; }
+  .fp-dd { position: absolute; top: calc(100% - 6px); left: 16px; z-index: 40; margin-top: 8px; min-width: 280px; max-width: 380px; background: var(--panel-2); border: 1px solid var(--mint-dim); border-radius: 10px; overflow: hidden; box-shadow: 0 8px 28px rgba(0,0,0,.4); }
+  .fp-dd-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; text-align: left; padding: 10px 14px; border: none; border-bottom: 1px solid var(--line2); background: transparent; cursor: pointer; }
+  .fp-dd-item:hover { background: rgba(125,227,141,.06); }
+  .fp-dd-item.fp-on { background: var(--mint-faint); }
+  .fp-di-name { font-size: .86rem; color: var(--text); }
+  .fp-dd-item.fp-on .fp-di-name { color: var(--mint); font-weight: 650; }
+  .fp-di-ex { font-family: var(--mono); font-size: .52rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--mint-dim); border-radius: 5px; padding: 1px 5px; margin-left: 6px; vertical-align: middle; }
+  .fp-di-meta { font-family: var(--mono); font-size: .62rem; color: var(--muted); white-space: nowrap; }
+  .fp-di-check { color: var(--mint); }
+  .fp-dd-new { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; padding: 11px 14px; color: var(--mint); font-family: var(--mono); font-size: .64rem; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; background: rgba(125,227,141,.05); border: none; }
+  .fp-dd-new:hover { background: rgba(125,227,141,.1); }
 </style>
 </head>
 <body>
@@ -152,6 +177,8 @@
     <h1>Future Press Release — Working Backwards</h1>
     <p>Write the launch announcement <em>before</em> the project exists, dated after success has happened. If the release isn't worth reading, the product isn't worth building. <a class="back" href="../innovation.html">&larr; back to the innovation process</a></p>
   </div>
+
+  <div id="project-bar"></div>
 
   <div class="intro" id="intro">
     <div class="intro-head" id="introHead" role="button" tabindex="0" aria-expanded="true">
@@ -225,6 +252,7 @@
   </div>
 
   <p class="foot">Data stays in this browser (localStorage) — export JSON to back up or branch a document. Method: Bryar &amp; Carr, <em>Working Backwards</em>; Rossman, <em>The Amazon Way</em>. Switch levels freely — nothing is lost. Level 3 (dual FAQ + the "So what?" gate) arrives in a later release.</p>
+<script src="projects.js"></script>
 
 </div>
 <input type="file" id="fileInput" accept="application/json" hidden>
@@ -267,9 +295,39 @@
     return d;
   }
 
+  // SportSpots example (sports-activity marketplace — corporate wellness angle)
+  function sampleSportspots() {
+    var d = blank();
+    d.city = 'Lisboa';
+    d.date = '2027-06-01';
+    d.headline = 'SportSpots gets busy teams moving — book a workout in under a minute';
+    d.level = 2; d.draft = 5;
+    d.free = 'SportSpots turns “I should exercise” into a booked session before the thought fades — and lets employers fund it. Early free-form pitch — switch to Level 1 to edit it.';
+    d.sentence = 'An office worker, at lunch, books a 6 p.m. court near the office — part-paid by the company — in under a minute.';
+    d.open = 'For employees at 12 pilot companies, staying active stopped being one more thing to organise: the session, the venue and the payment now live in one place, and HR picks up part of the tab.';
+    d.problem = 'Most people who want to train give up at the logistics — finding a nearby session at the right time, then booking and paying across three different apps. Meanwhile gyms and trainers run with empty, unsold slots.';
+    d.solution = 'SportSpots maps nearby sessions, filters them by time and interest, and books and pays in three taps, applying any corporate allowance automatically. It deliberately does not run the venues — it fills their empty slots and hands them paying customers.';
+    d.results = 'Booking time 6 min → 48 s · 41% of pilot employees booked within 30 days · venue off-peak slot fill +28% · €6/employee/month corporate plan validated with 5 of 8 HR leads';
+    d.quotes = '“I trained twice this week — I’d have skipped both if I’d had to phone around.” — pilot user, Lisboa';
+    d.tricky = [
+      { id: 't1', text: 'Employers accept a per-employee wellness subscription as a real benefit', dim: 'via' },
+      { id: 't2', text: 'Enough venues list and keep their empty slots updated for supply to feel dense', dim: 'fea' },
+      { id: 't3', text: 'Employees trust the app enough to make it a weekly habit, not a one-off', dim: 'des' }
+    ];
+    d.history = [{ draft: 1, at: '2026-04-10', level: 1, words: 160 }, { draft: 4, at: '2026-04-28', level: 2, words: 300 }];
+    return d;
+  }
+
   /* ---------- persistence ---------- */
+  function activeKey() {
+    if (window.FerraoProjects) { var k = window.FerraoProjects.key(); if (k) return k; }
+    return KEY;
+  }
   function save() {
-    try { localStorage.setItem(KEY, JSON.stringify({ doc: doc, tseq: tseq })); } catch (e) {}
+    try { localStorage.setItem(activeKey(), JSON.stringify({ doc: doc, tseq: tseq })); } catch (e) {}
+    if (window.FerraoProjects && window.FerraoProjects.activeId()) {
+      try { window.FerraoProjects.touch(window.FerraoProjects.activeId()); } catch (e) {}
+    }
     var s = document.getElementById('saved');
     s.classList.add('show');
     clearTimeout(save._t);
@@ -277,7 +335,7 @@
   }
   function load() {
     try {
-      var raw = localStorage.getItem(KEY);
+      var raw = localStorage.getItem(activeKey());
       if (!raw) return false;
       var o = JSON.parse(raw);
       if (!o || !o.doc) return false;
@@ -522,8 +580,26 @@
   });
 
   /* ---------- init ---------- */
-  if (!load()) { doc = sample(); doc.level = 1; }
-  render();
+  function loadActive() {
+    if (!load()) { doc = blank(); doc.level = 1; tseq = 100; }
+    render();
+  }
+  if (window.FerraoProjects) {
+    window.FerraoProjects.init({
+      toolNamespace: 'press-release-canvas',
+      migrateFrom: KEY,
+      migrateName: 'Importado',
+      exampleSeeds: {
+        'ex-safe-cycle': { doc: sample(), tseq: 4 },
+        'ex-sportspots': { doc: sampleSportspots(), tseq: 4 }
+      },
+      onActiveData: loadActive   // fired by init() and on every case switch
+    });
+    var bar = document.getElementById('project-bar');
+    if (bar) window.FerraoProjects.mountBar(bar, { label: 'Business case' });
+  } else {
+    loadActive();
+  }
 })();
 </script>
 </body>

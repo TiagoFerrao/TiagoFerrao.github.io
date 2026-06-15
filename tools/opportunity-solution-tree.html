@@ -201,6 +201,7 @@
     .tree-wrap { overflow: visible; }
     h1, .s-value, .n-text { color: #111; }
     .page-head p { color: #444; }
+    #project-bar { display: none !important; }
     .eyebrow { color: #2c8f6f; }
     .sum-card, .node { background: #fff; border-color: #bbb; box-shadow: none !important; break-inside: avoid; }
     .s-label, .s-sub, .n-type, .badge { color: #555; }
@@ -208,6 +209,31 @@
     .badge.star { background: #2c8f6f; color: #fff; }
     .tree ul::before, .tree li::before, .tree li::after { border-color: #999 !important; }
   }
+  /* ---- shared business-case selector bar (projects.js) ---- */
+  #project-bar:empty { display: none; }
+  .fp-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; background: var(--panel); border: 1px solid var(--line2); border-radius: var(--radius); padding: 10px 16px; margin-bottom: 18px; position: relative; }
+  .fp-label { font-family: var(--mono); font-size: .58rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .fp-select { display: inline-flex; align-items: center; gap: 8px; background: var(--panel-2); border: 1px solid var(--mint-dim); border-radius: 8px; padding: 7px 12px; cursor: pointer; }
+  .fp-name { font-weight: 650; font-size: .9rem; color: var(--mint); }
+  .fp-chev { color: var(--muted); font-family: var(--mono); font-size: .7rem; }
+  .fp-actions { display: flex; gap: 7px; margin-left: auto; flex-wrap: wrap; }
+  .fp-btn { font-family: var(--mono); font-size: .58rem; letter-spacing: .08em; text-transform: uppercase; padding: 6px 11px; border-radius: 8px; border: 1px solid var(--line2); background: transparent; color: var(--muted); cursor: pointer; }
+  .fp-btn:hover { color: var(--text); background: var(--panel-2); }
+  .fp-btn.fp-danger { border-color: rgba(224,122,107,.4); color: var(--red); }
+  .fp-btn.fp-danger:hover { background: rgba(224,122,107,.08); }
+  .fp-btn[disabled] { opacity: .4; cursor: not-allowed; }
+  .fp-ex-tag { font-family: var(--mono); font-size: .5rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--mint-dim); border-radius: 5px; padding: 1px 5px; }
+  .fp-dd { position: absolute; top: calc(100% - 6px); left: 16px; z-index: 40; margin-top: 8px; min-width: 280px; max-width: 380px; background: var(--panel-2); border: 1px solid var(--mint-dim); border-radius: 10px; overflow: hidden; box-shadow: 0 8px 28px rgba(0,0,0,.4); }
+  .fp-dd-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; text-align: left; padding: 10px 14px; border: none; border-bottom: 1px solid var(--line2); background: transparent; cursor: pointer; }
+  .fp-dd-item:hover { background: rgba(125,227,141,.06); }
+  .fp-dd-item.fp-on { background: var(--mint-faint); }
+  .fp-di-name { font-size: .86rem; color: var(--text); }
+  .fp-dd-item.fp-on .fp-di-name { color: var(--mint); font-weight: 650; }
+  .fp-di-ex { font-family: var(--mono); font-size: .52rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--mint-dim); border-radius: 5px; padding: 1px 5px; margin-left: 6px; vertical-align: middle; }
+  .fp-di-meta { font-family: var(--mono); font-size: .62rem; color: var(--muted); white-space: nowrap; }
+  .fp-di-check { color: var(--mint); }
+  .fp-dd-new { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; padding: 11px 14px; color: var(--mint); font-family: var(--mono); font-size: .64rem; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; background: rgba(125,227,141,.05); border: none; }
+  .fp-dd-new:hover { background: rgba(125,227,141,.1); }
 </style>
 </head>
 <body>
@@ -218,6 +244,8 @@
     <h1>Opportunity Solution Tree</h1>
     <p>Decide what to build next without skipping the evidence. Click any node to edit it — the tree highlights the path to your highest-scoring &#9733; target opportunity. <a class="back" href="../innovation.html">&larr; back to the innovation process</a></p>
   </div>
+
+  <div id="project-bar"></div>
 
   <div class="intro" id="intro">
     <div class="intro-head" id="introHead" role="button" tabindex="0" aria-expanded="true">
@@ -293,6 +321,7 @@
   <div class="panel" id="panel"><div class="p-empty">Select a node above to edit it, score it, or grow the tree from it.</div></div>
 
   <p class="foot">Data stays in this browser (localStorage) — export JSON to back up or share. Method: Teresa Torres, <em>Continuous Discovery Habits</em> (2021).</p>
+<script src="projects.js"></script>
 
 </div>
 <input type="file" id="fileInput" accept="application/json" hidden>
@@ -389,6 +418,52 @@
     return root;
   }
 
+  // SportSpots example (sports-activity marketplace — corporate wellness angle)
+  function sampleTreeSportspots() {
+    var root = newNode('outcome', 'Grow weekly active SportSpots users in Lisbon from 1,200 to 5,000 within 12 months');
+    root.metric = 'Weekly active users'; root.current = '1,200'; root.target = '5,000';
+
+    var o1 = newNode('opportunity', "People can't find a session that fits their schedule and location");
+    o1.reach = 5; o1.frequency = 4; o1.severity = 5;
+    o1.evidence = '18 user interviews; “no time / too far” is the top reason given for not training; most drop-off follows a failed search.';
+
+    var s1 = newNode('solution', 'Map + time-filter discovery feed');
+    s1.status = 'testing'; s1.notes = 'Geolocated; filter by time window and sport; surface what is bookable in the next 2 hours.';
+    var e1 = newNode('experiment', 'A/B test map-first vs list-first onboarding with 500 new users');
+    e1.method = 'Split new signups; measure first-week bookings.';
+    e1.threshold = '≥ 15% more first-week bookings on map-first';
+    e1.uncertainty = 'medium'; e1.impact = 'high'; e1.cost = 800; e1.result = 'pending';
+    s1.children.push(e1);
+
+    var o1a = newNode('opportunity', 'Organising a session with friends or colleagues is too much effort');
+    o1a.reach = 4; o1a.frequency = 3; o1a.severity = 4;
+    o1a.evidence = 'Diary study: group plans die in the WhatsApp back-and-forth before anyone books.';
+    var s2 = newNode('solution', 'One-tap group session create & invite');
+    s2.status = 'idea'; s2.notes = 'Create a session, share a link, friends join and pay their share.';
+    var e2 = newNode('experiment', 'Concierge group-booking for 20 teams; measure repeat');
+    e2.method = 'Manually organise the first group session for 20 teams.';
+    e2.threshold = '≥ 40% book a second group session within 3 weeks';
+    e2.uncertainty = 'high'; e2.impact = 'high'; e2.cost = 1500; e2.result = 'pending';
+    s2.children.push(e2);
+    o1a.children.push(s2);
+    o1.children.push(s1, o1a);
+
+    var o2 = newNode('opportunity', "Employees don't see exercise as affordable or employer-backed");
+    o2.reach = 4; o2.frequency = 3; o2.severity = 4;
+    o2.evidence = 'HR interviews: wellness budgets exist but go largely unused; employees unaware they are covered.';
+    var s3 = newNode('solution', 'Corporate allowance applied automatically at checkout');
+    s3.status = 'testing'; s3.notes = 'HR sets a monthly cap; the app deducts it at booking — no claims, no receipts.';
+    var e3 = newNode('experiment', 'Pilot the allowance with 2 companies for 6 weeks');
+    e3.method = 'Enable the allowance for ~200 employees; track redemption.';
+    e3.threshold = '≥ 40% of employees redeem at least once';
+    e3.uncertainty = 'high'; e3.impact = 'high'; e3.cost = 2500; e3.result = 'confirmed';
+    s3.children.push(e3);
+    o2.children.push(s3);
+
+    root.children.push(o1, o2);
+    return root;
+  }
+
   /* ---------- tree utils ---------- */
   function walk(node, fn, parent, depth) {
     fn(node, parent || null, depth || 0);
@@ -420,8 +495,15 @@
   }
 
   /* ---------- persistence ---------- */
+  function activeKey() {
+    if (window.FerraoProjects) { var k = window.FerraoProjects.key(); if (k) return k; }
+    return KEY;
+  }
   function save() {
-    try { localStorage.setItem(KEY, JSON.stringify({ seq: seq, tree: state })); } catch (e) {}
+    try { localStorage.setItem(activeKey(), JSON.stringify({ seq: seq, tree: state })); } catch (e) {}
+    if (window.FerraoProjects && window.FerraoProjects.activeId()) {
+      try { window.FerraoProjects.touch(window.FerraoProjects.activeId()); } catch (e) {}
+    }
     var s = document.getElementById('saved');
     s.classList.add('show');
     clearTimeout(save._t);
@@ -429,7 +511,7 @@
   }
   function load() {
     try {
-      var raw = localStorage.getItem(KEY);
+      var raw = localStorage.getItem(activeKey());
       if (!raw) return false;
       var obj = JSON.parse(raw);
       if (!obj || !obj.tree || obj.tree.type !== 'outcome') return false;
@@ -1008,8 +1090,30 @@
   });
 
   /* ---------- init ---------- */
-  if (!load()) { state = sampleTree(); }
-  render();
+  function loadActive() {
+    if (!load()) { state = newNode('outcome', ''); selId = null; }
+    render();
+  }
+  if (window.FerraoProjects) {
+    window.FerraoProjects.init({
+      toolNamespace: 'opportunity-solution-tree',
+      migrateFrom: KEY,
+      migrateName: 'Importado',
+      exampleSeeds: (function () {
+        var safe = sampleTree(); var safeSeq = seq;
+        var ss = sampleTreeSportspots(); var ssSeq = seq;
+        return {
+          'ex-safe-cycle': { seq: safeSeq, tree: safe },
+          'ex-sportspots': { seq: ssSeq, tree: ss }
+        };
+      })(),
+      onActiveData: loadActive   // fired by init() and on every case switch
+    });
+    var bar = document.getElementById('project-bar');
+    if (bar) window.FerraoProjects.mountBar(bar, { label: 'Business case' });
+  } else {
+    loadActive();
+  }
 
   /* ---------- PR/FAQ outcome handoff (receiver) ---------- */
   (function () {
