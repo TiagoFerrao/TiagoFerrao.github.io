@@ -254,11 +254,8 @@
     var cases = list();
     var openId = el.getAttribute('data-open') === '1';
     var locked = !!(a && a.locked);
-    // optional app-specific buttons (e.g. import/export/reset) rendered in the action row
-    var extras = opts.extras || [];
-    var extrasHtml = extras.map(function (x, i) {
-      return '<button class="fp-btn" data-act="extra" data-x="' + i + '" title="' + esc(x.title || '') + '">' + esc(x.label) + '</button>';
-    }).join('') + (extras.length ? '<span class="fp-sep"></span>' : '');
+    var menuOpen = el.getAttribute('data-menu') === '1';
+    var extras = opts.extras || [];   // app-specific actions (import/export/reset) \u2192 into the \u22ee menu
 
     var html = '<div class="fp-bar">' +
       '<span class="fp-label">' + esc(label) + '</span>' +
@@ -268,14 +265,7 @@
         '<span class="fp-chev">' + (openId ? '\u25b4' : '\u25be') + '</span>' +
       '</button>' +
       '<span class="fp-actions">' +
-        extrasHtml +
-        (locked
-          ? '<button class="fp-btn" data-act="reset" title="Repor os dados originais do exemplo">repor exemplo</button>'
-          : '<button class="fp-btn" data-act="rename" title="Renomear">renomear</button>') +
-        '<button class="fp-btn" data-act="duplicate" title="' + (locked ? 'Duplicar este exemplo para um caso edit\u00e1vel' : 'Duplicar') + '">duplicar</button>' +
-        (locked
-          ? '<button class="fp-btn" data-act="remove" title="Exemplo permanente \u2014 n\u00e3o pode ser apagado" disabled>apagar</button>'
-          : '<button class="fp-btn fp-danger" data-act="remove" title="Apagar">apagar</button>') +
+        '<button class="fp-btn fp-kebab" data-act="menu" title="A\u00e7\u00f5es" aria-label="A\u00e7\u00f5es" style="font-size:1.05rem;line-height:1;padding:4px 11px">\u22ee</button>' +
       '</span>';
 
     if (openId) {
@@ -290,6 +280,17 @@
       html += '<button class="fp-dd-new" data-act="create">\uFF0B novo business case</button>';
       html += '</div>';
     }
+
+    if (menuOpen) {
+      html += '<div class="fp-dd" style="left:auto;right:0;min-width:210px">';
+      extras.forEach(function (x, i) {
+        html += '<button class="fp-dd-item" data-act="extra" data-x="' + i + '" title="' + esc(x.title || '') + '"><span class="fp-di-name">' + esc(x.label) + '</span></button>';
+      });
+      html += '<button class="fp-dd-item" data-act="' + (locked ? 'reset' : 'rename') + '"><span class="fp-di-name">' + (locked ? 'repor exemplo' : 'renomear') + '</span></button>';
+      html += '<button class="fp-dd-item" data-act="duplicate"><span class="fp-di-name">duplicar</span></button>';
+      html += '<button class="fp-dd-item" data-act="remove"' + (locked ? ' disabled style="opacity:.45;cursor:not-allowed"' : '') + '><span class="fp-di-name"' + (locked ? '' : ' style="color:#ff6b6b"') + '>apagar</span></button>';
+      html += '</div>';
+    }
     html += '</div>';
     el.innerHTML = html;
 
@@ -297,15 +298,17 @@
       node.addEventListener('click', function (e) {
         e.stopPropagation();
         var act = node.getAttribute('data-act');
-        if (act === 'extra') {
-          var xs = opts.extras || [], x = xs[+node.getAttribute('data-x')];
-          if (x && typeof x.onClick === 'function') x.onClick();
+        // ⋮ actions menu: open/close (and close the case list)
+        if (act === 'menu') {
+          el.setAttribute('data-menu', el.getAttribute('data-menu') === '1' ? '0' : '1');
+          el.setAttribute('data-open', '0');
+          renderBar(el, opts);
           return;
         }
-        // read the live data-open at click time (not the captured render-time
-        // openId): pick/create re-render before the attribute settles, so the
-        // closure value can be stale.
+        // case-list toggle (read the live data-open at click time, not the
+        // render-time openId: pick/create re-render before the attribute settles).
         if (act === 'toggle') {
+          el.setAttribute('data-menu', '0');
           el.setAttribute('data-open', el.getAttribute('data-open') === '1' ? '0' : '1');
           renderBar(el, opts);
           return;
@@ -325,44 +328,51 @@
           renderBar(el, opts);
           return;
         }
+        // ---- items inside the ⋮ menu (each closes the menu) ----
+        el.setAttribute('data-menu', '0');
+        if (act === 'extra') {
+          var xs = opts.extras || [], x = xs[+node.getAttribute('data-x')];
+          renderBar(el, opts);
+          if (x && typeof x.onClick === 'function') x.onClick();
+          return;
+        }
         if (act === 'reset') {
-          if (!a || !a.locked) return;
-          el.setAttribute('data-open', '0');
-          if (confirm('Repor o exemplo «' + a.name + '»?\n\nAs tuas edições a este caso NESTA ferramenta serão substituídas pelos dados originais do exemplo. Outras ferramentas não são afetadas.')) {
+          if (a && a.locked && confirm('Repor o exemplo «' + a.name + '»?\n\nAs tuas edições a este caso NESTA ferramenta serão substituídas pelos dados originais do exemplo. Outras ferramentas não são afetadas.')) {
             resetExample(a.id);
-          } else {
-            renderBar(el, opts);
-          }
+          } else { renderBar(el, opts); }
           return;
         }
         if (act === 'rename') {
-          if (!a) return;
+          if (!a) { renderBar(el, opts); return; }
           var nn = prompt('Renomear business case:', a.name);
-          if (nn && nn.trim()) rename(a.id, nn.trim());
+          if (nn && nn.trim()) rename(a.id, nn.trim()); else renderBar(el, opts);
           return;
         }
         if (act === 'duplicate') {
-          if (!a) return;
+          if (!a) { renderBar(el, opts); return; }
           var dn = prompt('Nome da cópia:', a.name + ' (cópia)');
-          if (dn && dn.trim()) duplicate(a.id, dn.trim());
+          if (dn && dn.trim()) duplicate(a.id, dn.trim()); else renderBar(el, opts);
           return;
         }
         if (act === 'remove') {
-          if (!a) return;
-          if (cases.length <= 1) { alert('Não podes apagar o único business case. Cria outro primeiro.'); return; }
+          if (!a) { renderBar(el, opts); return; }
+          if (cases.length <= 1) { alert('Não podes apagar o único business case. Cria outro primeiro.'); renderBar(el, opts); return; }
           if (confirm('Apagar o business case "' + a.name + '"?\n\nIsto remove os dados deste caso nesta ferramenta. Outras ferramentas mantêm os seus dados até também apagares lá. Esta ação não se desfaz.')) {
             remove(a.id);
-          }
+          } else { renderBar(el, opts); }
           return;
         }
       });
     });
   }
 
-  // close any open dropdown when clicking elsewhere
+  // close any open dropdown / menu when clicking elsewhere
   global.addEventListener('click', function () {
     bars.forEach(function (b) {
-      if (b.el.getAttribute('data-open') === '1') { b.el.setAttribute('data-open', '0'); renderBar(b.el, b.opts); }
+      var ch = false;
+      if (b.el.getAttribute('data-open') === '1') { b.el.setAttribute('data-open', '0'); ch = true; }
+      if (b.el.getAttribute('data-menu') === '1') { b.el.setAttribute('data-menu', '0'); ch = true; }
+      if (ch) renderBar(b.el, b.opts);
     });
   });
 
