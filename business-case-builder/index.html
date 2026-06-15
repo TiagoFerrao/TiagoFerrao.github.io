@@ -222,16 +222,43 @@
     .fab{display:none;}              /* desktop uses the wing instead of the FAB */
     body.dock-open .wrap{margin-right:404px;}  /* reserve space so the open wing never covers content */
   }
+
+  /* shared business-case selector bar (projects.js) */
+  #project-bar:empty{display:none}
+  .fp-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:10px;position:relative;}
+  .fp-label{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);}
+  .fp-select{display:inline-flex;align-items:center;gap:8px;background:var(--bg-surface-2);border:1px solid var(--border-strong);border-radius:8px;padding:7px 12px;cursor:pointer;color:var(--text);}
+  .fp-name{font-weight:650;font-size:.9rem;color:var(--accent);}
+  .fp-chev{color:var(--text-dim);font-family:var(--mono);font-size:.7rem;}
+  .fp-actions{display:flex;gap:7px;margin-left:auto;flex-wrap:wrap;}
+  .fp-btn{font-family:var(--mono);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;padding:6px 11px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer;}
+  .fp-btn:hover{color:var(--text);background:var(--bg-surface-2);}
+  .fp-btn.fp-danger{border-color:rgba(255,107,107,.4);color:var(--danger);}
+  .fp-btn.fp-danger:hover{background:rgba(255,107,107,.08);}
+  .fp-btn[disabled]{opacity:.4;cursor:not-allowed;}
+  .fp-ex-tag{font-family:var(--mono);font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);border:1px solid var(--border-strong);border-radius:5px;padding:1px 5px;}
+  .fp-dd{position:absolute;top:calc(100% - 6px);left:14px;z-index:40;margin-top:8px;min-width:280px;max-width:380px;background:var(--bg-surface-2);border:1px solid var(--border-strong);border-radius:10px;overflow:hidden;box-shadow:0 8px 28px rgba(0,0,0,.5);}
+  .fp-dd-item{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;padding:10px 14px;border:none;border-bottom:1px solid var(--border);background:transparent;cursor:pointer;}
+  .fp-dd-item:hover{background:rgba(125,227,141,.06);}
+  .fp-dd-item.fp-on{background:rgba(125,227,141,.10);}
+  .fp-di-name{font-size:.86rem;color:var(--text);}
+  .fp-dd-item.fp-on .fp-di-name{color:var(--accent);font-weight:650;}
+  .fp-di-ex{font-family:var(--mono);font-size:.52rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);border:1px solid var(--border-strong);border-radius:5px;padding:1px 5px;margin-left:6px;vertical-align:middle;}
+  .fp-di-meta{font-family:var(--mono);font-size:.62rem;color:var(--text-dim);white-space:nowrap;}
+  .fp-di-check{color:var(--accent);}
+  .fp-dd-new{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:11px 14px;color:var(--accent);font-family:var(--mono);font-size:.64rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;background:rgba(125,227,141,.05);border:none;}
+  .fp-dd-new:hover{background:rgba(125,227,141,.1);}
 </style>
 </head>
 <body>
 <div id="root"></div>
 
+<script src="../tools/projects.js"></script>
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <script type="text/babel">
-const {useState,useEffect,useMemo} = React;
+const {useState,useEffect,useMemo,useRef} = React;
 const LS_KEY = "business-case-builder-v1";
 
 /* ============ seed example (illustrative — replace with your own) ============ */
@@ -418,6 +445,174 @@ const BLANK = {
 
 const EXAMPLES = { aerosense:{label:"AeroSense (demo)", seed:SEED}, wwtp:{label:"WWTP sludge → compost", seed:WWTP_SEED} };
 
+/* ============ shared example case: SportSpots (corporate sports marketplace) ============ */
+const SPORTSPOTS_CASE = {
+  meta:{ name:"SportSpots", tagline:"A platform marketplace connecting corporate employees with sports trainers & facilities.", startYear:2018, years:5 },
+  fundamentals:{
+    problemWhat:"Employees who want to stay active can't fit it around work — finding a nearby session at the right time, then booking and paying, spans several apps.",
+    problemWhy:"The logistics kill the habit; meanwhile gyms and trainers run with empty, unsold slots and companies carry the cost of unhealthy, stressed staff.",
+    problemWho:"Corporate employees and their HR / wellbeing teams; on the supply side, trainers and sport-facility managers.",
+    solution:"One app to discover, book and pay for sport activities in minutes, with a corporate allowance applied automatically and gamified team identity.",
+    unfairAdvantage:"Blends amateur and professional users in one marketplace, fills venues' empty slots, and turns corporate wellbeing into a gamified, social experience.",
+    segments:[{name:"Corporate employees", early:"Tech & services firms with wellbeing budgets"},{name:"Trainers & venues", early:"Urban gyms with off-peak capacity"}],
+    channels:"HR partnerships; app stores; in-gym promotion; word of mouth.",
+    revenueStreams:[{name:"Corporate subscription", desc:"Per-employee monthly wellbeing plan", seg:"Corporate employees"},{name:"Booking fee", desc:"Fee on paid activities", seg:"All"}]
+  },
+  assumptions:[
+    {id:1, text:"Employers will pay a per-employee wellness subscription (€4–8 / employee / mo)", cat:"Market", amount:"6", validated:false, comments:"5 of 8 HR leads accepted the range"},
+    {id:2, text:">40% of pilot employees book a session within 30 days", cat:"Market", amount:"40%", validated:false, comments:"To test in a 2-company pilot"},
+    {id:3, text:"Enough venues list and keep empty slots updated for dense supply", cat:"Costs", amount:"", validated:false, comments:"Manual onboarding sprint"}
+  ],
+  stakeholders:[
+    {name:"Employee", desc:"End user — wants to train without the logistics"},
+    {name:"HR / wellbeing lead", desc:"Buyer — wants a measurable, used wellbeing benefit"},
+    {name:"Trainer / venue", desc:"Supply — wants steady clients and higher occupancy"}
+  ],
+  needs:[
+    {name:"Find sessions fast", desc:"Nearby, at the right time, in seconds", stk:"Employee", priority:9},
+    {name:"One-minute booking", desc:"Book and pay in a few taps", stk:"Employee", priority:8},
+    {name:"Fill empty slots", desc:"Monetise off-peak capacity", stk:"Trainer / venue", priority:7},
+    {name:"Usage reporting", desc:"Show HR who's active and the benefit ROI", stk:"HR / wellbeing lead", priority:6}
+  ],
+  competitors:{
+    rows:["Main statement","Price point","Two-sided marketplace","Corporate allowance","Gamification","Off-peak fill"],
+    cols:["SportSpots","Urban Sports Club","SportID"],
+    data:{
+      "Main statement":["Marketplace + corporate wellbeing","Multi-venue membership","Corporate sports benefit"],
+      "Price point":["€6/employee/mo + fees","€30–80/mo","Per-employee benefit"],
+      "Two-sided marketplace":["9","4","5"],
+      "Corporate allowance":["9","6","8"],
+      "Gamification":["8","3","4"],
+      "Off-peak fill":["8","6","5"]
+    }
+  },
+  opportunity:{
+    pricePerUnit:72,
+    segments:[
+      {name:"Portugal corporates (employees)", tam:[300000,330000,363000,399300,439230], reach:[1,2.5,4.5,6.5,8.5]},
+      {name:"Iberia expansion", tam:[0,0,800000,880000,968000], reach:[0,0,0.5,1.5,3]}
+    ]
+  },
+  concept:{
+    description:"A consumer mobile app for discovery / booking / payment, plus a corporate HR dashboard for allowances and reporting.",
+    components:[
+      {name:"Mobile app (iOS/Android)", cost:6, module:"Software"},
+      {name:"Backend, matching & cloud", cost:4, module:"Software"},
+      {name:"Payments & allowance engine", cost:2, module:"Software"},
+      {name:"Onboarding & content (per active user)", cost:3, module:"Service"}
+    ]
+  },
+  specs:[
+    {name:"Search-to-result", component:"Software", target:"< 2 s, geolocated", need:"Find sessions fast"},
+    {name:"Booking flow", component:"Software", target:"≤ 3 taps, < 60 s", need:"One-minute booking"},
+    {name:"Slot management", component:"Software", target:"real-time availability", need:"Fill empty slots"},
+    {name:"HR dashboard", component:"Software", target:"adoption & usage exports", need:"Usage reporting"}
+  ],
+  finance:{
+    productionCostPerUnit:15,
+    fse:{
+      "Office rent":[12000,18000,24000,30000,36000],
+      "Cloud & payments":[8000,16000,30000,48000,70000],
+      "Marketing":[40000,70000,120000,180000,240000],
+      "Travel":[6000,10000,14000,18000,22000],
+      "Legal/Consulting":[10000,12000,15000,18000,22000],
+      "Others":[8000,10000,13000,16000,20000]
+    },
+    headcount:[3,5,9,14,20], costHeadcount:[30000,31000,32000,33000,34000],
+    outsourcing:[2,3,4,5,6], costOutsourcing:[22000,23000,24000,25000,26000]
+  }
+};
+
+/* ============ shared example case: SAFE-Cycle (municipal non-revenue-water) ============ */
+const SAFE_CASE = {
+  meta:{ name:"SAFE-Cycle", tagline:"Municipal non-revenue-water leak detection: telemetry-located leaks and dispatched repairs, sold per DMA.", startYear:2026, years:5 },
+  fundamentals:{
+    problemWhat:"Locating a water-network leak takes ~11 days on average, and almost a third of treated water never reaches a paying customer.",
+    problemWhy:"Night-flow anomalies are spotted late and crews chase vague areas; non-revenue water is a direct, recurring financial loss for operators.",
+    problemWho:"Municipal water operators and their night-shift ops teams; the DMA managers accountable for water-loss targets.",
+    solution:"Correlate acoustic and pressure telemetry across DMAs to localise leaks to ~50 m and auto-dispatch the nearest qualified crew.",
+    unfairAdvantage:"Cross-DMA correlation on existing telemetry (low hardware lift), plus a repair-crew network — not just an alert dashboard.",
+    segments:[{name:"Municipal operators", early:"High-loss DMAs in mid-size utilities"},{name:"Utility groups", early:"Multi-utility groups (e.g. AdP)"}],
+    channels:"Per-DMA SaaS; utility-group framework deals; water-loss programmes & industry bodies.",
+    revenueStreams:[{name:"Per-DMA subscription", desc:"Monthly SaaS per district metered area", seg:"Municipal operators"},{name:"Recovery success fee", desc:"Share of water recovered", seg:"All"}]
+  },
+  assumptions:[
+    {id:1, text:"Operators trust automated alerts enough to dispatch crews at night", cat:"Market", amount:"", validated:false, comments:"Shadow-mode pilot first"},
+    {id:2, text:"Correlation localises ≥ 70% of bursts within a 50 m radius", cat:"Costs", amount:"70%", validated:false, comments:"Backtest on 6 months of SCADA"},
+    {id:3, text:"Municipalities accept a per-DMA subscription model (~€120/DMA/mo)", cat:"Market", amount:"120", validated:false, comments:"Pricing interviews pending"}
+  ],
+  stakeholders:[
+    {name:"Operations lead", desc:"Buyer & user — owns water-loss targets"},
+    {name:"Field crew", desc:"Supply — needs well-scoped, geolocated jobs"},
+    {name:"Utility group CFO", desc:"Approves spend; wants recovered-water ROI"}
+  ],
+  needs:[
+    {name:"Locate leaks fast", desc:"From ~11 days to under 48 h", stk:"Operations lead", priority:9},
+    {name:"Trustworthy alerts", desc:"Few false positives, dispatch-ready", stk:"Operations lead", priority:8},
+    {name:"Recovery reporting", desc:"Quantify water & € recovered", stk:"Utility group CFO", priority:7},
+    {name:"Scoped dispatch", desc:"Tight search radius for crews", stk:"Field crew", priority:6}
+  ],
+  competitors:{
+    rows:["Main statement","Price point","Cross-DMA correlation","Works on existing telemetry","Crew dispatch","Recovery reporting"],
+    cols:["SAFE-Cycle","Acoustic-logger vendor","SCADA threshold alarms"],
+    data:{
+      "Main statement":["Correlation + dispatch network","Hardware loggers","Built-in SCADA alarms"],
+      "Price point":["€120/DMA/mo","Hardware capex","Included, basic"],
+      "Cross-DMA correlation":["9","4","2"],
+      "Works on existing telemetry":["9","3","8"],
+      "Crew dispatch":["8","2","1"],
+      "Recovery reporting":["8","4","3"]
+    }
+  },
+  opportunity:{
+    pricePerUnit:1440,
+    segments:[
+      {name:"Portugal DMAs", tam:[3000,3000,3000,3000,3000], reach:[2,5,9,14,20]},
+      {name:"Iberia DMAs", tam:[0,0,12000,12000,12000], reach:[0,0,1,3,6]}
+    ]
+  },
+  concept:{
+    description:"A cloud platform ingesting acoustic + pressure telemetry, a correlation engine, and a crew-dispatch marketplace.",
+    components:[
+      {name:"Telemetry ingestion & SCADA integration", cost:200, module:"Software"},
+      {name:"Correlation & anomaly engine", cost:160, module:"Software"},
+      {name:"Dispatch & job-scoping module", cost:90, module:"Software"},
+      {name:"Onboarding & model tuning (per DMA)", cost:150, module:"Service"}
+    ]
+  },
+  specs:[
+    {name:"Leak localisation", component:"Software", target:"≤ 50 m radius", need:"Locate leaks fast"},
+    {name:"Detection rate", component:"Software", target:"≥ 70% of bursts, < 2 false/wk", need:"Trustworthy alerts"},
+    {name:"Recovery report", component:"Software", target:"m³ & € recovered / cluster", need:"Recovery reporting"},
+    {name:"Dispatch packet", component:"Software", target:"map + radius + history", need:"Scoped dispatch"}
+  ],
+  finance:{
+    productionCostPerUnit:600,
+    fse:{
+      "Office rent":[18000,24000,30000,36000,42000],
+      "Cloud & data":[20000,35000,55000,80000,110000],
+      "Field-ops support":[15000,30000,55000,85000,120000],
+      "Marketing & sales":[30000,50000,90000,140000,200000],
+      "Legal/Consulting":[12000,15000,18000,22000,26000],
+      "Others":[8000,11000,14000,18000,22000]
+    },
+    headcount:[4,6,10,15,21], costHeadcount:[34000,35000,36000,37000,38000],
+    outsourcing:[3,4,6,8,10], costOutsourcing:[26000,27000,28000,29000,30000]
+  }
+};
+
+// load the model for the active business case (or fall back to the old internal library)
+function loadActiveModel(){
+  try{
+    var FP = window.FerraoProjects;
+    if(FP){ var k = FP.key(); if(k){ var s = localStorage.getItem(k); return s ? JSON.parse(s) : clone(BLANK); } }
+    var raw = localStorage.getItem(LIB_KEY);
+    if(raw){ var L = JSON.parse(raw); if(L && L.cases && L.cases.length){ var a = L.cases.find(c=>c.id===L.activeId)||L.cases[0]; return a.model; } }
+    var old = localStorage.getItem(LS_KEY); if(old) return JSON.parse(old);
+  }catch(e){}
+  return clone(SEED);
+}
+
 const clone=o=>JSON.parse(JSON.stringify(o));
 const pad=(a,n,fill=0)=>{a=Array.isArray(a)?a.slice(0,n):[];while(a.length<n)a.push(a.length?a[a.length-1]:fill);return a;};
 const eur=(n)=>{if(!isFinite(n))return"—";const a=Math.abs(n);const s=n<0?"-":"";
@@ -529,37 +724,56 @@ const LIB_KEY = "business-case-builder-lib-v1";
 const newId = ()=> Date.now()*1000 + Math.floor(Math.random()*1000);
 
 function App(){
-  // ---- case library: { activeId, cases:[{id, model}] } ----
-  const [lib,setLib]=useState(()=>{
-    try{
-      const raw=localStorage.getItem(LIB_KEY); if(raw){const L=JSON.parse(raw); if(L&&L.cases&&L.cases.length) return L;}
-      const old=localStorage.getItem(LS_KEY); // migrate a single saved model from the previous version
-      if(old){const m=JSON.parse(old); const id=newId(); return {activeId:id, cases:[{id, model:m}]};}
-    }catch(e){}
-    const id=newId(); return {activeId:id, cases:[{id, model:clone(SEED)}]};
-  });
+  // ---- per-case state, backed by the shared registry (FerraoProjects) ----
+  const [model,setModel]=useState(loadActiveModel);
   const [step,setStep]=useState(0);
   const [introOpen,setIntroOpen]=useState(()=>{try{return localStorage.getItem("business-case-builder-intro")!=="closed";}catch(e){return true;}});
   const toggleIntro=()=>setIntroOpen(o=>{const n=!o;try{localStorage.setItem("business-case-builder-intro",n?"open":"closed");}catch(e){}return n;});
   const [drawer,setDrawer]=useState(false);          // mobile overlay
   const [dockCollapsed,setDockCollapsed]=useState(false);  // desktop wing
-  useEffect(()=>{try{localStorage.setItem(LIB_KEY,JSON.stringify(lib));}catch(e){}},[lib]);
+  const barRef=useRef(null);
+
+  // wire the shared business-case layer; migrate the old internal library once (non-destructive)
+  useEffect(()=>{
+    var FP=window.FerraoProjects; if(!FP) return;
+    FP.init({
+      toolNamespace:"business-case-builder",
+      exampleSeeds:{ "ex-sportspots": SPORTSPOTS_CASE, "ex-safe-cycle": SAFE_CASE },
+      onActiveData:function(){ setModel(loadActiveModel()); }
+    });
+    try{
+      if(localStorage.getItem("bcb-migrated")!=="1"){
+        var raw=localStorage.getItem(LIB_KEY), firstId=null;
+        if(raw){ var L=JSON.parse(raw);
+          (L&&L.cases||[]).forEach(function(c){
+            var nm=(c.model&&c.model.meta&&c.model.meta.name)||"Imported case";
+            var id=FP.create(nm); if(!firstId)firstId=id;
+            try{ localStorage.setItem(FP.key(), JSON.stringify(c.model)); }catch(e){}
+          });
+        }
+        if(firstId) FP.setActive(firstId);   // land on the user's own first case, not an example
+        localStorage.setItem("bcb-migrated","1");
+      }
+    }catch(e){}
+    if(barRef.current) FP.mountBar(barRef.current,{label:"Business case"});
+    setModel(loadActiveModel());
+  },[]);
+  // persist edits to the active case
+  useEffect(()=>{
+    try{ var FP=window.FerraoProjects,k=FP&&FP.key();
+      if(k){ localStorage.setItem(k,JSON.stringify(model)); FP.touch(FP.activeId()); }
+      else { localStorage.setItem(LS_KEY,JSON.stringify(model)); }
+    }catch(e){}
+  },[model]);
   useEffect(()=>{try{document.body.classList.toggle("dock-open",!dockCollapsed);}catch(e){}},[dockCollapsed]);
 
-  const activeId = lib.cases.some(c=>c.id===lib.activeId) ? lib.activeId : lib.cases[0].id;
-  const model = lib.cases.find(c=>c.id===activeId).model;
-  const setModel=(updater)=>setLib(L=>{
-    const aid=L.cases.some(c=>c.id===L.activeId)?L.activeId:L.cases[0].id;
-    return {...L, cases:L.cases.map(c=> c.id===aid ? {...c, model:(typeof updater==="function"?updater(c.model):updater)} : c)};
-  });
-
-  // ---- case library actions ----
-  const caseName=(m)=> (m&&m.meta&&m.meta.name) ? m.meta.name : "Untitled case";
-  const addCase=(seed,activate)=>{const id=newId(); setLib(L=>({activeId:activate?id:L.activeId, cases:[...L.cases,{id, model:clone(seed||BLANK)}]})); if(activate)setStep(0);};
-  const duplicateCase=()=>{const id=newId(); setLib(L=>{const src=L.cases.find(c=>c.id===activeId)||L.cases[0]; const m=clone(src.model); m.meta.name=caseName(src.model)+" (copy)"; return {activeId:id, cases:[...L.cases,{id, model:m}]};}); setStep(0);};
-  const deleteCase=()=>{ if(lib.cases.length<=1){alert("Keep at least one case.");return;} if(!confirm("Delete \""+caseName(model)+"\"? This can't be undone."))return; setLib(L=>{const cases=L.cases.filter(c=>c.id!==activeId); return {activeId:cases[0].id, cases};}); setStep(0);};
-  const switchCase=(id)=>{setLib(L=>({...L,activeId:id})); setStep(0);};
-  const loadExample=(key)=>{ const ex=EXAMPLES[key]; if(ex) addCase(ex.seed,true); };
+  // load a worked-example template as a NEW case (AeroSense / WWTP / imported file)
+  const loadCaseSeed=(name,seed)=>{
+    var FP=window.FerraoProjects;
+    if(FP){ FP.create(name); try{ localStorage.setItem(FP.key(), JSON.stringify(clone(seed))); }catch(e){} }
+    setModel(clone(seed)); setStep(0);
+  };
+  const loadExample=(key)=>{ const ex=EXAMPLES[key]; if(ex) loadCaseSeed(ex.label, ex.seed); };
 
   const upd=(path,v)=>setModel(m=>{const c=clone(m);let o=c;const ks=path.split(".");for(let i=0;i<ks.length-1;i++)o=o[ks[i]];o[ks[ks.length-1]]=v;return c;});
   const r=useMemo(()=>compute(model),[model]);
@@ -584,7 +798,7 @@ function App(){
   /* --- io --- */
   const exportJSON=()=>{const b=new Blob([JSON.stringify(model,null,2)],{type:"application/json"});const a=document.createElement("a");
     a.href=URL.createObjectURL(b);a.download=(model.meta.name||"case").replace(/\s+/g,"_")+".case.json";a.click();};
-  const importJSON=(e)=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{addCase(JSON.parse(rd.result),true);}catch(x){alert("Invalid file");}};rd.readAsText(f);e.target.value="";};
+  const importJSON=(e)=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{var m=JSON.parse(rd.result); loadCaseSeed((m.meta&&m.meta.name)||"Imported case", m);}catch(x){alert("Invalid file");}};rd.readAsText(f);e.target.value="";};
 
   /* --- segment / list mutators --- */
   const setSeg=(i,k,v)=>setModel(m=>{const c=clone(m);c.opportunity.segments[i][k]=v;return c;});
@@ -607,15 +821,9 @@ function App(){
       <button className="btn" onClick={exportJSON}>export</button>
     </div>
 
+    <div id="project-bar" ref={barRef}></div>
     <div className="casesbar">
-      <span className="cb-label">saved cases</span>
-      <select value={activeId} onChange={e=>switchCase(+e.target.value)} title="Switch between saved cases">
-        {lib.cases.map(c=><option key={c.id} value={c.id}>{caseName(c.model)}</option>)}
-      </select>
-      <button className="btn" onClick={()=>addCase(BLANK,true)} title="Start a new blank case">+ new</button>
-      <button className="btn" onClick={duplicateCase} title="Duplicate the current case">duplicate</button>
-      <button className="btn" onClick={deleteCase} title="Delete the current case">delete</button>
-      <span className="cb-sep"></span>
+      <span className="cb-label">templates</span>
       <select className="ex" value="" onChange={e=>{if(e.target.value){loadExample(e.target.value);e.target.value="";}}} title="Load a worked example as a new case">
         <option value="">load example…</option>
         <option value="aerosense">AeroSense (demo)</option>
