@@ -138,16 +138,40 @@
     #vp h4,#vp .stmt b,#vp .vcol{color:#1c6b41;} #vp .stmt{color:#111;border-left-color:#1c6b41;background:#f4f8f5;}
     .doctools,.note{display:none;}
   }
+  /* shared business-case selector bar (projects.js) */
+  #project-bar:empty{display:none}
+  .fp-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;margin-bottom:14px;position:relative;}
+  .fp-label{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);}
+  .fp-select{display:inline-flex;align-items:center;gap:8px;background:var(--panel-2);border:1px solid var(--border-strong);border-radius:8px;padding:7px 12px;cursor:pointer;color:var(--text);}
+  .fp-name{font-weight:650;font-size:.9rem;color:var(--accent);}
+  .fp-chev{color:var(--dim);font-family:var(--mono);font-size:.7rem;}
+  .fp-actions{display:flex;gap:7px;margin-left:auto;flex-wrap:wrap;}
+  .fp-btn{font-family:var(--mono);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;padding:6px 11px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--dim);cursor:pointer;}
+  .fp-btn:hover{color:var(--text);background:var(--panel-2);}
+  .fp-btn.fp-danger{border-color:rgba(224,122,107,.4);color:var(--red);}
+  .fp-ex-tag{font-family:var(--mono);font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);border:1px solid var(--border-strong);border-radius:5px;padding:1px 5px;}
+  .fp-dd{position:absolute;top:calc(100% - 6px);left:14px;z-index:40;margin-top:8px;min-width:280px;max-width:380px;background:var(--panel-2);border:1px solid var(--border-strong);border-radius:10px;overflow:hidden;box-shadow:0 8px 28px rgba(0,0,0,.5);}
+  .fp-dd-item{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;padding:10px 14px;border:none;border-bottom:1px solid var(--border);background:transparent;cursor:pointer;}
+  .fp-dd-item:hover{background:rgba(125,227,141,.06);}
+  .fp-dd-item.fp-on{background:rgba(125,227,141,.10);}
+  .fp-di-name{font-size:.86rem;color:var(--text);}
+  .fp-dd-item.fp-on .fp-di-name{color:var(--accent);font-weight:650;}
+  .fp-di-ex{font-family:var(--mono);font-size:.52rem;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);border:1px solid var(--border-strong);border-radius:5px;padding:1px 5px;margin-left:6px;vertical-align:middle;}
+  .fp-di-meta{font-family:var(--mono);font-size:.62rem;color:var(--dim);white-space:nowrap;}
+  .fp-di-check{color:var(--accent);}
+  .fp-dd-new{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:11px 14px;color:var(--accent);font-family:var(--mono);font-size:.64rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;background:rgba(125,227,141,.05);border:none;}
+  .fp-dd-new:hover{background:rgba(125,227,141,.1);}
 </style>
 </head>
 <body>
 <div id="root"></div>
+<script src="projects.js"></script>
 
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <script type="text/babel">
-const {useState,useEffect} = React;
+const {useState,useEffect,useRef} = React;
 const LS_KEY = "valueprop-v2";
 const clone = o => JSON.parse(JSON.stringify(o));
 const uid = ()=> Date.now()*1000 + Math.floor(Math.random()*1000);
@@ -183,6 +207,27 @@ const SEED = (()=>{
 })();
 const BLANK = { seg:{name:"",desc:""}, jobs:[], pains:[], gains:[], products:[], relievers:[], creators:[] };
 
+/* ---------- SAFE-Cycle seed (municipal non-revenue-water) ---------- */
+const SAFE_SEED = (()=>{
+  const jobs=[J("Keep water losses below the contract / regulatory target",1),J("Find and fix leaks before they escalate",1),J("Justify spend & show ROI to the group",0),J("Avoid service complaints and street flooding",1)];
+  const pains=[J("Locating a leak takes ~11 days on average",1),J("Almost a third of treated water is non-revenue",1),J("Night-flow anomalies are caught late",1),J("Crews chase vague areas without a tight radius",0)];
+  const gains=[J("Locate leaks within hours, to ~50 m",1),J("Recover water and defer capital works",1),J("Dispatch crews with a precise search area",0),J("Prove recovered water in € and m³",0)];
+  const products=[{id:uid(),t:"SAFE-Cycle detection platform",links:[jobs[0].id,jobs[1].id,jobs[3].id]},{id:uid(),t:"Crew dispatch app",links:[jobs[1].id]}];
+  const relievers=[{id:uid(),t:"Cross-DMA correlation → ~50 m localisation",links:[pains[0].id,pains[3].id]},{id:uid(),t:"Night-flow anomaly detection on existing telemetry",links:[pains[1].id,pains[2].id]}];
+  const creators=[{id:uid(),t:"Recovery dashboard (€ & m³ per cluster)",links:[gains[1].id,gains[3].id]},{id:uid(),t:"Auto-dispatch with map + radius",links:[gains[0].id,gains[2].id]}];
+  return { seg:{name:"Municipal water operators", desc:"Ops teams at municipal water utilities accountable for non-revenue-water targets across their DMAs."}, jobs, pains, gains, products, relievers, creators };
+})();
+
+// load the model for the active business case (or fall back to single-state)
+function loadActiveModel(){
+  try{
+    var FP = window.FerraoProjects;
+    if(FP){ var k = FP.key(); if(k){ var s = localStorage.getItem(k); return s ? JSON.parse(s) : clone(BLANK); } }
+    var s2 = localStorage.getItem(LS_KEY); if(s2) return JSON.parse(s2);
+  }catch(e){}
+  return clone(SEED);
+}
+
 /* geometry */
 const CX=240, CY=240, R=180;
 function pt(cx,cy,r,deg){const a=deg*Math.PI/180;return [cx+r*Math.cos(a), cy+r*Math.sin(a)];}
@@ -196,10 +241,22 @@ const VMAP = {
 };
 
 function App(){
-  const [m,setM]=useState(()=>{try{const s=localStorage.getItem(LS_KEY);if(s)return JSON.parse(s);}catch(e){}return clone(SEED);});
+  const [m,setM]=useState(loadActiveModel);
   const [sel,setSel]=useState("jobs");
   const [vpOpen,setVpOpen]=useState(false);
-  useEffect(()=>{try{localStorage.setItem(LS_KEY,JSON.stringify(m));}catch(e){}},[m]);
+  const barRef=useRef(null);
+  useEffect(()=>{
+    var FP=window.FerraoProjects; if(!FP) return;
+    FP.init({ toolNamespace:"value-proposition", migrateFrom:LS_KEY, migrateName:"Importado",
+      exampleSeeds:{ "ex-sportspots":SEED, "ex-safe-cycle":SAFE_SEED },
+      onActiveData:function(){ setM(loadActiveModel()); } });
+    if(barRef.current) FP.mountBar(barRef.current,{label:"Business case", extras:[{label:"blank",title:"Clear the canvas",onClick:blank}]});
+    setM(loadActiveModel());
+  },[]);
+  useEffect(()=>{ try{ var FP=window.FerraoProjects,k=FP&&FP.key();
+    if(k){ localStorage.setItem(k,JSON.stringify(m)); FP.touch(FP.activeId()); }
+    else { localStorage.setItem(LS_KEY,JSON.stringify(m)); }
+  }catch(e){} },[m]);
 
   const Z = ZONES[sel];
   const profileOf = (z)=> ZONES[z].side==="profile" ? z : ZONES[z].pair; // the profile zone of the active pair
@@ -270,10 +327,8 @@ function App(){
     <div className="topbar">
       <div className="brand"><span className="pp">~/</span> value proposition canvas
         <small>fit your offer to the customer — then see why it's valuable</small></div>
-      <div className="sp"></div>
-      <button className="btn" onClick={example}>example</button>
-      <button className="btn" onClick={blank}>blank</button>
     </div>
+    <div id="project-bar" ref={barRef}></div>
 
     <div className="seg">
       <div className="l">Customer segment</div>
