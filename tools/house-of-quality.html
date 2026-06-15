@@ -146,16 +146,40 @@
   @media(max-width:980px){
     .layout{grid-template-columns:1fr;} .aside{position:static;}
   }
+  /* shared business-case selector bar (projects.js) */
+  #project-bar:empty{display:none}
+  .fp-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;margin-bottom:14px;position:relative;}
+  .fp-label{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);}
+  .fp-select{display:inline-flex;align-items:center;gap:8px;background:var(--panel-2);border:1px solid var(--border-strong);border-radius:8px;padding:7px 12px;cursor:pointer;color:var(--text);}
+  .fp-name{font-weight:650;font-size:.9rem;color:var(--accent);}
+  .fp-chev{color:var(--dim);font-family:var(--mono);font-size:.7rem;}
+  .fp-actions{display:flex;gap:7px;margin-left:auto;flex-wrap:wrap;}
+  .fp-btn{font-family:var(--mono);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;padding:6px 11px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--dim);cursor:pointer;}
+  .fp-btn:hover{color:var(--text);background:var(--panel-2);}
+  .fp-btn.fp-danger{border-color:rgba(224,122,107,.4);color:var(--red);}
+  .fp-ex-tag{font-family:var(--mono);font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);border:1px solid var(--border-strong);border-radius:5px;padding:1px 5px;}
+  .fp-dd{position:absolute;top:calc(100% - 6px);left:14px;z-index:40;margin-top:8px;min-width:280px;max-width:380px;background:var(--panel-2);border:1px solid var(--border-strong);border-radius:10px;overflow:hidden;box-shadow:0 8px 28px rgba(0,0,0,.5);}
+  .fp-dd-item{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;padding:10px 14px;border:none;border-bottom:1px solid var(--border);background:transparent;cursor:pointer;}
+  .fp-dd-item:hover{background:rgba(125,227,141,.06);}
+  .fp-dd-item.fp-on{background:rgba(125,227,141,.10);}
+  .fp-di-name{font-size:.86rem;color:var(--text);}
+  .fp-dd-item.fp-on .fp-di-name{color:var(--accent);font-weight:650;}
+  .fp-di-ex{font-family:var(--mono);font-size:.52rem;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);border:1px solid var(--border-strong);border-radius:5px;padding:1px 5px;margin-left:6px;vertical-align:middle;}
+  .fp-di-meta{font-family:var(--mono);font-size:.62rem;color:var(--dim);white-space:nowrap;}
+  .fp-di-check{color:var(--accent);}
+  .fp-dd-new{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:11px 14px;color:var(--accent);font-family:var(--mono);font-size:.64rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;background:rgba(125,227,141,.05);border:none;}
+  .fp-dd-new:hover{background:rgba(125,227,141,.1);}
 </style>
 </head>
 <body>
 <div id="root"></div>
+<script src="projects.js"></script>
 
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <script type="text/babel">
-const {useState,useEffect,useMemo} = React;
+const {useState,useEffect,useMemo,useRef} = React;
 const LS_KEY = "house-of-quality-v1";
 const uid = ()=> Date.now()*1000 + Math.floor(Math.random()*1000);
 const clone = o => JSON.parse(JSON.stringify(o));
@@ -203,6 +227,45 @@ const BLANK = {
   needs:[{id:uid(),text:"",imp:3}], specs:[], rel:{},
   competitors:[], comp:{}, roofOn:false, roof:{}
 };
+
+/* ---------- seed: SAFE-Cycle (municipal non-revenue-water QFD) ---------- */
+const safeNeeds = [
+  {id:1,text:"Locate leaks fast",imp:5},
+  {id:2,text:"Trustworthy alerts (few false positives)",imp:5},
+  {id:3,text:"Work with existing telemetry",imp:4},
+  {id:4,text:"Scoped crew dispatch",imp:3},
+  {id:5,text:"Quantify recovery (water & €)",imp:4},
+];
+const safeSpecs = [
+  {id:11,text:"Cross-DMA acoustic correlation",target:"≤ 50 m radius",dir:"down",from:1},
+  {id:12,text:"Night-flow anomaly detection",target:"≥ 70% bursts, < 2 false/wk",dir:"up",from:2},
+  {id:13,text:"SCADA / telemetry integration",target:"OPC-UA, existing feeds",dir:"up",from:3},
+  {id:14,text:"Crew dispatch packet",target:"map + 50 m radius",dir:"up",from:4},
+  {id:15,text:"Recovery dashboard",target:"m³ & € / cluster",dir:"up",from:5},
+];
+const safeRel = {};
+[[1,11,9],[1,12,3],[1,14,1],[2,12,9],[2,11,3],[3,13,9],[3,12,1],[4,14,9],[4,11,3],[5,15,9],[5,12,1]]
+  .forEach(([n,s,v])=>safeRel[rk(n,s)]=v);
+const safeComp = {};
+[[1,"us",4],[1,"Loggers",3],[1,"SCADA",2],[2,"us",4],[2,"Loggers",3],[2,"SCADA",2],
+ [3,"us",5],[3,"Loggers",2],[3,"SCADA",4],[4,"us",4],[4,"Loggers",2],[4,"SCADA",1],
+ [5,"us",4],[5,"Loggers",3],[5,"SCADA",2]].forEach(([n,w,v])=>safeComp[n+"|"+w]=v);
+const SAFE_SEED = {
+  meta:{name:"SAFE-Cycle", tagline:"From operator needs to ranked detection capabilities (QFD)."},
+  needs:safeNeeds, specs:safeSpecs, rel:safeRel,
+  competitors:[{id:"Loggers",name:"Acoustic loggers"},{id:"SCADA",name:"SCADA alarms"}],
+  comp:safeComp, roofOn:true, roof:{"11|12":2,"12|13":1,"14|15":1,"11|14":1}
+};
+
+// load the model for the active business case (or fall back to single-state)
+function loadActiveModel(){
+  try{
+    var FP = window.FerraoProjects;
+    if(FP){ var k = FP.key(); if(k){ var s = localStorage.getItem(k); return s ? JSON.parse(s) : clone(BLANK); } }
+    var s2 = localStorage.getItem(LS_KEY); if(s2) return JSON.parse(s2);
+  }catch(e){}
+  return clone(SEED);
+}
 
 /* ---------- engine ---------- */
 function compute(m){
@@ -300,10 +363,23 @@ function Roof({specs,roof,onCell}){
 
 /* ====================================================== */
 function App(){
-  const [m,setM]=useState(()=>{try{const s=localStorage.getItem(LS_KEY);if(s)return JSON.parse(s);}catch(e){}return clone(SEED);});
+  const [m,setM]=useState(loadActiveModel);
   const [step,setStep]=useState(0);
   const [focus,setFocus]=useState(null); // section detail in right panel
-  useEffect(()=>{try{localStorage.setItem(LS_KEY,JSON.stringify(m));}catch(e){}},[m]);
+  const barRef=useRef(null);
+  // wire the shared business-case layer (graceful: standalone if projects.js is absent)
+  useEffect(()=>{
+    var FP=window.FerraoProjects; if(!FP) return;
+    FP.init({ toolNamespace:"house-of-quality", migrateFrom:LS_KEY, migrateName:"Importado",
+      exampleSeeds:{ "ex-sportspots":SEED, "ex-safe-cycle":SAFE_SEED },
+      onActiveData:function(){ setM(loadActiveModel()); } });
+    if(barRef.current) FP.mountBar(barRef.current,{label:"Business case", extras:[{label:"blank",title:"Clear to a blank house",onClick:blank}]});
+    setM(loadActiveModel());
+  },[]);
+  useEffect(()=>{ try{ var FP=window.FerraoProjects,k=FP&&FP.key();
+    if(k){ localStorage.setItem(k,JSON.stringify(m)); FP.touch(FP.activeId()); }
+    else { localStorage.setItem(LS_KEY,JSON.stringify(m)); }
+  }catch(e){} },[m]);
   const r = useMemo(()=>compute(m),[m]);
 
   const up=(path,v)=>setM(x=>{const c=clone(x);let o=c;const k=path.split(".");for(let i=0;i<k.length-1;i++)o=o[k[i]];o[k[k.length-1]]=v;return c;});
@@ -346,10 +422,8 @@ function App(){
     <div className="topbar">
       <div className="brand"><span className="pp">~/</span> house of quality
         <small>QFD — turn ranked customer needs into prioritised specifications</small></div>
-      <div className="sp"></div>
-      <button className="btn" onClick={reset}>example</button>
-      <button className="btn" onClick={blank}>blank</button>
     </div>
+    <div id="project-bar" ref={barRef}></div>
     <div className="idea">
       <input className="name" value={m.meta.name} onChange={e=>up("meta.name",e.target.value)} placeholder="Product / project name"/>
       <input className="tag" value={m.meta.tagline} onChange={e=>up("meta.tagline",e.target.value)} placeholder="One line about it"/>
