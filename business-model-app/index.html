@@ -82,6 +82,9 @@
   /* the two market sides get a tinted edge, like actors in the diagram */
   .cell.side-buy{border-left:2px solid var(--info);} .cell.side-sell{border-left:2px solid var(--warn);}
   .cell.core{border-color:var(--border-strong);background:rgba(0,55,66,.65);}
+  /* Value Proposition bridges the perspective divider — opaque bg so the dashed
+     line sits behind it (the card reads as "in front of the line"). */
+  .cell.a-value{background:#002e38;}
   .cell h3{margin:0 0 7px;font-family:var(--mono);font-weight:700;font-size:11px;letter-spacing:1.1px;
     text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
   .cell h3 .ic{font-size:13px;opacity:.9;}
