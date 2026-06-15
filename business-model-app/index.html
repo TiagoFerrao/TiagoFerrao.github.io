@@ -248,6 +248,7 @@
   .fp-di-check{color:var(--accent);}
   .fp-dd-new{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:11px 14px;color:var(--accent);font-family:var(--mono);font-size:.64rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;background:rgba(125,227,141,.05);border:none;}
   .fp-dd-new:hover{background:rgba(125,227,141,.1);}
+  .fp-sep{width:1px;align-self:stretch;background:var(--border);margin:0 3px;}
 </style>
 </head>
 <body>
@@ -439,6 +440,9 @@ function App(){
   const [introOpen,setIntroOpen]=useState(()=>{try{return localStorage.getItem("platform-model-intro")!=="closed";}catch(e){return true;}});
   const toggleIntro=()=>setIntroOpen(o=>{const n=!o;try{localStorage.setItem("platform-model-intro",n?"open":"closed");}catch(e){}return n;});
   const barRef = useRef(null);
+  const fileRef = useRef(null);
+  const modelRef = useRef(model);
+  useEffect(()=>{ modelRef.current = model; }, [model]);
 
   // wire the shared business-case layer (graceful: standalone if projects.js is absent)
   useEffect(()=>{
@@ -450,7 +454,11 @@ function App(){
       onActiveData: function(){ setModel(loadActiveModel()); }
     });
     if(exampleMode) FP.setActive(FP.EXAMPLE_IDS.sportspots);
-    if(barRef.current) FP.mountBar(barRef.current, { label:"Business case" });
+    if(barRef.current) FP.mountBar(barRef.current, { label:"Business case", extras:[
+      {label:"import", title:"Import a model JSON file", onClick:triggerImport},
+      {label:"export", title:"Export this case as JSON", onClick:exportJSON},
+      {label:"reset",  title:"Clear this case to a blank canvas", onClick:reset}
+    ] });
     setModel(loadActiveModel());
   }, []);
 
@@ -475,10 +483,12 @@ function App(){
 
   const reset=()=>{ if(confirm("Clear this case to a blank canvas? (Example cases can be restored with “repor exemplo”.)")) setModel(clone(BLANK)); };
   const exportJSON=()=>{
-    const blob=new Blob([JSON.stringify(model,null,2)],{type:"application/json"});
+    var m=modelRef.current;
+    const blob=new Blob([JSON.stringify(m,null,2)],{type:"application/json"});
     const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
-    a.download=(model.meta.name||"model").replace(/\s+/g,"_")+".model.json"; a.click();
+    a.download=(m.meta.name||"model").replace(/\s+/g,"_")+".model.json"; a.click();
   };
+  const triggerImport=()=>{ if(fileRef.current) fileRef.current.click(); };
   const importJSON=(e)=>{
     const f=e.target.files[0]; if(!f) return;
     const rd=new FileReader(); rd.onload=()=>{ try{setModel(JSON.parse(rd.result));}catch(err){alert("Invalid model file");} }; rd.readAsText(f);
@@ -491,12 +501,8 @@ function App(){
     <div className="topbar">
       <div className="brand"><span className="pp">~/</span> platform canvas
         <small>interactive business model + first financial estimate</small></div>
-      <div className="spacer"></div>
-      <label className="btn" style={{cursor:"pointer"}}>import
-        <input type="file" accept="application/json" onChange={importJSON} style={{display:"none"}}/></label>
-      <button className="btn" onClick={exportJSON}>export</button>
-      <button className="btn" onClick={reset}>reset</button>
     </div>
+    <input type="file" ref={fileRef} accept="application/json" onChange={importJSON} style={{display:"none"}}/>
 
     <div className="intro">
       <div className="intro-head" onClick={toggleIntro}>

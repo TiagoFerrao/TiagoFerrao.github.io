@@ -254,6 +254,11 @@
     var cases = list();
     var openId = el.getAttribute('data-open') === '1';
     var locked = !!(a && a.locked);
+    // optional app-specific buttons (e.g. import/export/reset) rendered in the action row
+    var extras = opts.extras || [];
+    var extrasHtml = extras.map(function (x, i) {
+      return '<button class="fp-btn" data-act="extra" data-x="' + i + '" title="' + esc(x.title || '') + '">' + esc(x.label) + '</button>';
+    }).join('') + (extras.length ? '<span class="fp-sep"></span>' : '');
 
     var html = '<div class="fp-bar">' +
       '<span class="fp-label">' + esc(label) + '</span>' +
@@ -263,6 +268,7 @@
         '<span class="fp-chev">' + (openId ? '\u25b4' : '\u25be') + '</span>' +
       '</button>' +
       '<span class="fp-actions">' +
+        extrasHtml +
         (locked
           ? '<button class="fp-btn" data-act="reset" title="Repor os dados originais do exemplo">repor exemplo</button>'
           : '<button class="fp-btn" data-act="rename" title="Renomear">renomear</button>') +
@@ -291,6 +297,11 @@
       node.addEventListener('click', function (e) {
         e.stopPropagation();
         var act = node.getAttribute('data-act');
+        if (act === 'extra') {
+          var xs = opts.extras || [], x = xs[+node.getAttribute('data-x')];
+          if (x && typeof x.onClick === 'function') x.onClick();
+          return;
+        }
         // read the live data-open at click time (not the captured render-time
         // openId): pick/create re-render before the attribute settles, so the
         // closure value can be stale.

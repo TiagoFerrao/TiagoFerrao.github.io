@@ -248,6 +248,7 @@
   .fp-di-check{color:var(--accent);}
   .fp-dd-new{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:11px 14px;color:var(--accent);font-family:var(--mono);font-size:.64rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;background:rgba(125,227,141,.05);border:none;}
   .fp-dd-new:hover{background:rgba(125,227,141,.1);}
+  .fp-sep{width:1px;align-self:stretch;background:var(--border);margin:0 3px;}
 </style>
 </head>
 <body>
@@ -732,6 +733,10 @@ function App(){
   const [drawer,setDrawer]=useState(false);          // mobile overlay
   const [dockCollapsed,setDockCollapsed]=useState(false);  // desktop wing
   const barRef=useRef(null);
+  const fileRef=useRef(null);
+  const modelRef=useRef(model);
+  useEffect(()=>{ modelRef.current=model; },[model]);
+  const triggerImport=()=>{ if(fileRef.current) fileRef.current.click(); };
 
   // wire the shared business-case layer; migrate the old internal library once (non-destructive)
   useEffect(()=>{
@@ -755,7 +760,10 @@ function App(){
         localStorage.setItem("bcb-migrated","1");
       }
     }catch(e){}
-    if(barRef.current) FP.mountBar(barRef.current,{label:"Business case"});
+    if(barRef.current) FP.mountBar(barRef.current,{label:"Business case", extras:[
+      {label:"import", title:"Import a case JSON file", onClick:triggerImport},
+      {label:"export", title:"Export this case as JSON", onClick:exportJSON}
+    ]});
     setModel(loadActiveModel());
   },[]);
   // persist edits to the active case
@@ -796,7 +804,7 @@ function App(){
   const delAssum=(id)=>setModel(m=>({...m,assumptions:m.assumptions.filter(a=>a.id!==id)}));
 
   /* --- io --- */
-  const exportJSON=()=>{const b=new Blob([JSON.stringify(model,null,2)],{type:"application/json"});const a=document.createElement("a");
+  const exportJSON=()=>{const model=modelRef.current;const b=new Blob([JSON.stringify(model,null,2)],{type:"application/json"});const a=document.createElement("a");
     a.href=URL.createObjectURL(b);a.download=(model.meta.name||"case").replace(/\s+/g,"_")+".case.json";a.click();};
   const importJSON=(e)=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{var m=JSON.parse(rd.result); loadCaseSeed((m.meta&&m.meta.name)||"Imported case", m);}catch(x){alert("Invalid file");}};rd.readAsText(f);e.target.value="";};
 
@@ -816,10 +824,8 @@ function App(){
     <div className="topbar">
       <div className="brand"><span className="pp">~/</span> business case builder
         <small>idea → market → costs → financial prediction · structure from the 360 business-case template</small></div>
-      <div className="spacer"></div>
-      <label className="btn" style={{cursor:"pointer"}}>import<input type="file" accept="application/json" onChange={importJSON} style={{display:"none"}}/></label>
-      <button className="btn" onClick={exportJSON}>export</button>
     </div>
+    <input type="file" ref={fileRef} accept="application/json" onChange={importJSON} style={{display:"none"}}/>
 
     <div id="project-bar" ref={barRef}></div>
     <div className="casesbar">
