@@ -164,6 +164,26 @@
   .seedbadge{font-size:11px;color:var(--text-mut);}
   .seedbadge b{color:var(--accent-2);}
 
+  /* back link + tool intro — toolbox convention (mirrors tools/*.html) */
+  .back{display:inline-block;font-family:var(--mono);font-size:12.5px;color:var(--text-dim);text-decoration:none;margin-bottom:12px;}
+  .back:hover{color:var(--accent);}
+  .intro{background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;margin-bottom:18px;}
+  .intro-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 16px;cursor:pointer;user-select:none;}
+  .intro-head:hover{background:var(--bg-surface-2);border-radius:10px;}
+  .intro-head .t{font-family:var(--mono);font-weight:700;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);}
+  .intro-head .chev{font-family:var(--mono);font-size:12px;color:var(--text-dim);}
+  .intro-body{padding:0 16px 16px;}
+  .intro-body p{font-size:13px;color:var(--text-dim);line-height:1.65;max-width:920px;margin:8px 0 0;}
+  .intro-body strong{color:var(--text);font-weight:600;}
+  .intro-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:11px;margin-top:14px;}
+  .intro-col{background:var(--bg-surface-2);border:1px solid var(--border);border-radius:9px;padding:11px 13px;}
+  .intro-col h3{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;margin:0 0 6px;font-weight:700;}
+  .intro-col.use h3{color:var(--accent);}
+  .intro-col.notuse h3{color:var(--warn);}
+  .intro-col.fits h3{color:var(--info);}
+  .intro-col p{font-size:12px;margin:0;line-height:1.55;color:var(--text-dim);}
+  .intro-col a{color:var(--accent);}
+
   /* help tooltips */
   .help{margin-left:auto;flex:none;width:16px;height:16px;border:1px solid var(--border);border-radius:50%;
     font-size:10px;color:var(--text-dim);display:inline-flex;align-items:center;justify-content:center;
@@ -328,6 +348,8 @@ function App(){
     return clone(SEED);
   });
   const [tab,setTab]=useState("canvas");
+  const [introOpen,setIntroOpen]=useState(()=>{try{return localStorage.getItem("platform-model-intro")!=="closed";}catch(e){return true;}});
+  const toggleIntro=()=>setIntroOpen(o=>{const n=!o;try{localStorage.setItem("platform-model-intro",n?"open":"closed");}catch(e){}return n;});
   useEffect(()=>{ if(exampleMode) return; try{localStorage.setItem(LS_KEY,JSON.stringify(model));}catch(e){} },[model]);
 
   const setMeta=(k,v)=>setModel(m=>({...m,meta:{...m.meta,[k]:v}}));
@@ -354,6 +376,7 @@ function App(){
 
   return (
    <div className="wrap">
+    <a className="back" href="../innovation.html">← back to the innovation process</a>
     <div className="topbar">
       <div className="brand"><span className="pp">~/</span> platform model builder
         <small>interactive business model + first financial estimate</small></div>
@@ -362,6 +385,21 @@ function App(){
         <input type="file" accept="application/json" onChange={importJSON} style={{display:"none"}}/></label>
       <button className="btn" onClick={exportJSON}>export</button>
       <button className="btn" onClick={reset}>reset</button>
+    </div>
+
+    <div className="intro">
+      <div className="intro-head" onClick={toggleIntro}>
+        <span className="t">What is this &amp; when to use it</span>
+        <span className="chev">{introOpen?"▾":"▸"}</span>
+      </div>
+      {introOpen && <div className="intro-body">
+        <p>The <strong>Business Platform Canvas</strong> maps a multi-sided platform from two angles — the <strong>product perspective</strong> (what you build) and the <strong>business perspective</strong> (the market it serves) — bridged by a single value proposition. Fill the canvas, list your revenue segments, then switch to the <strong>financial estimate</strong> tab to turn adoption assumptions into a first revenue and EBITDA projection. It is the platform-specific cousin of the classic Business Model Canvas (2018 ISCTE thesis, Fig. 28).</p>
+        <div className="intro-cols">
+          <div className="intro-col use"><h3>Use it when</h3><p>You are designing a platform or marketplace — value comes from connecting two or more groups (buyers &amp; sellers, users &amp; producers) and network effects matter.</p></div>
+          <div className="intro-col notuse"><h3>Don't use it when</h3><p>You are modelling a simple linear, single-sided business (a standard Business Model Canvas fits better), or you only need to sharpen the offer — start with the <a href="../tools/value-proposition.html">Value Proposition Designer</a>.</p></div>
+          <div className="intro-col fits"><h3>How it fits the toolbox</h3><p>Validated pains and the value proposition feed the canvas; the <strong>Value Capture</strong> box feeds the financial estimate, turning the model into numbers you can pressure-test.</p></div>
+        </div>
+      </div>}
     </div>
 
     <div className="idea">
