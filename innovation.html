@@ -80,10 +80,11 @@
        once around when you click either discovery phase (2.1 ⇄ 2.2) */
     .disc-wrap .dw-label { z-index: 2; }
     .dw-loop { position: absolute; inset: 0; overflow: visible; pointer-events: none; z-index: 1; }
-    .dw-loop .dw-arrow { fill: var(--accent-primary); opacity: .55; }
-    .dw-loop .dw-comet { fill: none; stroke: none; }   /* invisible motion path (geometry only) */
-    .dw-loop .dw-mover { fill: var(--accent-primary); stroke: var(--bg-primary); stroke-width: 1; stroke-linejoin: round;
-      opacity: 0; filter: drop-shadow(0 0 2px rgba(125,227,141,.5)); }
+    .dw-loop .dw-arrow, .dw-loop .dw-mover { fill: var(--accent-primary); stroke: var(--bg-primary);
+      stroke-width: 1; stroke-linejoin: round; filter: drop-shadow(0 0 2px rgba(125,227,141,.5)); }
+    .dw-loop .dw-arrow { opacity: .85; }                /* resting arrow at the start point */
+    .dw-loop .dw-mover { opacity: 0; }                  /* travels on click */
+    .dw-loop .dw-comet { fill: none; stroke: none; }    /* invisible motion path (geometry only) */
 
     @media (max-width: 760px) {
       .phasenav { flex-wrap: wrap; }
@@ -362,7 +363,7 @@
             i++;
           }
           wrap.appendChild(row);
-          wrap.insertAdjacentHTML('beforeend', '<svg class="dw-loop" preserveAspectRatio="none" aria-hidden="true"><polygon class="dw-arrow" points="0,-4 8,0 0,4"></polygon><polygon class="dw-arrow" points="0,-4 8,0 0,4"></polygon><path class="dw-comet"></path><polygon class="dw-mover" points="-6,-8 12,0 -6,8 -2,0"></polygon></svg>');
+          wrap.insertAdjacentHTML('beforeend', '<svg class="dw-loop" preserveAspectRatio="none" aria-hidden="true"><polygon class="dw-arrow" points="-6,-8 12,0 -6,8 -2,0"></polygon><path class="dw-comet"></path><polygon class="dw-mover" points="-6,-8 12,0 -6,8 -2,0"></polygon></svg>');
           wrap.addEventListener('click', function () { sweepLoop(wrap.querySelector('.dw-loop')); });
           nav.appendChild(wrap);
         } else {
@@ -378,10 +379,12 @@
     /* ---- discovery iteration loop (2.1 ⇄ 2.2): arrows + on-click comet ---- */
     function dwPath(W, H, r) {
       var cx = W / 2;
-      return 'M ' + cx + ' 0 L ' + (W - r) + ' 0 A ' + r + ' ' + r + ' 0 0 1 ' + W + ' ' + r +
+      // start at bottom-centre (clear of the top label); travel clockwise
+      return 'M ' + cx + ' ' + H + ' L ' + r + ' ' + H + ' A ' + r + ' ' + r + ' 0 0 1 0 ' + (H - r) +
+             ' L 0 ' + r + ' A ' + r + ' ' + r + ' 0 0 1 ' + r + ' 0' +
+             ' L ' + (W - r) + ' 0 A ' + r + ' ' + r + ' 0 0 1 ' + W + ' ' + r +
              ' L ' + W + ' ' + (H - r) + ' A ' + r + ' ' + r + ' 0 0 1 ' + (W - r) + ' ' + H +
-             ' L ' + r + ' ' + H + ' A ' + r + ' ' + r + ' 0 0 1 0 ' + (H - r) +
-             ' L 0 ' + r + ' A ' + r + ' ' + r + ' 0 0 1 ' + r + ' 0 L ' + cx + ' 0 Z';
+             ' L ' + cx + ' ' + H + ' Z';
     }
     function drawLoop() {
       var wrap = document.querySelector('.disc-wrap'); if (!wrap) return;
@@ -391,25 +394,24 @@
       svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
       svg.setAttribute('width', W); svg.setAttribute('height', H);
       var comet = svg.querySelector('.dw-comet'); comet.setAttribute('d', d);
-      var L = comet.getTotalLength();
-      var arrows = svg.querySelectorAll('.dw-arrow');
-      [0.14, 0.62].forEach(function (f, k) {
-        if (!arrows[k]) return;
-        var p = comet.getPointAtLength(L * f), q = comet.getPointAtLength(L * f + 1);
+      var arrow = svg.querySelector('.dw-arrow');
+      if (arrow) {
+        var p = comet.getPointAtLength(0), q = comet.getPointAtLength(2);   // start = bottom-centre
         var a = Math.atan2(q.y - p.y, q.x - p.x) * 180 / Math.PI;
-        arrows[k].setAttribute('transform', 'translate(' + p.x + ' ' + p.y + ') rotate(' + a + ')');
-      });
+        arrow.setAttribute('transform', 'translate(' + p.x + ' ' + p.y + ') rotate(' + a + ')');
+      }
     }
     function sweepLoop(svg) {
       if (!svg) return;
-      var path = svg.querySelector('.dw-comet'), mover = svg.querySelector('.dw-mover');
+      var path = svg.querySelector('.dw-comet'), mover = svg.querySelector('.dw-mover'), arrow = svg.querySelector('.dw-arrow');
       if (!path || !mover) return;
       var L = path.getTotalLength(); if (!L) return;
       if (svg.__dwRaf) cancelAnimationFrame(svg.__dwRaf);
-      var dur = 1600, start = performance.now();
+      if (arrow) arrow.style.opacity = '0';                 // resting arrow hides while the mover travels
+      var dur = 2400, start = performance.now();
       function frame(now) {
         var t = (now - start) / dur;
-        if (t >= 1) { mover.style.opacity = 0; svg.__dwRaf = null; return; }
+        if (t >= 1) { mover.style.opacity = 0; if (arrow) arrow.style.opacity = ''; svg.__dwRaf = null; return; }
         var te = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;   // ease-in-out
         var dist = te * L;
         var p = path.getPointAtLength(dist), q = path.getPointAtLength(Math.min(dist + 1, L));
