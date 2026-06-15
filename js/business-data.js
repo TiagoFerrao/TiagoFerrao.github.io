@@ -90,13 +90,22 @@ const businessData = [
     blurb: 'IPAC is the official Portuguese entity responsible for the accreditation of national certification bodies. Certifications such as ISO9001 or NP4457 can only be emitted by accredited certification bodies. My role involves evaluating innovation management systems across organisations.'
   },
   {
-    company: 'Ready2innov',
-    role: 'Partner | Digital Disruption',
-    year: '2019',
-    dates: 'Sep 2019 – present',
+    company: 'SportSpots',
+    role: 'Co-Founder',
+    year: '2018',
+    dates: '2018 – 2020',
     location: 'Lisbon',
     cities: ['lisboa'],
-    blurb: 'Ready2innov is my consultancy project on the innovation management subject. Our mission is to support the development of innovative products, services and processes but most of all to capacitate all kinds of organisations to develop their own innovation competences and culture. Through Ready2innov I delivered innovation-management training for APQ — the Portuguese Association for Quality — with a proposal pipeline spanning consultancies, industrial groups and research institutes. The brand was registered with INPI in 2020.'
+    blurb: 'SportSpots was a digital platform to manage sport activities — and my entrepreneurial deep-dive. Its business plan was my ISCTE Master\'s dissertation, applying lean startup, Quality Function Deployment and the platform canvas. I co-founded and ran it for two years: it was selected by the KickUP Sports Accelerator — the first European sports accelerator launched within a major sports club, in partnership with SL Benfica — and won recognition across several startup competitions, before I sold my stake to my business partner.'
+  },
+  {
+    company: 'Ready2innov',
+    role: 'Co-Founder',
+    year: '2020',
+    dates: '2020 – 2021',
+    location: 'Lisbon',
+    cities: ['lisboa'],
+    blurb: 'Ready2innov was my innovation-management consultancy, co-founded to help organisations build their own innovation competences and culture — not just to deliver projects for them. I registered the brand with INPI in 2020 and delivered innovation-management training for APQ, the Portuguese Association for Quality, with a proposal pipeline spanning consultancies, industrial groups and research institutes.'
   },
   {
     company: 'SmartEnergyLab',
