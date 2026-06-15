@@ -52,23 +52,16 @@
   .idea input.tag{font-family:var(--mono);font-size:14px;color:var(--text-dim);background:transparent;border:none;width:100%;padding:3px 0;}
   .idea input.tag:hover,.idea input.tag:focus{outline:none;color:var(--text);}
 
-  /* canvas — Product | Business perspective split (thesis Fig. 14 shape);
-     Value Proposition is the central bridge straddling the dashed divider. */
-  .persp-canvas{position:relative;}
-  .persp-canvas::before{content:"";position:absolute;top:2px;bottom:0;left:37.5%;width:0;
-    border-left:1.5px dashed var(--border-strong);transform:translateX(-50%);pointer-events:none;z-index:0;}
-  .persp{display:flex;margin-bottom:10px;font-family:var(--mono);font-weight:700;font-size:11px;
-    letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);}
-  .persp span:first-child{width:37.5%;text-align:center;}
-  .persp span:last-child{flex:1;text-align:center;}
-  .canvas{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;position:relative;z-index:1;
+  /* canvas grid — mirrors Figure 28 (Business Platform Canvas) layout */
+  .canvas{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;
     grid-template-areas:
-      "feat    value   problem  users"
-      "diff    value   net      sellers"
-      "rep     value   net      sellers";}
-  .canvas-foot{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:11px;}
+      "feat    value   problem users"
+      "diff    net     net     sellers"
+      "rep     net     net     sellers"
+      "metrics metrics capture capture";}
   .a-feat{grid-area:feat}.a-value{grid-area:value}.a-problem{grid-area:problem}.a-users{grid-area:users}
   .a-diff{grid-area:diff}.a-net{grid-area:net}.a-sellers{grid-area:sellers}.a-rep{grid-area:rep}
+  .a-metrics{grid-area:metrics}.a-capture{grid-area:capture}
   .cell{background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;padding:12px 13px;
     display:flex;flex-direction:column;min-height:128px;transition:.15s;}
   .cell:hover{border-color:var(--border-strong);box-shadow:inset 0 0 30px rgba(0,60,60,.35),0 0 14px rgba(var(--accent-rgb),.08);}
@@ -169,9 +162,6 @@
   .help .tip .eg b{color:var(--accent-2);font-weight:700;}
 
   @media(max-width:880px){.canvas{display:flex;flex-direction:column}
-    .canvas-foot{grid-template-columns:1fr}
-    .persp-canvas::before{display:none}
-    .persp{flex-direction:column;gap:2px}.persp span{width:auto!important;text-align:left!important}
     .fin{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}
     .help .tip{right:auto;left:-6px;width:220px}
     .help .tip::before{right:auto;left:9px}}
@@ -367,10 +357,8 @@ function App(){
     </div>
 
     {tab==="canvas" && <>
-      <div className="persp-canvas">
-      <div className="persp"><span>Product perspective</span><span>Business perspective</span></div>
       <div className="canvas">
-        <Cell cls="a-feat" icon="⚷" title="Product Key Features"
+        <Cell cls="a-feat core" icon="⚷" title="Product Key Features"
           value={model.canvas.feat} onChange={v=>setCanvas("feat",v)} ph="What can users actually do in the product?"
           tip="The concrete features that deliver the value — the things users actually do in the product. List the few that matter, not every screen."
           eg="join an activity for a set price, affiliate with a team or corporation, create and join events."/>
@@ -390,7 +378,7 @@ function App(){
           value={model.canvas.diff} onChange={v=>setCanvas("diff",v)} ph="Why do you win vs. the alternatives?"
           tip="Why you win versus existing alternatives — the edge that's hard for others to copy."
           eg="blends amateur + professional users; gamified team and corporate identity."/>
-        <Cell cls="a-net" icon="⇄" title="Network Effects" hint="the flywheel"
+        <Cell cls="a-net core" icon="⇄" title="Network Effects" hint="the flywheel"
           value={model.canvas.net} onChange={v=>setCanvas("net",v)} ph="Why does it get better as more users join?"
           tip="Why the platform becomes more valuable as more people join — the flywheel that makes a marketplace defensible."
           eg="invites pull in external users; competition and more activity available as the base grows."/>
@@ -402,14 +390,11 @@ function App(){
           value={model.canvas.rep} onChange={v=>setCanvas("rep",v)} ph="Why do users come back after the first match?"
           tip="Why users return after the first buyer–seller match — what drives retention instead of one-and-done usage."
           eg="points tradable for rewards or charity; activity tied to discovering new locations."/>
-      </div>
-      </div>
-      <div className="canvas-foot">
         <Cell cls="a-metrics" icon="▤" title="Key Metrics"
           value={model.canvas.metrics} onChange={v=>setCanvas("metrics",v)} ph="Which few numbers prove the model works?"
           tip="The handful of numbers that tell you the model is working — pick leading indicators of adoption and engagement, not vanity counts."
           eg="registrations, activities created and joined, teams created, usage frequency, rewards redeemed."/>
-        <Cell cls="a-capture" icon="⊞" title="Value Capture" hint="feeds the financial tab →"
+        <Cell cls="a-capture core" icon="⊞" title="Value Capture" hint="feeds the financial tab →"
           value={model.canvas.capture} onChange={v=>setCanvas("capture",v)} ph="How does the core interaction make money?"
           tip="How the platform turns the core interaction into revenue. This is what you model in the revenue segments below and the financial tab."
           eg="corporate subscriptions (€1 / employee / month) plus a fee on paid activities."/>
