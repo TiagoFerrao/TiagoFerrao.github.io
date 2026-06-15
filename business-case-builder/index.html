@@ -44,6 +44,23 @@
   .wrap{max-width:1100px;margin:0 auto;padding:22px 20px 90px;}
   .back{display:inline-block;font-family:var(--mono);font-size:12.5px;color:var(--text-dim);text-decoration:none;margin-bottom:12px;}
   .back:hover{color:var(--accent);}
+  /* tool intro — toolbox convention (mirrors tools/*.html) */
+  .intro{background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;margin-bottom:18px;}
+  .intro-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 16px;cursor:pointer;user-select:none;}
+  .intro-head:hover{background:var(--bg-surface-2);border-radius:10px;}
+  .intro-head .t{font-family:var(--mono);font-weight:700;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);}
+  .intro-head .chev{font-family:var(--mono);font-size:12px;color:var(--text-dim);}
+  .intro-body{padding:0 16px 16px;}
+  .intro-body p{font-size:13px;color:var(--text-dim);line-height:1.65;max-width:920px;margin:8px 0 0;}
+  .intro-body strong{color:var(--text);font-weight:600;}
+  .intro-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:11px;margin-top:14px;}
+  .intro-col{background:var(--bg-surface-2);border:1px solid var(--border);border-radius:9px;padding:11px 13px;}
+  .intro-col h3{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;margin:0 0 6px;font-weight:700;}
+  .intro-col.use h3{color:var(--accent);}
+  .intro-col.notuse h3{color:var(--warn);}
+  .intro-col.fits h3{color:var(--info);}
+  .intro-col p{font-size:12px;margin:0;line-height:1.55;color:var(--text-dim);}
+  .intro-col a{color:var(--accent);}
 
   .topbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--border);padding-bottom:14px;margin-bottom:18px;}
   .brand{font-family:var(--disp);font-weight:700;font-size:19px;color:var(--text);}
@@ -522,6 +539,8 @@ function App(){
     const id=newId(); return {activeId:id, cases:[{id, model:clone(SEED)}]};
   });
   const [step,setStep]=useState(0);
+  const [introOpen,setIntroOpen]=useState(()=>{try{return localStorage.getItem("business-case-builder-intro")!=="closed";}catch(e){return true;}});
+  const toggleIntro=()=>setIntroOpen(o=>{const n=!o;try{localStorage.setItem("business-case-builder-intro",n?"open":"closed");}catch(e){}return n;});
   const [drawer,setDrawer]=useState(false);          // mobile overlay
   const [dockCollapsed,setDockCollapsed]=useState(false);  // desktop wing
   useEffect(()=>{try{localStorage.setItem(LIB_KEY,JSON.stringify(lib));}catch(e){}},[lib]);
@@ -602,6 +621,21 @@ function App(){
         <option value="aerosense">AeroSense (demo)</option>
         <option value="wwtp">WWTP sludge → compost</option>
       </select>
+    </div>
+
+    <div className="intro">
+      <div className="intro-head" onClick={toggleIntro}>
+        <span className="t">What is this &amp; when to use it</span>
+        <span className="chev">{introOpen?"▾":"▸"}</span>
+      </div>
+      {introOpen && <div className="intro-body">
+        <p>The <strong>Business Case Builder</strong> is a 7-step wizard that turns a validated idea into a defensible financial prediction — Fundamentals → Stakeholders → Opportunity size (TAM/SOM) → Concept &amp; costs → Product spec → Financial plan → Results. It mirrors the 360 business-case template, builds a multi-year P&amp;L through to EBITDA, and keeps a floating <strong>Assumptions</strong> drawer of every number you commit to.</p>
+        <div className="intro-cols">
+          <div className="intro-col use"><h3>Use it when</h3><p>You have a validated concept and need to make the case to invest — sizing the opportunity, costing the build, and projecting the multi-year P&amp;L for a decision-maker or investor.</p></div>
+          <div className="intro-col notuse"><h3>Don't use it when</h3><p>You are still discovering the problem or shaping the offer — start with the <a href="../tools/value-proposition.html">Value Proposition Designer</a> or <a href="../tools/opportunity-solution-tree.html">Opportunity Solution Tree</a> — or you only need a one-page model (<a href="../business-model-canvas/">Business Model Canvas</a> / <a href="../business-model-app/">Platform Model Builder</a>).</p></div>
+          <div className="intro-col fits"><h3>How it fits the toolbox</h3><p>It is the numbers end of the toolbox: validated assumptions and the chosen concept feed the wizard; the output is a financial prediction you can defend.</p></div>
+        </div>
+      </div>}
     </div>
 
     <div className="idea">
