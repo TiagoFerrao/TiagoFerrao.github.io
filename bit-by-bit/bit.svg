@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Bit: the little phosphor screen that brightens as you learn -->
+  <rect x="5" y="6" width="54" height="52" rx="14" fill="#002a33" stroke="#0c4a52" stroke-width="2"/>
+  <circle cx="47" cy="15" r="2.6" fill="#ffb24d"/>
+  <g fill="#7DE38D">
+    <circle cx="25" cy="29" r="4.6"/>
+    <circle cx="41" cy="29" r="4.6"/>
+  </g>
+  <path d="M23 39 Q32 49 41 39" fill="none" stroke="#7DE38D" stroke-width="4.2" stroke-linecap="round"/>
+</svg>
