@@ -70,6 +70,7 @@
           <h3>Bit by Bit &mdash; AI Literacy Crash Course</h3>
           <p class="card-meta"><span class="accent">Interactive AI Primer</span> &middot; 2026 &middot; EN &middot; PT</p>
           <p>A self-built, gamified crash course that takes you from &ldquo;what is this thing actually doing&rdquo; to building responsibly with AI &mdash; eight short sections, each with a quick self-check. Meet <em>Bit</em>, a little screen that brightens as your AI literacy climbs. <a href="bit-by-bit/" target="_blank" rel="noopener">&rsaquo; <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px;"><path d="M10 14 21 3M21 3h-6M21 3v6"/><path d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"/></svg> start the course</a></p>
+          <p id="bit-stats" hidden style="font-family:var(--font-body);font-size:var(--text-xs);color:var(--text-muted);letter-spacing:.02em;margin-top:var(--space-sm);"></p>
         </article>
 
         <article class="content-card fade-in">
@@ -130,5 +131,29 @@
   <script src="js/theme-toggle.js"></script>
   <script src="js/footer.js"></script>
   <script src="js/main.js"></script>
+
+  <!-- Discreet Bit-by-Bit usage counter, pulled from GoatCounter's public
+       visitor-counter endpoint (no login, aggregate only). Requires the
+       visitor counter to be enabled in the GoatCounter site settings. -->
+  <script>
+  (function(){
+    var GC = "https://bitcounter.goatcounter.com/counter/";
+    function num(path){
+      return fetch(GC + encodeURIComponent(path) + ".json")
+        .then(function(r){ return r.ok ? r.json() : null; })
+        .then(function(d){ return d ? parseInt((d.count_unique||d.count||"0").replace(/[^\d]/g,""),10) : null; })
+        .catch(function(){ return null; });
+    }
+    Promise.all([num("TOTAL"), num("course-complete")]).then(function(v){
+      var visits = v[0], done = v[1], parts = [];
+      if(visits){ parts.push(visits.toLocaleString() + (visits===1?" learner":" learners")); }
+      if(done){ parts.push(done.toLocaleString() + " completed"); }
+      if(!parts.length) return;
+      var el = document.getElementById("bit-stats");
+      el.textContent = "◍ " + parts.join("  ·  ");
+      el.hidden = false;
+    });
+  })();
+  </script>
 </body>
 </html>

@@ -5,6 +5,14 @@
 <link rel="icon" href="../img/bee.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bit by Bit · an AI literacy primer</title>
+<!-- Privacy-friendly aggregate analytics (GoatCounter): no cookies, no personal data,
+     only counts of visits and section-completions. Sign up free at goatcounter.com,
+     then replace the code below with your own site code. -->
+<script>
+  window.GC_CODE = "bitcounter"; /* goatcounter.com site code */
+  window.goatcounter = { endpoint: "https://" + window.GC_CODE + ".goatcounter.com/count" };
+</script>
+<script async src="//gc.zgo.at/count.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
@@ -834,9 +842,15 @@ function refreshQuiz(idx){
 }
 
 /* ---------------- COMPLETION ---------------- */
+/* fire an aggregate (no-identity) event to GoatCounter, if it loaded */
+function gcEvent(path,title){
+  try{ if(window.goatcounter&&window.goatcounter.count) window.goatcounter.count({path:path,title:title,event:true}); }catch(e){}
+}
 function completeSection(idx){
+  const wasNew = !state.completed.has(idx);
   state.completed.add(idx);
   updateMeter();
+  if(wasNew) gcEvent('section-'+String(idx+1).padStart(2,'0')+'-complete','Section '+(idx+1)+' complete');
   if(state.completed.size===TOTAL){ showFinale(); return; }
   showCheer(idx);
 }
@@ -856,6 +870,7 @@ function showCheer(idx){
   document.getElementById('ov-back').onclick=()=>{ closeOverlay(); goHub(); };
 }
 function showFinale(){
+  if(!state.finished){ state.finished=true; gcEvent('course-complete','Course complete'); }
   const card=document.getElementById('overlay-card');
   card.innerHTML=`${DEVICE_HTML('bit-ov',4)}
     <h2>${L().beaming}</h2>
