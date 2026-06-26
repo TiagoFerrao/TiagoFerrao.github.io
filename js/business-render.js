@@ -26,7 +26,7 @@
   function linksHtml(e) {
     if (!e.links || !e.links.length) return '';
     return '<p class="tl-links">' + e.links.map(l =>
-      `<a href="${esc(l.href)}"${l.ext ? ' target="_blank" rel="noopener"' : ''}>&rsaquo; ${EXT_ICON} ${esc(l.label)}</a>`
+      `<a href="${esc(l.href)}">&rsaquo; ${EXT_ICON} ${esc(l.label)}</a>`
     ).join('<span class="sep">&middot;</span>') + '</p>';
   }
 

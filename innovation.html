@@ -465,7 +465,7 @@
     function toolCard(id) {
       var t = TOOLS[id]; if (!t) return '';
       if (t.soon) return '<span class="tl soon" data-tool="' + id + '"><span class="nm">' + t.nm + '</span><span class="ds">' + t.ds + '</span><span class="soon-tag">coming soon</span></span>';
-      return '<a class="tl" data-tool="' + id + '" href="' + t.href + '" target="_blank" rel="noopener"><span class="nm">' + t.nm + '</span><span class="ds">' + t.ds + '</span></a>';
+      return '<a class="tl" data-tool="' + id + '" href="' + t.href + '"><span class="nm">' + t.nm + '</span><span class="ds">' + t.ds + '</span></a>';
     }
 
     var ARROW = '<div class="farrow"><svg viewBox="0 0 16 16"><path d="M8 2v9M3 8l5 5 5-5" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>';
